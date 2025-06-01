@@ -1,7 +1,6 @@
 package com.ec.user.security;
 
 import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
-import com.sgu.backend.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +26,9 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 	
-	@Autowired
-	@Lazy
-	private AccountService accountService;
+//	@Autowired
+//	@Lazy
+//	private AccountService accountService;
 	
 	@Autowired
 	@Lazy

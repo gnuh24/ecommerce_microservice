@@ -4,7 +4,7 @@ import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
 import com.ec.user.exceptions.JwtException.InvalidJWTSignatureException;
 import com.ec.user.exceptions.JwtException.TokenExpiredException;
 import com.ec.user.exceptions.JwtException.UsernameNotFound;
-import com.sgu.backend.services.AccountService;
+import com.ec.user.service.AccountService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
