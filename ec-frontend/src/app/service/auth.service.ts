@@ -30,10 +30,8 @@ export interface LoginResponse {
 
 
 interface RegisterRequest {
-    email: string;
+    username: string;
     password: string;
-    fullName?: string;
-    // thêm các trường cần thiết
 }
 
 @Injectable({
@@ -56,9 +54,9 @@ export class AuthService {
         return this.http.post(`${this.baseUrl}/auth/active-account?otp=${otp}`, {});
     }
 
-    // register(data: RegisterRequest): Observable<any> {
-    //     return this.http.post(`${this.baseUrl}/auth/register`, data);
-    // }
+    register(data: RegisterRequest): Observable<any> {
+        return this.http.post(`${this.baseUrl}/auth/register`, data);
+    }
 
     // logout(): void {
     //     // Có thể gọi API logout backend hoặc xóa token client-side

@@ -1,1 +1,53 @@
-<p>register works!</p>
+<div class="auth-layout">
+    <div class="auth-container">
+        <h1 class="auth-title">Đăng ký</h1>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+            <!-- Email -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" required />
+                <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+                    Vui lòng nhập email
+                </mat-error>
+                <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+                    Email không hợp lệ
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Password -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mật khẩu</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+                <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+                    Vui lòng nhập mật khẩu
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Confirm Password -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nhập lại mật khẩu</mat-label>
+                <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmPassword" required />
+                <button mat-icon-button matSuffix type="button" (click)="hideConfirm = !hideConfirm">
+                    <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="registerForm.hasError('passwordMismatch')">
+                    Mật khẩu không khớp
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Submit button -->
+            <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid"
+                class="custom-login-btn">
+                Đăng ký
+            </button>
+        </form>
+
+        <div class="login-links">
+            <p>Đã có tài khoản? <a routerLink="/auth/login">Đăng nhập</a></p>
+        </div>
+    </div>
+</div>

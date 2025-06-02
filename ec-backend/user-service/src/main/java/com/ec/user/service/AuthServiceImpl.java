@@ -54,7 +54,6 @@ public class AuthServiceImpl implements AuthService {
 	public Account activeAccount(String otp) {
 		
 		String accountId = redisService.get(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp).toString();
-		System.err.println(accountId);
 		if (accountId == null || accountId.isEmpty() ){
 			throw new RuntimeException("OTP không tồn tại hoặc đã hết hạn sử dụng !");
 		}
@@ -71,10 +70,6 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public AuthResponseDTO login(LoginRequestForm request) {
 		Account user = accountService.getAccountByUsername(request.getUsername());
-		System.err.println(user);
-		System.err.println(request.getPassword());
-		System.err.println("Password: " + passwordEncoder.encode(user.getPassword()));
-		System.err.println("Password of Account: " + user.getPassword());
 		if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new BadCredentialsException("Email hoặc mật khẩu không đúng!");
 		}
