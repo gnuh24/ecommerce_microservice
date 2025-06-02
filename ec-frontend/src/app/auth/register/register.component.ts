@@ -50,36 +50,33 @@ export class RegisterComponent implements OnInit {
 
 
 
+            // Hiển thị loading trước khi gửi request
+            Swal.fire({
+                title: 'Đang xử lý...',
+                text: 'Vui lòng chờ trong giây lát',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             this.authService.register(formData)
-                .pipe(
-                    tap(() => {
-                        // Hiển thị loading ngay khi bắt đầu
-                        Swal.fire({
-                            title: 'Đang xử lý...',
-                            text: 'Vui lòng chờ trong giây lát',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                    }),
-                    finalize(() => {
-                        // Kết thúc loading (dù thành công hay lỗi)
-                        Swal.close();
-                    })
-                )
                 .subscribe({
                     next: (res) => {
+                        // Đóng loading trước khi hiện popup thành công
+                        Swal.close();
+
+                        // Hiển thị popup thành công, đợi người dùng OK rồi chuyển hướng
                         Swal.fire({
                             icon: 'success',
                             title: 'Đăng ký thành công',
-                            // text: res.message || 'Vui lòng kiểm tra email để kích hoạt tài khoản.'
                             text: 'Vui lòng kiểm tra email để kích hoạt tài khoản.'
-
+                        }).then(() => {
+                            this.router.navigate(['/auth/login']);
                         });
-                        this.router.navigate(['/auth/login']);
                     },
                     error: (err) => {
+                        Swal.close(); // Đóng loading nếu có lỗi
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi đăng ký',
@@ -87,6 +84,8 @@ export class RegisterComponent implements OnInit {
                         });
                     }
                 });
+
+
         }
     }
 }
