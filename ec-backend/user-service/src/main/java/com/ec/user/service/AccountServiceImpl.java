@@ -1,7 +1,11 @@
 package com.ec.user.service;
 
 
+import com.ec.user.dto.auth.UserRegistrationForm;
+import com.ec.user.dto.profile.ProfileCreateForm;
 import com.ec.user.entity.Account;
+import com.ec.user.entity.Profile;
+import com.ec.user.integration.redis.RedisService;
 import com.ec.user.repository.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +23,10 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	private ProfileService profileService;
 
-//    @Autowired
-//    private ProfileService profileService;
-//
 //    @Autowired
 //    private ModelMapper modelMapper;
 //
@@ -31,28 +35,27 @@ public class AccountServiceImpl implements AccountService {
 //
 //    @Autowired
 //    private JwtTokenProvider jwtTokenProvider;
-//
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Autowired
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	//    @Autowired
 //    private EmailService emailService;
 //
-//    @Autowired
-//    private RedisService redisService;
+	@Autowired
+	private RedisService redisService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return accountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Account with username " + username + " not found"));
 	}
-
-    @Override
-    public Account getAccountByUsername(String username) {
-        return accountRepository.findByUsername(username).orElse(null);
+	
+	@Override
+	public Account getAccountByUsername(String username) {
+		return accountRepository.findByUsername(username).orElse(null);
 //                .orElseThrow(() -> new UsernameNotFoundException("Account with username " + username + " not found"));
-    }
-    
-    
+	}
+
 
 //    @Override
 //    public Account getAccountById(String id) {
@@ -65,54 +68,27 @@ public class AccountServiceImpl implements AccountService {
 //        Specification<Account> specification = AccountSpecification.buildWhere(filterForm);
 //        return accountRepository.findAll(specification, pageable);
 //    }
-//
-//    @Override
-////    @Cacheable(value = "account:email", key = "#email", unless = "#result == null")
-//    public boolean isUsernameExists(String username) {
-//
-//        if(redisService.hashExists(RedisContants.EMAIL_EXIST,username)){
-//            return true;
-//        }
-//
-//        if (accountRepository.existsByEmail(username)){
-//            redisService.hashSet(RedisContants.EMAIL_EXIST,username,true);
-//            return true;
-//        } else {
-//            return false;
-//        }
-//
-//    }
-//
-//
-//    @Override
-//    @Transactional
-//    public Account createAccount(UserRegistrationForm accountCreateForm) {
-//
-//        Profile profile = profileService.getProfileByPhone(accountCreateForm.getPhone());
-//        Account account = new Account();
-//
-//        if (profile == null){
-//            ProfileCreateForm profileCreateForm = new ProfileCreateForm();
-//            profileCreateForm.setEmail(accountCreateForm.getEmail());
-//            profileCreateForm.setFullname(accountCreateForm.getFullname());
-//            profileCreateForm.setPhone(accountCreateForm.getPhone());
-//            profile = profileService.createProfile(profileCreateForm, null);
-//        }else{
-//            profile.setFullname(accountCreateForm.getFullname());
-//            profile.setEmail(accountCreateForm.getEmail());
-//            profileService.updateProfile(profile);
-//        }
-//
-//        account.setEmail(accountCreateForm.getEmail());
-//        account.setPassword(passwordEncoder.encode(accountCreateForm.getPassword()));
-//        account.setProfile(profile);
-//
-//        account = accountRepository.save(account);
-//
-////        OTP otp = otpService.createOTP(account, OTP.Category.REGISTER, 25);
-////        emailService.sendRegistrationUserConfirm(account.getEmail(), otp);
-//        return account;
-//    }
+
+	@Override
+	@Transactional
+	public Account createAccount(UserRegistrationForm accountCreateForm) {
+		
+		ProfileCreateForm profileCreateForm = new ProfileCreateForm();
+		profileCreateForm.setEmail(accountCreateForm.getEmail());
+		Profile profile = profileService.createProfile(profileCreateForm, null);
+		
+		Account account = new Account();
+		
+		account.setUsername(accountCreateForm.getEmail());
+		account.setPassword(passwordEncoder.encode(accountCreateForm.getPassword()));
+		account.setProfile(profile);
+		
+		account = accountRepository.save(account);
+
+//        OTP otp = otpService.createOTP(account, OTP.Category.REGISTER, 25);
+//        emailService.sendRegistrationUserConfirm(account.getEmail(), otp);
+		return account;
+	}
 //
 //    @Override
 //    public Account updateStatusOfAccount(String accountId, Account.Status status) {

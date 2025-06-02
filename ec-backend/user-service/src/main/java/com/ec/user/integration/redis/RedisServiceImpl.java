@@ -42,7 +42,6 @@ public class RedisServiceImpl implements RedisService {
 		hashOperations.put(key, field, value);
 	}
 	
-	
 	@Override
 	public boolean hashExists(String key, String field) {
 		return hashOperations.hasKey(key, field);

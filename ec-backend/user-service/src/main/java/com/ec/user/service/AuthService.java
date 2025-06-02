@@ -9,6 +9,8 @@ import com.ec.user.dto.auth.LoginRequestForm;
 
 public interface AuthService {
 	
+	boolean isUsernameExists(String username);
+	
 	AuthResponseDTO login(LoginRequestForm request);
 	
 	AuthResponseDTO staffLogin(LoginRequestForm request);

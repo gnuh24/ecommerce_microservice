@@ -3,21 +3,21 @@ CREATE DATABASE `EC_Microservice`;
 USE `EC_Microservice`;
 
 CREATE TABLE `Profile` (
-    `id` VARCHAR(255) PRIMARY KEY,
-    `email` VARCHAR(255) NOT NULL UNIQUE,
-    `phone` VARCHAR(255) NOT NULL UNIQUE,
-    `fullName` VARCHAR(255) NOT NULL,
-    `birthday` DATE,
-    `gender` ENUM("MALE", "FEMALE", "ORTHER")
+    `id` 		VARCHAR(255) 	PRIMARY KEY,
+    `email` 	VARCHAR(255) 	NOT NULL 	UNIQUE,
+    `phone` 	VARCHAR(255)  				UNIQUE,
+    `fullName` 	VARCHAR(255) ,
+    `birthday` 	DATE,
+    `gender` 	ENUM("MALE", "FEMALE", "ORTHER")
 );
 
 CREATE TABLE `Account` (
-    `id` 			VARCHAR(255) PRIMARY KEY,
-    `createdAt` 	DATETIME NOT NULL,
-    `updatedAt` 	DATETIME NOT NULL,
-    `username` 		VARCHAR(255) NOT NULL UNIQUE,
-    `password` 		VARCHAR(255) NOT NULL,
-    `role` 			ENUM('ADMIN', 'USER') NOT NULL,
+    `id` 			VARCHAR(255) 			PRIMARY KEY,
+    `createdAt` 	DATETIME 				NOT NULL,
+    `updatedAt` 	DATETIME 				NOT NULL,
+    `username` 		VARCHAR(255) 			NOT NULL UNIQUE,
+    `password` 		VARCHAR(255) 			NOT NULL,
+    `role` 			ENUM('ADMIN', 'USER') 	NOT NULL,
     `status` 		ENUM('ACTIVE', 'INACTIVE', 'BANNED') NOT NULL,
     `avatar` 		VARCHAR(255),
     `profileId` 	VARCHAR(255) NOT NULL,
@@ -40,7 +40,7 @@ INSERT INTO `Profile`   (`id`, 		`email`, 			`phone`, 	`fullName`, 		`birthday`,
 						('P001', 	'admin@gmail.com', '0909123456', 'Ngô Tuấn Hưng', 	'2004-04-02', 'MALE'),
 						('P002', 	'user1@gmail.com', '0909988776', 'Bob Trần', 		'1992-03-22', 'FEMALE'),
 						('P003', 	'user2@gmail.com', '0911223344', 'Charlie Phạm', 	NULL, NULL);
-Account
+                        
 INSERT INTO `Account` 	(`id`, 		`createdAt`, `updatedAt`, `username`, `password`, `role`, `status`, `avatar`, `profileId`) VALUES
 						('acc1', 	NOW(), 			NOW(), 'admin@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'ADMIN', 'ACTIVE', "Test", 'P001'),
 						('acc2', 	NOW(), 			NOW(), 'user1@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'USER', 'ACTIVE', "Test", 'P002'),

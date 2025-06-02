@@ -3,7 +3,7 @@ package com.ec.user.integration.redis;
 public class RedisConstants {
 	
 	// 1. Email tồn tại
-	public static final String EMAIL_EXIST = "email_exist"; // dùng kèm với :<email>
+	public static final String USERNAME_EXIST = "username_exist"; // dùng kèm với :<email>
 	
 	// 2. OTP xác thực tài khoản
 	public static final String OTP_VERIFY_ACCOUNT = "otp_verify_account"; // dùng kèm với :<email>

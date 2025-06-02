@@ -3,21 +3,18 @@ package com.ec.user.service;
 import com.ec.user.dto.auth.AuthResponseDTO;
 import com.ec.user.dto.auth.LoginRequestForm;
 import com.ec.user.entity.Account;
+import com.ec.user.integration.redis.RedisConstants;
+import com.ec.user.integration.redis.RedisService;
 import com.ec.user.security.JwtTokenProvider;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -46,8 +43,13 @@ public class AuthServiceImpl implements AuthService {
 //	@Autowired
 //	private EmailService emailService;
 //
-//	@Autowired
-//	private RedisService redisService;
+	@Autowired
+	private RedisService redisService;
+	
+	@Override
+	public boolean isUsernameExists(String username) {
+		return redisService.exists(RedisConstants.USERNAME_EXIST + ":"+ username);
+	}
 	
 	@Override
 	public AuthResponseDTO login(LoginRequestForm request) {
