@@ -1,0 +1,45 @@
+<div class="auth-layout">
+    <div class="auth-container">
+        <h1 class="auth-title">Đăng nhập</h1>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+            <!-- Email -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="username" type="email" required />
+            </mat-form-field>
+
+            <!-- Password với con mắt -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mật khẩu</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required />
+                <button mat-icon-button matSuffix type="button" (click)="hide = !hide">
+                    <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <!-- Button submit -->
+            <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid"
+                class="custom-login-btn">
+                Đăng nhập
+            </button>
+
+        </form>
+
+        <!-- Các liên kết phụ -->
+        <div class="login-links">
+            <p>
+                Chưa có tài khoản?
+                <a routerLink="/auth/register">Đăng ký</a>
+            </p>
+            <p>
+                Quên mật khẩu?
+                <a routerLink="/auth/forgot-password">Khôi phục mật khẩu</a>
+            </p>
+            <p>
+                Bạn là nhân viên của hệ thống?
+                <a routerLink="/auth/staff-login">Đăng nhập nhân viên</a>
+            </p>
+        </div>
+    </div>
+</div>

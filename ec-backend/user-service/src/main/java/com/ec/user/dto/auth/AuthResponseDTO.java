@@ -14,8 +14,13 @@ public class AuthResponseDTO {
 	@Schema(description = "Username của người dùng", example = "user@example.com")
 	private String username;
 	
+	@Schema(description = "Full name của người dùng", example = "Ngô Tuấn Hưng")
+	private String fullName;
+	
 	@Schema(description = "Vai trò của người dùng", example = "ADMIN")
 	private String role;
+	
+	private String avatar;
 	
 	@Schema(description = "Mã token để xác thực", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
 	private String token;

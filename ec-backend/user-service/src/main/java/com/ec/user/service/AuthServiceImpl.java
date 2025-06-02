@@ -176,6 +176,7 @@ public class AuthServiceImpl implements AuthService {
 		AuthResponseDTO response = new AuthResponseDTO();
 		response.setId(user.getId());
 		response.setUsername(user.getUsername());
+		response.setFullName(user.getProfile().getFullName());
 		response.setRole(user.getRole().toString());
 		
 		// Tạo Token
