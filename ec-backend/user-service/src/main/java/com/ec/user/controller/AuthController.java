@@ -62,18 +62,18 @@ public class AuthController {
 				return ResponseEntity.ok(new ApiResponse<>(200, "Login successful", loginInfo));
 		}
 		
-//		/**
-//		 * 📌 Đăng nhập nhân viên
-//		 * @param loginInputForm Thông tin đăng nhập nhân viên
-//		 * @return Thông tin đăng nhập nhân viên
-//		 */
-//		@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
-//		@PostMapping("/staff-login")
-//		public ResponseEntity<ApiResponse<AuthResponseDTO>> loginStaff(
-//				@RequestBody @Valid LoginRequestForm loginInputForm) {
-//				AuthResponseDTO loginInfo = authService.staffLogin(loginInputForm);
-//				return ResponseEntity.ok(new ApiResponse<>(200, "Login successful", loginInfo));
-//		}
+		/**
+		 * 📌 Đăng nhập nhân viên
+		 * @param loginInputForm Thông tin đăng nhập nhân viên
+		 * @return Thông tin đăng nhập nhân viên
+		 */
+		@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
+		@PostMapping("/staff-login")
+		public ResponseEntity<ApiResponse<AuthResponseDTO>> loginStaff(
+				@RequestBody @Valid LoginRequestForm loginInputForm) {
+				AuthResponseDTO loginInfo = authService.staffLogin(loginInputForm);
+				return ResponseEntity.ok(new ApiResponse<>(200, "Login successful", loginInfo));
+		}
 		
 //		/**
 //		 * 📌 Đăng ký tài khoản người dùng

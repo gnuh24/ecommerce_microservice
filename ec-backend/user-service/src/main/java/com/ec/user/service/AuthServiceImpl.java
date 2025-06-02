@@ -72,6 +72,26 @@ public class AuthServiceImpl implements AuthService {
 		return buildAuthResponse(user);
 	}
 	
+	@Override
+	public AuthResponseDTO staffLogin(LoginRequestForm request) {
+		Account user = accountService.getAccountByUsername(request.getUsername());
+		
+		if (user == null || user.getRole().equals(Account.Role.USER) || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new BadCredentialsException("Email hoặc mật khẩu không đúng!");
+		}
+
+		if (user.getStatus().toString().equals("INACTIVE")) {
+			throw new DisabledException("Tài khoản của bạn chưa được kích hoạt, hãy kiểm tra email " + request.getUsername());
+		}
+		
+		if (user.getStatus().toString().equals("BANNED")) {
+			throw new LockedException("Tài khoản của bạn đã bị khóa! Nếu có vấn đề, vui lòng liên hệ Admin.");
+		}
+		
+		// Tạo và trả về AuthResponseDTO
+		return buildAuthResponse(user);
+	}
+	
 //	@Override
 //	public boolean registration(UserRegistrationForm userRegistrationForm) {
 //		if (accountService.isEmailExists(userRegistrationForm.getEmail())) {
@@ -110,27 +130,7 @@ public class AuthServiceImpl implements AuthService {
 //		return true;
 //	}
 //
-//	@Override
-//	public AuthResponseDTO staffLogin(LoginRequestForm request) {
-//		Account user = accountService.getAccountByEmail(request.getEmail());
-//
-//
-//		if (user == null || user.getRole().equals(Account.Role.USER) || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-//			throw new BadCredentialsException("Email hoặc mật khẩu không đúng!");
-//		}
-//
-//		if (user.getStatus().toString().equals("INACTIVE")) {
-//			throw new DisabledException("Tài khoản của bạn chưa được kích hoạt, hãy kiểm tra email " + request.getEmail());
-//		}
-//
-//		if (user.getStatus().toString().equals("BANNED")) {
-//			throw new LockedException("Tài khoản của bạn đã bị khóa! Nếu có vấn đề, vui lòng liên hệ Admin.");
-//		}
-//
-//
-//		// Tạo và trả về AuthResponseDTO
-//		return buildAuthResponse(user);
-//	}
+
 //
 //	@Override
 //	public AuthResponseDTO refreshToken(String oldToken, String refreshToken) {
