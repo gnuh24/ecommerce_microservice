@@ -1,0 +1,47 @@
+.verify-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    padding: 40px;
+}
+
+.verify-card {
+    width: 400px;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    mat-card-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .loading-text {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .success-text {
+        color: green;
+        text-align: center;
+        font-weight: bold;
+        padding: 12px;
+    }
+
+    .error-text {
+        color: red;
+        text-align: center;
+        font-weight: bold;
+        padding: 12px;
+    }
+
+    .action {
+        margin-top: 20px;
+        text-align: center;
+    }
+}

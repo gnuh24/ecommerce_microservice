@@ -27,7 +27,6 @@ public class Profile implements Serializable {
 	@Column(unique = true)
 	private String phone;
 	
-	@Column(nullable = false)
 	private String fullName;
 	
 	private LocalDate birthday;

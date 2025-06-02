@@ -22,15 +22,22 @@ public class RedisServiceImpl implements RedisService {
 	}
 	
 	
-	@Override
-	public void set(String key, Object value) {
-		redisTemplate.opsForValue().set(key, value);
-	}
+//	@Override
+//	public void set(String key, Object value) {
+//		redisTemplate.opsForValue().set(key, value);
+//	}
+	
 	
 	@Override
 	public void set(String key, String value) {
 		redisTemplate.opsForValue().set(key, value);
 	}
+	
+	@Override
+	public void set(String key, String value, long timeout, TimeUnit unit) {
+		redisTemplate.opsForValue().set(key, value, timeout, unit);
+	}
+	
 	
 	@Override
 	public void setTimeToLive(String key, long timeoutInDays) {
@@ -86,7 +93,6 @@ public class RedisServiceImpl implements RedisService {
 		
 		
 	}
-	
 	
 	@Override
 	public void delete(String key) {

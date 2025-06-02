@@ -12,7 +12,7 @@ public interface ProfileService {
 	
 	//    Profile getProfileByPhone(String phone);
 //    Page<Profile> getAllProfile(Pageable pageable, String search, ProfileFilterForm form);
-	Profile createProfile(ProfileCreateForm form, Account account);
+	Profile createProfile(ProfileCreateForm form);
 //    Profile createProfile(ProfileCreateForm form);
 //
 //

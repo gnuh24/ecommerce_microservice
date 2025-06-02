@@ -20,10 +20,8 @@ public class Address implements Serializable {
 	@Id
 	private String id = IdGenerator.generateId();
 	
-	@Column(nullable = false)
 	private String title;
 	
-	@Column(nullable = false)
 	private String address;
 	
 	@Column(nullable = false)
@@ -32,9 +30,7 @@ public class Address implements Serializable {
 	@Column(nullable = false)
 	private boolean isDeleted = false;
 	
-	@Column(nullable = false)
 	private String fullName;
 	
-	@Column(nullable = false)
 	private String phone;
 }

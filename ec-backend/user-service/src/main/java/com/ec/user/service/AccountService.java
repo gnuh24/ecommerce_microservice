@@ -6,23 +6,23 @@ package com.ec.user.service;
 //import com.sgu.backend.entities.OTP;
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.Pageable;
-import com.ec.user.dto.auth.UserRegistrationForm;
+import com.ec.user.dto.account.AccountCreateForm;
 import com.ec.user.entity.Account;
+import com.ec.user.entity.Profile;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AccountService extends UserDetailsService {
 	
+	Account getAccountById(String accountId);
 	Account getAccountByUsername(String username);
-	Account createAccount(UserRegistrationForm accountCreateForm);
+	Account createAccount(AccountCreateForm accountCreateForm, Profile profile);
+	Account activeAccount(String accountId);
+
 //    Page<Account> getAllAccounts(Pageable pageable, AccountFilterForm filterForm);
 //
 //    Account getAccountByEmail(String username);
 //
-//    Account getAccountById(String id);
-//
-//    boolean isEmailExists(String email);
-//
-//    Account createAccount(UserRegistrationForm userRegistrationForm);
+
 //
 //    Account updateStatusOfAccount(String accountId, Account.Status status);
 //

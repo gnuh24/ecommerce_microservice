@@ -13,6 +13,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { VerifyAccountComponent } from './verify-account/verify-account.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -21,7 +24,8 @@ import { MatButtonModule } from '@angular/material/button';
         AuthLayoutComponent,
         ForgotPasswordComponent,
         ResetPasswordComponent,
-        StaffLoginComponent
+        StaffLoginComponent,
+        VerifyAccountComponent
 
     ],
     imports: [
@@ -31,7 +35,9 @@ import { MatButtonModule } from '@angular/material/button';
         MatFormFieldModule,
         MatInputModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        MatCardModule,
+        MatProgressSpinnerModule
     ]
 })
 export class AuthModule { }

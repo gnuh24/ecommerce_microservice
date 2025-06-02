@@ -9,6 +9,7 @@ import { AuthLayoutComponent } from './auth-layout/auth-layout.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { StaffLoginComponent } from './staff-login/staff-login.component';
+import { VerifyAccountComponent } from './verify-account/verify-account.component';
 
 const routes: Routes = [
     {
@@ -21,6 +22,8 @@ const routes: Routes = [
             { path: 'forgot-password', component: ForgotPasswordComponent },
             { path: 'reset-password', component: ResetPasswordComponent },
             { path: 'staff-login', component: StaffLoginComponent },
+            { path: 'verify-account', component: VerifyAccountComponent },
+
             { path: '**', redirectTo: 'login' }
         ]
     }

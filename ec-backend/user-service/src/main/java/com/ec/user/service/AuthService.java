@@ -6,8 +6,12 @@ package com.ec.user.service;
 
 import com.ec.user.dto.auth.AuthResponseDTO;
 import com.ec.user.dto.auth.LoginRequestForm;
+import com.ec.user.dto.auth.UserRegistrationForm;
+import com.ec.user.entity.Account;
 
 public interface AuthService {
+	
+	Account activeAccount(String otp);
 	
 	boolean isUsernameExists(String username);
 	
@@ -15,8 +19,7 @@ public interface AuthService {
 	
 	AuthResponseDTO staffLogin(LoginRequestForm request);
 
-//  boolean registration(UserRegistrationForm userRegistrationForm);
-//  boolean verifiOTP( String email,String otp);
+  	Account register(UserRegistrationForm userRegistrationForm);
 //
 //
 //    AuthResponseDTO refreshToken(String oldToken, String refreshToken);

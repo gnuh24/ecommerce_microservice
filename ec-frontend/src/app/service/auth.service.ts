@@ -52,6 +52,9 @@ export class AuthService {
         return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/staff-login`, data);
     }
 
+    activeAccount(otp: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/auth/active-account?otp=${otp}`, {});
+    }
 
     // register(data: RegisterRequest): Observable<any> {
     //     return this.http.post(`${this.baseUrl}/auth/register`, data);

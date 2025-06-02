@@ -16,44 +16,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
-
-    @Autowired
-    private ProfileRepository profileRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    
-    @Autowired
-    @Lazy
-    private AccountService accountService;
+	
+	@Autowired
+	private ProfileRepository profileRepository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	@Autowired
+	@Lazy
+	private AccountService accountService;
 
 //    @Override
 //    public Page<Profile> getAllProfile(Pageable pageable, String search, ProfileFilterForm form) {
 //	Specification<Profile> specification = ProfileSpecification.buildWhere(search, form);
 //	return profileRepository.findAll(specification, pageable);
 //    }
-
-    @Override
-    public Profile getProfileById(String profileId) {
-	return profileRepository.findById(profileId)
-		.orElseThrow(() -> new EntityNotFoundException("Không tìm thấy profile với ID: " + profileId));
-    }
+	
+	@Override
+	public Profile getProfileById(String profileId) {
+		return profileRepository.findById(profileId)
+		    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy profile với ID: " + profileId));
+	}
 
 //    @Override
 //    public Profile getProfileByPhone(String phone) {
 //	return profileRepository.findByPhone(phone).orElse(null);
 //    }
-
-    @Override
-    @Transactional
-    public Profile createProfile(ProfileCreateForm form, Account account) {
-
-	Profile profile = modelMapper.map(form, Profile.class);
-
-	profile = profileRepository.save(profile);
-	return profile;
-    }
+	
+	@Override
+	@Transactional
+	public Profile createProfile(ProfileCreateForm form) {
+		Profile profile = modelMapper.map(form, Profile.class);
+		profile = profileRepository.save(profile);
+		return profile;
+	}
 
 //    @Override
 //    public Profile createProfile(ProfileCreateForm form) {
@@ -97,6 +94,6 @@ public class ProfileServiceImpl implements ProfileService {
 //				// Lưu lại vào database
 //				return profileRepository.save(profile);
 //		}
-		
-		
+
+
 }

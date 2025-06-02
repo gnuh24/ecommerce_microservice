@@ -89,7 +89,7 @@ public class AuthController {
 	public ResponseEntity<ApiResponse<RegisterResponseDTO>> createAccount(@RequestBody @Valid UserRegistrationForm form) {
 		
 		// Tạo tài khoản
-		Account account = accountService.createAccount(form);
+		Account account = authService.register(form);
 		
 		// Chuyển đổi tài khoản sang DTO
 		RegisterResponseDTO authResponseDTO = new RegisterResponseDTO();
@@ -98,6 +98,22 @@ public class AuthController {
 		
 		// Trả về phản hồi
 		return ResponseEntity.ok(new ApiResponse<>(201, "Account created successfully. Please activate your account on your email: " + account.getUsername(), authResponseDTO));
+	}
+	
+	/**
+	 * 📌 Đăng nhập nhân viên
+	 *
+	 * @param otp Thông tin đăng nhập nhân viên
+	 * @return Thông tin đăng nhập nhân viên
+	 */
+	@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
+	@PostMapping("/active-account")
+	public ResponseEntity<ApiResponse<AuthResponseDTO>> activeAccount(@RequestParam String otp) {
+		Account account = authService.activeAccount(otp);
+		AuthResponseDTO responseDTO = new AuthResponseDTO();
+		responseDTO.setId(account.getId());
+		responseDTO.setUsername(account.getUsername());
+		return ResponseEntity.ok(new ApiResponse<>(200, "Verify successfully", responseDTO));
 	}
 
 //		/**

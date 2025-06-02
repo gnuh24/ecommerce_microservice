@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public interface RedisService {
-	void set(String key, Object value);
+//	void set(String key, Object value);
 	
 	void set(String key, String value);
+	
+	void set(String key, String value, long timeout, TimeUnit unit);
 	
 	void setTimeToLive(String key, long timeoutInDays);
 	
