@@ -48,11 +48,9 @@ export class RegisterComponent implements OnInit {
                 password: this.registerForm.value.password
             };
 
-
-
-            // Hiển thị loading trước khi gửi request
+            // Hiển thị loading
             Swal.fire({
-                title: 'Đang xử lý...',
+                title: 'Đang kiểm tra...',
                 text: 'Vui lòng chờ trong giây lát',
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -60,32 +58,53 @@ export class RegisterComponent implements OnInit {
                 }
             });
 
-            this.authService.register(formData)
-                .subscribe({
-                    next: (res) => {
-                        // Đóng loading trước khi hiện popup thành công
-                        Swal.close();
+            // Bước 1: Kiểm tra username đã tồn tại chưa
+            this.authService.checkUsernameExists(formData.username).subscribe({
+                next: (res) => {
+                    console.log('Kết quả kiểm tra username:', res);
+                    const isExisted = res?.data === true;
 
-                        // Hiển thị popup thành công, đợi người dùng OK rồi chuyển hướng
+                    if (isExisted) {
+                        Swal.close();
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Đăng ký thành công',
-                            text: 'Vui lòng kiểm tra email để kích hoạt tài khoản.'
-                        }).then(() => {
-                            this.router.navigate(['/auth/login']);
+                            icon: 'warning',
+                            title: 'Email đã tồn tại',
+                            text: 'Vui lòng sử dụng email khác.'
                         });
-                    },
-                    error: (err) => {
-                        Swal.close(); // Đóng loading nếu có lỗi
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi đăng ký',
-                            text: err.error.message || 'Có lỗi xảy ra, vui lòng thử lại.'
+                    } else {
+                        // Bước 2: Gọi API đăng ký
+                        this.authService.register(formData).subscribe({
+                            next: () => {
+                                Swal.close();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đăng ký thành công',
+                                    text: 'Vui lòng kiểm tra email để kích hoạt tài khoản.'
+                                }).then(() => {
+                                    this.router.navigate(['/auth/login']);
+                                });
+                            },
+                            error: (err) => {
+                                Swal.close();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi đăng ký',
+                                    text: err.error.message || 'Có lỗi xảy ra, vui lòng thử lại.'
+                                });
+                            }
                         });
                     }
-                });
-
-
+                },
+                error: (err) => {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi kiểm tra email',
+                        text: err.error.message || 'Không thể kiểm tra email, vui lòng thử lại.'
+                    });
+                }
+            });
         }
     }
+
 }

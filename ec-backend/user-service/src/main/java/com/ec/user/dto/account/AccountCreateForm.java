@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccountCreateForm {
 	
+	private String id;
+	
 	@NotBlank(message = "Email không được để trống !!")
 	@Email(message = "Email phải đúng định dang !!")
 	private String username;

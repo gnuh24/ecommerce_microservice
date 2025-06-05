@@ -22,10 +22,15 @@ public class RedisServiceImpl implements RedisService {
 	}
 	
 	
-//	@Override
-//	public void set(String key, Object value) {
-//		redisTemplate.opsForValue().set(key, value);
-//	}
+	@Override
+	public void set(String key, Object value) {
+		redisTemplate.opsForValue().set(key, value);
+	}
+	
+	@Override
+	public void setObjectWithTTL(String key, Object value, long timeout, TimeUnit unit) {
+		redisTemplate.opsForValue().set(key, value, timeout, unit);
+	}
 	
 	
 	@Override

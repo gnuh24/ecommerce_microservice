@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
 	public Account createAccount(AccountCreateForm accountCreateForm, Profile profile) {
 		
 		Account account = new Account();
-		
+		account.setId(accountCreateForm.getId());
 		account.setUsername(accountCreateForm.getUsername());
 		account.setPassword(passwordEncoder.encode(accountCreateForm.getPassword()));
 		account.setProfile(profile);

@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public interface RedisService {
-//	void set(String key, Object value);
+	void set(String key, Object value);
+	
+	void setObjectWithTTL(String key, Object value, long timeout, TimeUnit unit);
 	
 	void set(String key, String value);
 	

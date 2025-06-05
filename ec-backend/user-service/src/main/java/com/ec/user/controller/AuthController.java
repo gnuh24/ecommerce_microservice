@@ -1,6 +1,7 @@
 package com.ec.user.controller;
 
 import com.ec.user.api.ApiResponse;
+import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.AuthResponseDTO;
 import com.ec.user.dto.auth.LoginRequestForm;
 import com.ec.user.dto.auth.RegisterResponseDTO;
@@ -13,12 +14,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Enumeration;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,6 +41,8 @@ public class AuthController {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	private int count = 0;
 	
 	
 	/**
@@ -87,9 +94,10 @@ public class AuthController {
 	@Operation(summary = "Đăng ký tài khoản", description = "Tạo tài khoản mới cho người dùng.")
 	@PostMapping("/register")
 	public ResponseEntity<ApiResponse<RegisterResponseDTO>> createAccount(@RequestBody @Valid UserRegistrationForm form) {
+		System.err.println("Call API register");
 		
 		// Tạo tài khoản
-		Account account = authService.register(form);
+		AccountRedisDTO account = authService.register(form);
 		
 		// Chuyển đổi tài khoản sang DTO
 		RegisterResponseDTO authResponseDTO = new RegisterResponseDTO();
@@ -109,10 +117,17 @@ public class AuthController {
 	@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
 	@PostMapping("/active-account")
 	public ResponseEntity<ApiResponse<AuthResponseDTO>> activeAccount(@RequestParam String otp) {
+		
+		System.err.println("OTP: " + otp);
+		System.err.println("Số lần call: " + ++count);
+		System.err.println("_____________________");
+		
+		// ✅ Business logic
 		Account account = authService.activeAccount(otp);
 		AuthResponseDTO responseDTO = new AuthResponseDTO();
 		responseDTO.setId(account.getId());
 		responseDTO.setUsername(account.getUsername());
+		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Verify successfully", responseDTO));
 	}
 

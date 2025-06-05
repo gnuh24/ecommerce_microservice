@@ -26,6 +26,39 @@ public class EmailServiceImpl implements EmailService {
 		String content = getEmailContentForRegistration(confirmationUrl);
 		
 		sendEmail(email, subject, content);
+		System.err.println(content);
+	}
+	
+	private String getEmailContentForRegistration(String confirmationUrl) {
+		return "<!DOCTYPE html>" +
+		    "<html>" +
+		    "<head>" +
+		    "<style>" +
+		    "body {font-family: Arial, sans-serif;}" +
+		    ".container {padding: 20px;}" +
+		    ".header {background-color: #4CAF50; padding: 10px; text-align: center; color: white;}" +
+		    ".content {margin: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;}" +
+		    ".button {background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;}" +
+		    ".footer {margin-top: 20px; text-align: center; color: #888;}" +
+		    ".highlight {color: white; font-weight: bold;}" +  // Thêm lớp .highlight
+		    "</style>" +
+		    "</head>" +
+		    "<body>" +
+		    "<div class=\"container\">" +
+		    "<div class=\"header\">" +
+		    "<h1>Xác Nhận Đăng Ký Account</h1>" +
+		    "</div>" +
+		    "<div class=\"content\">" +
+		    "<p>Chào bạn,</p>" +
+		    "<p>Bạn đã đăng ký thành công. Click vào link dưới đây để kích hoạt tài khoản:</p>" +
+		    "<p><a href=\"" + confirmationUrl + "\" class=\"button\"><span class=\"highlight\">Kích hoạt tài khoản</span></a></p>" +  // Áp dụng lớp .highlight
+		    "</div>" +
+		    "<div class=\"footer\">" +
+		    "<p>Cảm ơn bạn vì đã tin tưởng chúng tôi!</p>" +
+		    "</div>" +
+		    "</div>" +
+		    "</body>" +
+		    "</html>";
 	}
 
 //    @Override
@@ -87,37 +120,7 @@ public class EmailServiceImpl implements EmailService {
 		    "</html>";
 	}
 	
-	private String getEmailContentForRegistration(String confirmationUrl) {
-		return "<!DOCTYPE html>" +
-		    "<html>" +
-		    "<head>" +
-		    "<style>" +
-		    "body {font-family: Arial, sans-serif;}" +
-		    ".container {padding: 20px;}" +
-		    ".header {background-color: #4CAF50; padding: 10px; text-align: center; color: white;}" +
-		    ".content {margin: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;}" +
-		    ".button {background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;}" +
-		    ".footer {margin-top: 20px; text-align: center; color: #888;}" +
-		    ".highlight {color: white; font-weight: bold;}" +  // Thêm lớp .highlight
-		    "</style>" +
-		    "</head>" +
-		    "<body>" +
-		    "<div class=\"container\">" +
-		    "<div class=\"header\">" +
-		    "<h1>Xác Nhận Đăng Ký Account</h1>" +
-		    "</div>" +
-		    "<div class=\"content\">" +
-		    "<p>Chào bạn,</p>" +
-		    "<p>Bạn đã đăng ký thành công. Click vào link dưới đây để kích hoạt tài khoản:</p>" +
-		    "<p><a href=\"" + confirmationUrl + "\" class=\"button\"><span class=\"highlight\">Kích hoạt tài khoản</span></a></p>" +  // Áp dụng lớp .highlight
-		    "</div>" +
-		    "<div class=\"footer\">" +
-		    "<p>Cảm ơn bạn vì đã tin tưởng chúng tôi!</p>" +
-		    "</div>" +
-		    "</div>" +
-		    "</body>" +
-		    "</html>";
-	}
+
 	
 	private void sendEmail(final String recipientEmail, final String subject, final String content) {
 		MimeMessage message = mailSender.createMimeMessage();

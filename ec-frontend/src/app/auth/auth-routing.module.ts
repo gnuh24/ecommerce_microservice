@@ -23,7 +23,6 @@ const routes: Routes = [
             { path: 'reset-password', component: ResetPasswordComponent },
             { path: 'staff-login', component: StaffLoginComponent },
             { path: 'verify-account', component: VerifyAccountComponent },
-
             { path: '**', redirectTo: 'login' }
         ]
     }

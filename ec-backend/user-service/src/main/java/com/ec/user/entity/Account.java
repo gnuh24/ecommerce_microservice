@@ -26,15 +26,13 @@ public class Account implements Serializable,  UserDetails {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	private String id = IdGenerator.generateId();
+	private String id;
 	
 	@Column(nullable = false)
-	@CreationTimestamp
-	private LocalDateTime createdAt;
+	private LocalDateTime createdAt = LocalDateTime.now();
 	
 	@Column(nullable = false)
-	@UpdateTimestamp
-	private LocalDateTime updatedAt;
+	private LocalDateTime updatedAt  = LocalDateTime.now();
 	
 	@Column(nullable = false, unique = true)
 	private String username;

@@ -1,6 +1,7 @@
 package com.ec.user.service;
 
 import com.ec.user.dto.account.AccountCreateForm;
+import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.AuthResponseDTO;
 import com.ec.user.dto.auth.LoginRequestForm;
 import com.ec.user.dto.auth.UserRegistrationForm;
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private ModelMapper modelMapper;
-
+	
 	@Autowired
 	private ProfileService profileService;
 //
@@ -46,25 +47,38 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private EmailService emailService;
-
+	
 	@Autowired
 	private RedisService redisService;
 	
 	@Override
+	@Transactional
 	public Account activeAccount(String otp) {
 		
-		String accountId = redisService.get(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp).toString();
-		if (accountId == null || accountId.isEmpty() ){
+		AccountRedisDTO account = (AccountRedisDTO) redisService.get(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp);
+		
+		if (account == null) {
 			throw new RuntimeException("OTP không tồn tại hoặc đã hết hạn sử dụng !");
 		}
 		
-		return accountService.activeAccount(accountId);
+		ProfileCreateForm profileCreateForm = new ProfileCreateForm();
+		profileCreateForm.setEmail(account.getUsername());
+		Profile profile = profileService.createProfile(profileCreateForm);
+
+		
+		AccountCreateForm accountCreateForm = new AccountCreateForm();
+		accountCreateForm.setId(account.getId());
+		accountCreateForm.setUsername(account.getUsername());
+		accountCreateForm.setPassword(account.getPassword());
+		accountService.createAccount(accountCreateForm, profile);
+		
+		return accountService.activeAccount(account.getId());
 		
 	}
 	
 	@Override
 	public boolean isUsernameExists(String username) {
-		return redisService.exists(RedisConstants.USERNAME_EXIST + ":"+ username);
+		return redisService.exists(RedisConstants.USERNAME_EXIST + ":" + username);
 	}
 	
 	@Override
@@ -97,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
 		if (user == null || user.getRole().equals(Account.Role.USER) || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new BadCredentialsException("Email hoặc mật khẩu không đúng!");
 		}
-
+		
 		if (user.getStatus().toString().equals("INACTIVE")) {
 			throw new DisabledException("Tài khoản của bạn chưa được kích hoạt, hãy kiểm tra email " + request.getUsername());
 		}
@@ -110,33 +124,32 @@ public class AuthServiceImpl implements AuthService {
 		return buildAuthResponse(user);
 	}
 	
-
+	
 	@Override
 	@Transactional
-	public Account register(UserRegistrationForm userRegistrationForm) {
+	public AccountRedisDTO register(UserRegistrationForm userRegistrationForm) {
 //		if (accountService.isEmailExists(userRegistrationForm.getEmail())) {
 //			throw new RuntimeException("Email :" + userRegistrationForm.getEmail() + " đã tồn tại trong hệ thống !");
 //		}
 		
 		
-		ProfileCreateForm profileCreateForm = new ProfileCreateForm();
-		profileCreateForm.setEmail(userRegistrationForm.getUsername());
-		Profile profile = profileService.createProfile(profileCreateForm);
+		String accountId = IdGenerator.generateId();
+		redisService.set(RedisConstants.USERNAME_EXIST + ":" + userRegistrationForm.getUsername(), "true", 5, TimeUnit.MINUTES);
 		
 		
-		AccountCreateForm accountCreateForm = new AccountCreateForm();
-		accountCreateForm.setUsername(userRegistrationForm.getUsername());
-		accountCreateForm.setPassword(userRegistrationForm.getPassword());
-		Account account = accountService.createAccount(accountCreateForm, profile);
-
-		
-		redisService.set(RedisConstants.USERNAME_EXIST + ":" + userRegistrationForm.getUsername(), "true");
-		
+		AccountRedisDTO account = new AccountRedisDTO();
+		account.setId(accountId);
+		account.setUsername(userRegistrationForm.getUsername());
+		account.setPassword(
+		    passwordEncoder.encode(
+			userRegistrationForm.getPassword()
+		    )
+		);
 		
 		String otp = IdGenerator.generateOTP();
-		redisService.set(RedisConstants.OTP_VERIFY_ACCOUNT  + ":" +  otp, account.getId(), 5, TimeUnit.MINUTES);
-
-		emailService.sendRegistrationUserConfirm(profile.getEmail(), otp);
+		redisService.setObjectWithTTL(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp, account, 5, TimeUnit.MINUTES);
+		
+		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(),  otp);
 		return account;
 	}
 
@@ -157,7 +170,8 @@ public class AuthServiceImpl implements AuthService {
 //		    .fullname(userRegistrationForm.getFullname())
 //		    .build();
 //
-////		Profile profile=profileService.createProfile(form, );
+	
+	/// /		Profile profile=profileService.createProfile(form, );
 //		Account account = accountService.createAccount(userRegistrationForm);
 //
 //		return true;
@@ -204,7 +218,6 @@ public class AuthServiceImpl implements AuthService {
 //
 //		return response;
 //	}
-	
 	private AuthResponseDTO buildAuthResponse(Account user) {
 		AuthResponseDTO response = new AuthResponseDTO();
 		response.setId(user.getId());
@@ -216,7 +229,7 @@ public class AuthServiceImpl implements AuthService {
 		String jwt = jwtTokenProvider.generateToken(user);
 		response.setToken(jwt);
 		response.setTokenExpirationTime("30 phút");
-		
+
 //		redisService.set(RedisContants.TOKEN + jwt, true);
 		
 		

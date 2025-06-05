@@ -15,5 +15,6 @@ public class RedisConstants {
 	public static final String OTP_CHANGE_EMAIL = "otp:change_email"; // dùng kèm với :<email>
 	
 	// 5. Đơn hàng ảo
-	public static final String TEMP_ORDER = "temp_order"; // dùng kèm với :<orderId> hoặc <userId>
+	public static final String TEMP_ORDER = "temp:order"; // dùng kèm với :<orderId> hoặc <userId>
+	
 }
