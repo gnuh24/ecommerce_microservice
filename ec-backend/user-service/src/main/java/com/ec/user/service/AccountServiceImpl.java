@@ -87,6 +87,13 @@ public class AccountServiceImpl implements AccountService {
 		account.setStatus(Account.Status.ACTIVE);
 		return accountRepository.save(account);
 	}
+	
+	@Override
+	public Account updatePassword(String username, String newPassword) {
+		Account account = getAccountByUsername(username);
+		account.setPassword(passwordEncoder.encode(newPassword));
+		return accountRepository.save(account);
+	}
 
 //    @Override
 //    public Account updateStatusOfAccount(String accountId, Account.Status status) {
@@ -101,14 +108,6 @@ public class AccountServiceImpl implements AccountService {
 //        account.setRole(role);
 //        return accountRepository.save(account);
 //    }
-//
-//    @Override
-//    public Account resetPasswordOfAccount(OTP otp, AccountUpdateFormForResetPassword form) {
-//        	Account account = getAccountById(otp.getAccountId());
-//            String newPassword = passwordEncoder.encode(form.getNewPassword());
-//            account.setPassword(newPassword);
-//            return accountRepository.save(account);
-//
-//    }
+
 }
 

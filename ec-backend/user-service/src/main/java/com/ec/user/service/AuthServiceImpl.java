@@ -4,6 +4,7 @@ import com.ec.user.dto.account.AccountCreateForm;
 import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.AuthResponseDTO;
 import com.ec.user.dto.auth.LoginRequestForm;
+import com.ec.user.dto.auth.ResetPasswordForm;
 import com.ec.user.dto.auth.UserRegistrationForm;
 import com.ec.user.dto.profile.ProfileCreateForm;
 import com.ec.user.entity.Account;
@@ -151,6 +152,26 @@ public class AuthServiceImpl implements AuthService {
 		
 		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(),  otp);
 		return account;
+	}
+	
+	@Override
+	public void sendOtpResetPassword(String username) {
+		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
+		String otp = IdGenerator.generateOTP();
+		redisService.set(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username, otp,3, TimeUnit.MINUTES);
+		emailService.sendResetPasswordUserConfirm(username, otp);
+	}
+	
+	@Override
+	public Account resetPassword(String username, ResetPasswordForm form) {
+		String otpRedis = redisService.get(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username).toString();
+		
+		if (!otpRedis.equals(form.getOtp())){
+			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
+		}
+		
+		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
+		return accountService.updatePassword(username, form.getNewPassword());
 	}
 
 //	@Override

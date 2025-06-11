@@ -2,10 +2,7 @@ package com.ec.user.controller;
 
 import com.ec.user.api.ApiResponse;
 import com.ec.user.dto.account.AccountRedisDTO;
-import com.ec.user.dto.auth.AuthResponseDTO;
-import com.ec.user.dto.auth.LoginRequestForm;
-import com.ec.user.dto.auth.RegisterResponseDTO;
-import com.ec.user.dto.auth.UserRegistrationForm;
+import com.ec.user.dto.auth.*;
 import com.ec.user.entity.Account;
 import com.ec.user.service.AccountService;
 import com.ec.user.service.AuthService;
@@ -41,8 +38,6 @@ public class AuthController {
 	
 	@Autowired
 	private ModelMapper modelMapper;
-	
-	private int count = 0;
 	
 	
 	/**
@@ -118,10 +113,6 @@ public class AuthController {
 	@PostMapping("/active-account")
 	public ResponseEntity<ApiResponse<AuthResponseDTO>> activeAccount(@RequestParam String otp) {
 		
-		System.err.println("OTP: " + otp);
-		System.err.println("Số lần call: " + ++count);
-		System.err.println("_____________________");
-		
 		// ✅ Business logic
 		Account account = authService.activeAccount(otp);
 		AuthResponseDTO responseDTO = new AuthResponseDTO();
@@ -129,6 +120,27 @@ public class AuthController {
 		responseDTO.setUsername(account.getUsername());
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Verify successfully", responseDTO));
+	}
+	
+	@PostMapping("/send-reset-password-otp/{username}")
+	public ResponseEntity<ApiResponse<String>> sendOtpForResetPassword(@PathVariable String username) {
+		authService.sendOtpResetPassword(username);
+		return ResponseEntity.ok(
+		    new ApiResponse<>(
+			200, // HTTP status code
+			"Hệ thống đã gửi OTP sang email " + username + " .Bạn có 3 phút để kiểm tra nhé", // Success message
+			null
+		    )
+		);
+	}
+	
+	@PatchMapping("/reset-password/{username}")
+	public ResponseEntity<ApiResponse<String>> resetPassword(	@PathVariable String username,
+														@RequestBody @Valid ResetPasswordForm form ) {
+		
+		authService.resetPassword(username, form);
+	
+		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
 	}
 
 //		/**
@@ -158,30 +170,5 @@ public class AuthController {
 //				));
 //		}
 
-//		@PostMapping("/send-otp-reset-password/{id}")
-//		public ResponseEntity<ApiResponse<String>> sendOtpForResetPassword(@PathVariable String id ) throws JsonProcessingException {
-//
-//				String request = otpService.getOTPForResetPassword(id);
-//
-//
-//				return ResponseEntity.ok(
-//						new ApiResponse<>(
-//								200, // HTTP status code
-//								request, // Success message
-//								null
-//						)
-//				);
-//		}
 
-//		@PatchMapping("/reset-password")
-//		public ResponseEntity<ApiResponse<AccountResponseForAdmin>> resetPassword(
-//				@RequestBody @Valid AccountUpdateFormForResetPassword form) {
-//
-//				OTP otp = otpService.getOTPByCode(form.getOtp());
-//				System.err.println(otp);
-//
-//				Account updatedAccount = accountService.resetPasswordOfAccount(otp, form);
-//				AccountResponseForAdmin result = modelMapper.map(updatedAccount, AccountResponseForAdmin.class);
-//				return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", result));
-//		}
 }

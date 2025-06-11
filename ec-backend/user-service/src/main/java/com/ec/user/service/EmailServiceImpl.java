@@ -26,7 +26,6 @@ public class EmailServiceImpl implements EmailService {
 		String content = getEmailContentForRegistration(confirmationUrl);
 		
 		sendEmail(email, subject, content);
-		System.err.println(content);
 	}
 	
 	private String getEmailContentForRegistration(String confirmationUrl) {
@@ -60,6 +59,15 @@ public class EmailServiceImpl implements EmailService {
 		    "</body>" +
 		    "</html>";
 	}
+	
+	@Override
+	public void sendResetPasswordUserConfirm(String email, String otp) {
+		String subject = "Mã xác nhận đổi mật khẩu";
+		
+		String content = getEmailContentWithSixDigitTokenPassword(otp);
+		
+		sendEmail(email, subject, content);
+	}
 
 //    @Override
 //    public void sendUpdatePasswordUserConfirm(Account account, OTP otp) {
@@ -79,14 +87,7 @@ public class EmailServiceImpl implements EmailService {
 //
 //    }
 //
-//    @Override
-//    public void sendResetPasswordUserConfirm(String email, OTP otp) {
-//        String subject = "Mã xác nhận đổi mật khẩu";
-//
-//        String content = getEmailContentWithSixDigitTokenPassword(otp.getCode());
-//
-//        sendEmail(email, subject, content);
-//    }
+
 	
 	private String getEmailContentWithSixDigitTokenPassword(String token) {
 		return "<!DOCTYPE html>" +

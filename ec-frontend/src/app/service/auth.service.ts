@@ -33,6 +33,11 @@ interface RegisterRequest {
     password: string;
 }
 
+interface ResetPasswordForm {
+    otp: string;
+    newPassword: string;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -65,6 +70,16 @@ export class AuthService {
     register(data: RegisterRequest): Observable<any> {
         return this.http.post(`${this.baseUrl}/auth/register`, data);
     }
+
+    resetPassword(username: string, data: ResetPasswordForm): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/auth/reset-password/${username}`, data);
+    }
+
+    resendForgotPasswordOtp(username: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/auth/send-reset-password-otp/${username}`, {});
+    }
+
+
 
 
     // logout(): void {

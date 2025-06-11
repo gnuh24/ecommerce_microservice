@@ -61,7 +61,6 @@ export class RegisterComponent implements OnInit {
             // Bước 1: Kiểm tra username đã tồn tại chưa
             this.authService.checkUsernameExists(formData.username).subscribe({
                 next: (res) => {
-                    console.log('Kết quả kiểm tra username:', res);
                     const isExisted = res?.data === true;
 
                     if (isExisted) {
