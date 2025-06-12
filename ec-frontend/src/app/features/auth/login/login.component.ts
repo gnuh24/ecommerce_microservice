@@ -44,7 +44,6 @@ export class LoginComponent implements OnInit {
                     sessionStorage.setItem('fullName', res.data.fullName);
                     sessionStorage.setItem('username', res.data.username);
                     sessionStorage.setItem('role', res.data.role);
-                    sessionStorage.setItem('avatar', res.data.avatar || ''); // Nếu không có avatar thì để rỗng
                     // Chuyển hướng đến trang chính hoặc trang người dùng
                     this.router.navigate(['/home']);
                 },

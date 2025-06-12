@@ -48,9 +48,6 @@ public class Account implements Serializable,  UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.INACTIVE;
 	
-	@Column(nullable = true)
-	private String avatar;
-	
 	// Enum Role (Viết hoa toàn bộ)
 	public enum Role {
 		ADMIN, USER

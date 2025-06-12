@@ -19,7 +19,6 @@ export interface LoginResponse {
     id: string;
     username: string;
     fullName: string;
-    avatar: string | null; // Có thể là null nếu không có avatar
     role: string;
     token: string;
     tokenExpirationTime: string;      // vd: "30 phút"
