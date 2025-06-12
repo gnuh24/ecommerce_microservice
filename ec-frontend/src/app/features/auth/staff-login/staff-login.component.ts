@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../../service/auth.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-staff-login',
     standalone: false,
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss']
+    templateUrl: './staff-login.component.html',
+    styleUrl: './staff-login.component.scss'
 })
-export class LoginComponent implements OnInit {
+export class StaffLoginComponent implements OnInit {
     loginForm!: FormGroup;
     hide = true;
 
@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
         if (this.loginForm.valid) {
             const loginData = this.loginForm.value;
 
-            this.authService.login(loginData).subscribe({
+            this.authService.loginForStaff(loginData).subscribe({
                 next: (res) => {
                     // Giả sử response có status, message hoặc token
                     Swal.fire({
@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
                     sessionStorage.setItem('role', res.data.role);
                     sessionStorage.setItem('avatar', res.data.avatar || ''); // Nếu không có avatar thì để rỗng
                     // Chuyển hướng đến trang chính hoặc trang người dùng
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/admin']);
                 },
                 error: (err) => {
                     // Hiển thị lỗi từ backend trả về

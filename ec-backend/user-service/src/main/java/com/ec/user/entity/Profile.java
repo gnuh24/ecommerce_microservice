@@ -32,6 +32,9 @@ public class Profile implements Serializable {
 	private LocalDate birthday;
 	
 	private String gender;
+	
+	@OneToOne(mappedBy = "profile")
+	private Account account;
 }
 
 

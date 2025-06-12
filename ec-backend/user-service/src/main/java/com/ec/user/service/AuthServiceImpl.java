@@ -85,6 +85,7 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public AuthResponseDTO login(LoginRequestForm request) {
 		Account user = accountService.getAccountByUsername(request.getUsername());
+		
 		if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new BadCredentialsException("Email hoặc mật khẩu không đúng!");
 		}

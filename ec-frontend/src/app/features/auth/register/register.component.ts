@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../../service/auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { tap, finalize } from 'rxjs/operators';
