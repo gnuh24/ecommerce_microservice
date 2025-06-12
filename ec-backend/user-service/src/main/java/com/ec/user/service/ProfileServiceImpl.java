@@ -1,6 +1,7 @@
 package com.ec.user.service;
 
 import com.ec.user.dto.profile.ProfileCreateForm;
+import com.ec.user.dto.profile.ProfileUpdateForm;
 import com.ec.user.entity.Account;
 import com.ec.user.entity.Profile;
 import com.ec.user.repository.ProfileRepository;
@@ -63,22 +64,30 @@ public class ProfileServiceImpl implements ProfileService {
 //    public Profile updateProfile(Profile profile) {
 //	return profileRepository.save(profile);
 //    }
-//
-//    @Override
-//    public Profile updatePersionalInformationOfProfile(Profile profile,  ProfileUpdateForm form) {
-//
-//	// Kiểm tra từng trường, nếu không null thì mới cập nhật
-//	if (form.getFullname() != null) {
-//	    profile.setFullname(form.getFullname());
-//	}
-//	if (form.getPhone() != null) {
-//	    profile.setPhone(form.getPhone());
-//	}
-//
-//	// Lưu lại vào database
-//	return profileRepository.save(profile);
-//    }
-//
+	
+	@Override
+	public Profile updateProfile(Profile profile, ProfileUpdateForm form) {
+		
+		// Kiểm tra từng trường, nếu không null thì mới cập nhật
+		if (form.getFullName() != null) {
+			profile.setFullName(form.getFullName());
+		}
+		if (form.getPhone() != null) {
+			profile.setPhone(form.getPhone());
+		}
+		
+		if (form.getBirthday() != null) {
+			profile.setBirthday(form.getBirthday());
+		}
+		
+		if (form.getGender() != null) {
+			profile.setGender(form.getGender());
+		}
+		
+		// Lưu lại vào database
+		return profileRepository.save(profile);
+	}
+
 //		@Override
 //		public Profile updatePersionalInformationOfProfile(String id, ProfileUpdateForm form) {
 //				Profile profile = getProfileById(id);

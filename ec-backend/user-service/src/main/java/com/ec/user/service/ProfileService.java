@@ -2,6 +2,7 @@ package com.ec.user.service;
 
 
 import com.ec.user.dto.profile.ProfileCreateForm;
+import com.ec.user.dto.profile.ProfileUpdateForm;
 import com.ec.user.entity.Account;
 import com.ec.user.entity.Profile;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public interface ProfileService {
 //
 //
 //    Profile updateProfile(Profile profile);
-//    Profile updatePersionalInformationOfProfile(Profile profile, ProfileUpdateForm form);
+Profile updateProfile(Profile profile,  ProfileUpdateForm form);
 //		Profile updatePersionalInformationOfProfile(String id, ProfileUpdateForm form);
 //
 }

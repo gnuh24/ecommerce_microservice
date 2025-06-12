@@ -2,7 +2,9 @@ package com.ec.user.controller;
 
 import com.ec.user.api.ApiResponse;
 import com.ec.user.dto.profile.ProfileDetailResponseDTO;
+import com.ec.user.dto.profile.ProfileUpdateForm;
 import com.ec.user.entity.Account;
+import com.ec.user.entity.Profile;
 import com.ec.user.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,19 +88,19 @@ public class ProfileController {
 //		    .body(new ApiResponse<>(201, "Tạo Profile thành công", responseDTO));
 //	}
 
-//	@Operation(summary = "Cập nhật profile cá nhân", description = "Cập nhật thông tin hồ sơ của người dùng đang đăng nhập")
-//	@PatchMapping("/me")
-//	public ResponseEntity<ApiResponse<ProfileDetailResponseDTO>> updateProfile(
-//	    @RequestBody @Valid ProfileUpdateForm form) {
-//
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		Account account = (Account) authentication.getPrincipal();
-//
-//		Profile updatedProfile = profileService.updatePersionalInformationOfProfile(account.getProfile(), form);
-//		ProfileDetailResponseDTO responseDTO = modelMapper.map(updatedProfile, ProfileDetailResponseDTO.class);
-//
-//		return ResponseEntity.ok(
-//		    new ApiResponse<>(200, "Cập nhật profile thành công", responseDTO)
-//		);
-//	}
+	@Operation(summary = "Cập nhật profile cá nhân", description = "Cập nhật thông tin hồ sơ của người dùng đang đăng nhập")
+	@PatchMapping("/me")
+	public ResponseEntity<ApiResponse<ProfileDetailResponseDTO>> updateProfile(
+	    	1@RequestBody @Valid ProfileUpdateForm form) {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Account account = (Account) authentication.getPrincipal();
+
+		Profile updatedProfile = profileService.updateProfile(account.getProfile(), form);
+		ProfileDetailResponseDTO responseDTO = modelMapper.map(updatedProfile, ProfileDetailResponseDTO.class);
+
+		return ResponseEntity.ok(
+		    new ApiResponse<>(200, "Cập nhật profile thành công", responseDTO)
+		);
+	}
 }
