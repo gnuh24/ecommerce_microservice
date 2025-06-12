@@ -1,1 +1,45 @@
-<p>my-profile works!</p>
+<div class="profile-container">
+    <!-- Menu trái -->
+    <mat-nav-list class="profile-menu">
+        <a mat-list-item routerLink="/profile" routerLinkActive="active">Thông tin cá nhân</a>
+        <a mat-list-item routerLink="/profile/my-account" routerLinkActive="active">Thông tin tài khoản</a>
+        <a mat-list-item routerLink="/profile/my-address" routerLinkActive="active">Địa chỉ</a>
+    </mat-nav-list>
+
+    <!-- Nội dung phải -->
+    <div class="profile-content">
+        <form (ngSubmit)="onSubmit()" #profileForm="ngForm">
+            <mat-form-field appearance="outline" class="form-field" floatLabel="always">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" [value]="profile.email" disabled />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Họ và tên</mat-label>
+                <input matInput [(ngModel)]="profile.fullName" name="fullName" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Số điện thoại</mat-label>
+                <input matInput [(ngModel)]="profile.phone" name="phone" />
+            </mat-form-field>
+
+            <label class="mat-label">Giới tính</label>
+            <mat-radio-group [(ngModel)]="profile.gender" name="gender" class="gender-group">
+                <mat-radio-button *ngFor="let gender of genders" [value]="gender">
+                    {{ gender }}
+                </mat-radio-button>
+            </mat-radio-group>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Ngày sinh</mat-label>
+                <input matInput [matDatepicker]="picker" [(ngModel)]="profile.birthday" name="birthday" />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+
+            <button mat-raised-button color="primary" type="submit">Cập nhật</button>
+        </form>
+    </div>
+</div>

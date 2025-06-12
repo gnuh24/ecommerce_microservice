@@ -47,11 +47,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		final String authHeader = request.getHeader("Authorization");
 		final String jwtToken;
 		final String userEmail;
+		System.err.println("Chạy vào filter với token: " + authHeader);
 		
 		// Kiểm tra token
 		if (authHeader != null && !authHeader.isBlank()) {
 			jwtToken = authHeader.substring(7);
-			
 			try {
 				userEmail = jwtTokenProvider.getUsername(jwtToken);
 				

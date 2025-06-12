@@ -91,7 +91,7 @@ public class ProfileController {
 	@Operation(summary = "Cập nhật profile cá nhân", description = "Cập nhật thông tin hồ sơ của người dùng đang đăng nhập")
 	@PatchMapping("/me")
 	public ResponseEntity<ApiResponse<ProfileDetailResponseDTO>> updateProfile(
-	    	1@RequestBody @Valid ProfileUpdateForm form) {
+	    	@RequestBody @Valid ProfileUpdateForm form) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Account account = (Account) authentication.getPrincipal();
