@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes),
-        provideClientHydration(withEventReplay()),
+        // provideClientHydration(withEventReplay()),
         provideHttpClient(withFetch()),
 
         // ✅ Cấu hình tiếng Việt cho Datepicker

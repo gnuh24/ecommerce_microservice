@@ -39,7 +39,6 @@ public class AuthController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	
 	/**
 	 * 📌 Kiểm tra username đã tồn tại chưa
 	 *
@@ -112,8 +111,7 @@ public class AuthController {
 	@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
 	@PostMapping("/active-account")
 	public ResponseEntity<ApiResponse<AuthResponseDTO>> activeAccount(@RequestParam String otp) {
-		
-		// ✅ Business logic
+
 		Account account = authService.activeAccount(otp);
 		AuthResponseDTO responseDTO = new AuthResponseDTO();
 		responseDTO.setId(account.getId());

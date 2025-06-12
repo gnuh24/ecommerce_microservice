@@ -60,10 +60,6 @@ export class AuthService {
 
     activeAccount(otp: string): Observable<any> {
 
-        var random = Math.floor(Math.random() * 1000000);
-        sessionStorage.setItem(`activeAccountCalled${random}`, 'Call vào lúc ' + new Date().toISOString());
-
-
         return this.http.post(`${this.baseUrl}/auth/active-account?otp=${otp}`, {});
     }
 

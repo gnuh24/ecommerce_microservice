@@ -6,7 +6,6 @@ export const routes: Routes = [
 
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
-
     {
         path: 'auth',
         loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)

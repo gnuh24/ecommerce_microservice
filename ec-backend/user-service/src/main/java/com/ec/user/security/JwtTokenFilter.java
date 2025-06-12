@@ -38,19 +38,38 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private AuthExceptionHandler authExceptionHandler;
 	
+	// ✅ Danh sách các đường dẫn public bắt đầu bằng /api/user
+	private boolean isPublicPath(String path) {
+		return path.startsWith("/api/user/auth/login")
+		    || path.startsWith("/api/user/auth/register")
+		    || path.startsWith("/api/user/auth/check-username")
+		    || path.startsWith("/api/user/auth/staff-login")
+		    || path.startsWith("/api/user/auth/active-account")
+		    || path.startsWith("/api/user/auth/send-reset-password-otp")
+		    || path.startsWith("/api/user/auth/reset-password")
+		    || path.startsWith("/api/user/swagger")
+		    || path.startsWith("/api/user/v3/api-docs");
+	}
+
+	
 	@Override
-	// Xác thực Token khi login và call API (Chạy đầu tiên)
 	protected void doFilterInternal(HttpServletRequest request,
 					@NonNull HttpServletResponse response,
 					@NonNull FilterChain filterChain) throws ServletException, IOException {
 		
+		final String path = request.getRequestURI();
+		// ✅ Bỏ qua filter nếu là API public
+		if (isPublicPath(path)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
 		final String authHeader = request.getHeader("Authorization");
 		final String jwtToken;
 		final String userEmail;
-		System.err.println("Chạy vào filter với token: " + authHeader);
 		
 		// Kiểm tra token
-		if (authHeader != null && !authHeader.isBlank()) {
+		if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
 			jwtToken = authHeader.substring(7);
 			try {
 				userEmail = jwtTokenProvider.getUsername(jwtToken);
@@ -81,4 +100,3 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 }
-
