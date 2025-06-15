@@ -140,6 +140,14 @@ public class AuthController {
 	
 		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
 	}
+	
+	@PatchMapping("/update-password")
+	public ResponseEntity<ApiResponse<String>> updatePassword( @RequestBody @Valid UpdatePasswordForm form ) {
+		
+		authService.updatePassword(form);
+		
+		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
+	}
 
 //		/**
 //		 * 📌 Làm mới Token

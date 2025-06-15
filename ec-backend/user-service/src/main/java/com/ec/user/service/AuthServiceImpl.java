@@ -2,10 +2,7 @@ package com.ec.user.service;
 
 import com.ec.user.dto.account.AccountCreateForm;
 import com.ec.user.dto.account.AccountRedisDTO;
-import com.ec.user.dto.auth.AuthResponseDTO;
-import com.ec.user.dto.auth.LoginRequestForm;
-import com.ec.user.dto.auth.ResetPasswordForm;
-import com.ec.user.dto.auth.UserRegistrationForm;
+import com.ec.user.dto.auth.*;
 import com.ec.user.dto.profile.ProfileCreateForm;
 import com.ec.user.entity.Account;
 import com.ec.user.entity.Profile;
@@ -18,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,6 +172,21 @@ public class AuthServiceImpl implements AuthService {
 		
 		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
 		return accountService.updatePassword(username, form.getNewPassword());
+	}
+	
+	@Override
+	public Account updatePassword(UpdatePasswordForm form) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Account account = (Account) authentication.getPrincipal();
+		
+		if (!passwordEncoder.matches(form.getOldPassword(), account.getPassword())) {
+			throw new RuntimeException("Mật khẩu cũ không đúng !!");
+		}
+		
+		String newPassword = passwordEncoder.encode(form.getNewPassword());
+		return accountService.updatePassword(account, newPassword);
+		
 	}
 
 //	@Override

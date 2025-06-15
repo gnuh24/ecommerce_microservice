@@ -91,7 +91,12 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account updatePassword(String username, String newPassword) {
 		Account account = getAccountByUsername(username);
-		account.setPassword(passwordEncoder.encode(newPassword));
+		return updatePassword(account, newPassword);
+	}
+	
+	@Override
+	public Account updatePassword(Account account, String newPassword) {
+		account.setPassword(newPassword);
 		return accountRepository.save(account);
 	}
 

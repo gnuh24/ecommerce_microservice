@@ -1,0 +1,39 @@
+.profile-container {
+    display: flex;
+    gap: 32px;
+    padding: 24px;
+}
+
+.profile-menu {
+    width: 220px;
+    border-right: 1px solid #ddd;
+
+    a.active {
+        background-color: #e3f2fd;
+        font-weight: bold;
+    }
+}
+
+.profile-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-field {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .gender-group {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+}

@@ -16,17 +16,20 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { ProfileLayoutComponent } from './profile-layout/profile-layout.component';
 import { MyProfileComponent } from './my-profile/my-profile.component';
 import { ProfileRoutingModule } from './profile-routing.module';
+import { MyAccountComponent } from './my-account/my-account.component';
 
 @NgModule({
     declarations: [
         ProfileLayoutComponent,
         MyProfileComponent,
+        MyAccountComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
         ProfileRoutingModule,
+
 
         // Material Modules
         MatFormFieldModule,

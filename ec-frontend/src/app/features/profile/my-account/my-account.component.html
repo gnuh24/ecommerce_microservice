@@ -1,0 +1,54 @@
+<div class="profile-container">
+    <!-- Menu trái -->
+    <mat-nav-list class="profile-menu">
+        <a mat-list-item routerLink="/profile" routerLinkActive="active">Thông tin cá nhân</a>
+        <a mat-list-item routerLink="/profile/my-account" routerLinkActive="active">Cập nhật email và mật khẩu</a>
+        <a mat-list-item routerLink="/profile/my-address" routerLinkActive="active">Địa chỉ</a>
+    </mat-nav-list>
+
+    <!-- Nội dung phải -->
+    <div class="profile-content">
+
+        <!-- Cập nhật email -->
+        <form (ngSubmit)="onUpdateEmail()" #emailForm="ngForm" class="account-form">
+            <h3>Cập nhật Email</h3>
+
+            <mat-form-field appearance="outline" class="form-field" floatLabel="always">
+                <mat-label>Email hiện tại</mat-label>
+                <input matInput [value]="profile.email" disabled />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field" floatLabel="always">
+                <mat-label>Email mới</mat-label>
+                <input matInput [(ngModel)]="newEmail" name="newEmail" type="email" required />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit">Cập nhật Email</button>
+        </form>
+
+        <hr />
+
+        <!-- Cập nhật mật khẩu -->
+        <form (ngSubmit)="onUpdatePassword()" #passwordForm="ngForm" class="account-form">
+            <h3>Đổi Mật Khẩu</h3>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Mật khẩu hiện tại</mat-label>
+                <input matInput [(ngModel)]="currentPassword" name="currentPassword" type="password" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Mật khẩu mới</mat-label>
+                <input matInput [(ngModel)]="newPassword" name="newPassword" type="password" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Xác nhận mật khẩu mới</mat-label>
+                <input matInput [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit">Đổi mật khẩu</button>
+        </form>
+
+    </div>
+</div>

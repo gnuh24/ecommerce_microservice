@@ -21,9 +21,9 @@ export interface LoginResponse {
     fullName: string;
     role: string;
     token: string;
-    tokenExpirationTime: string;      // vd: "30 phút"
+    tokenExpirationTime: string;
     refreshToken: string;
-    refreshTokenExpirationTime: string; // vd: "7 ngày"
+    refreshTokenExpirationTime: string;
 }
 
 
