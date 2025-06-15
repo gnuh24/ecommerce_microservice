@@ -23,12 +23,17 @@ export class MyAccountComponent {
     newPassword = '';
     confirmPassword = '';
 
-    constructor(private authService: AuthService) { }
+    constructor(private authService: AuthService) {
+        const storedEmail = sessionStorage.getItem('username');
+        if (storedEmail) {
+            this.profile.email = storedEmail;
+        }
+    }
 
     onUpdateEmail() {
         if (!this.newEmail) return;
 
-        // Gợi ý: xử lý cập nhật email nếu cần
+        // Gợi ý: xử lý cập nhật email nếu cần3
         console.log('Gửi email mới:', this.newEmail);
     }
 
