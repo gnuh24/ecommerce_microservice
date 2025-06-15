@@ -132,6 +132,26 @@ public class AuthController {
 		);
 	}
 	
+	@PostMapping("/send-update-email-otp/{username}")
+	public ResponseEntity<ApiResponse<String>> sendOtpForUpdateEmail(@PathVariable String username) {
+		authService.sendOtpUpdateEmail(username);
+		return ResponseEntity.ok(
+			    new ApiResponse<>(
+				200, // HTTP status code
+				"Hệ thống đã gửi OTP sang email " + username + " .Bạn có 3 phút để kiểm tra nhé", // Success message
+				null
+			    )
+		);
+	}
+	
+	@PatchMapping("/update-email")
+	public ResponseEntity<ApiResponse<String>> updateEmail( @RequestBody @Valid UpdateEmailForm form ) {
+		
+		authService.updateEmail(form);
+		
+		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
+	}
+	
 	@PatchMapping("/reset-password/{username}")
 	public ResponseEntity<ApiResponse<String>> resetPassword(	@PathVariable String username,
 														@RequestBody @Valid ResetPasswordForm form ) {

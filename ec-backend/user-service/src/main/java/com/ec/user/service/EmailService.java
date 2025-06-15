@@ -7,6 +7,8 @@ public interface EmailService {
 	
 	void sendResetPasswordUserConfirm(String email, String otp);
 	
+	void sendUpdateEmailOtp(String username, String otp);
+
 //	void sendUpdatePasswordUserConfirm(Account account, OTP otp);
 //
 //	void sendUpdateEmailUserConfirm(String newEmail, OTP otp);

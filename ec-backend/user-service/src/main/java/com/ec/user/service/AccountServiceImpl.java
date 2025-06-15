@@ -99,6 +99,12 @@ public class AccountServiceImpl implements AccountService {
 		account.setPassword(newPassword);
 		return accountRepository.save(account);
 	}
+	
+	@Override
+	public Account updateUsername(Account account, String newEmail) {
+		account.setUsername(newEmail);
+		return accountRepository.save(account);
+	}
 
 //    @Override
 //    public Account updateStatusOfAccount(String accountId, Account.Status status) {

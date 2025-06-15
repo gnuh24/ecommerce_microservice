@@ -101,7 +101,11 @@ public class WebSecurityConfiguration {
 			    
 			    .requestMatchers(HttpMethod.POST, "/auth/send-reset-password-otp/{username}").permitAll()
 			    .requestMatchers(HttpMethod.PATCH, "/auth/reset-password/{username}").permitAll()
-			
+			    
+			    .requestMatchers(HttpMethod.POST, "/auth/send-update-email-otp/{username}").hasAnyAuthority("USER")
+			    .requestMatchers(HttpMethod.PATCH, "/auth/update-email").hasAnyAuthority("USER")
+			    
+			    
 			    .requestMatchers(HttpMethod.PATCH, "/auth/update-password").hasAnyAuthority("USER")
 			    .requestMatchers(HttpMethod.POST, "/auth/refresh-token").hasAnyAuthority("USER", "ADMIN")
 			    

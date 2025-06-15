@@ -14,11 +14,9 @@ public interface ProfileService {
 	//    Profile getProfileByPhone(String phone);
 //    Page<Profile> getAllProfile(Pageable pageable, String search, ProfileFilterForm form);
 	Profile createProfile(ProfileCreateForm form);
-//    Profile createProfile(ProfileCreateForm form);
-//
-//
-//    Profile updateProfile(Profile profile);
-Profile updateProfile(Profile profile,  ProfileUpdateForm form);
-//		Profile updatePersionalInformationOfProfile(String id, ProfileUpdateForm form);
-//
+
+	Profile updateProfile(Profile profile,  ProfileUpdateForm form);
+	
+	Profile updateEmail(Profile profile, String newEmail);
+
 }

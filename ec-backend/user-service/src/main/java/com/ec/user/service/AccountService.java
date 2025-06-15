@@ -19,6 +19,8 @@ public interface AccountService extends UserDetailsService {
 	Account activeAccount(String accountId);
 	Account updatePassword(String username, String newPassword);
 	Account updatePassword(Account account, String newPassword);
+	
+	Account updateUsername(Account account, String newEmail);
 
 //    Page<Account> getAllAccounts(Pageable pageable, AccountFilterForm filterForm);
 //

@@ -188,72 +188,41 @@ public class AuthServiceImpl implements AuthService {
 		return accountService.updatePassword(account, newPassword);
 		
 	}
-
-//	@Override
-//	@Transactional
-//	public boolean verifiOTP(String email, String otp) {
-//		if (!redisService.exists(RedisContants.OTP_CODE + otp)) {
-//			return false;
-//		}
-//		UserRegistrationForm userRegistrationForm = (UserRegistrationForm) redisService.get(RedisContants.OTP_CODE + otp);
-//
-//		if (!Objects.equals(email, userRegistrationForm.getEmail())) {
-//			return false;
-//		}
-//		ProfileCreateForm form = ProfileCreateForm.builder()
-//		    .phone(userRegistrationForm.getPhone())
-////				.email(userRegistrationForm.getEmail())
-//		    .fullname(userRegistrationForm.getFullname())
-//		    .build();
-//
 	
-	/// /		Profile profile=profileService.createProfile(form, );
-//		Account account = accountService.createAccount(userRegistrationForm);
+	@Override
+	public void sendOtpUpdateEmail(String username) {
+		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + username);
+		String otp = IdGenerator.generateOTP();
+		redisService.set(RedisConstants.OTP_CHANGE_EMAIL + ":" + username, otp,3, TimeUnit.MINUTES);
+		emailService.sendUpdateEmailOtp(username, otp);
+	}
+	
+	@Override
+	public Account updateEmail(UpdateEmailForm form) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Account account = (Account) authentication.getPrincipal();
+		
+		String otpRedis = redisService.get(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail()).toString();
+		if (!otpRedis.equals(form.getOtp())){
+			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
+		}
+		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
+		
+		
+		String currentEmail = account.getUsername();
+		redisService.delete(RedisConstants.USERNAME_EXIST + ":" + currentEmail);
+		
+		accountService.updateUsername(account, form.getNewEmail());
+		profileService.updateEmail(account.getProfile(), form.getNewEmail());
+		
+//		redisService.set(RedisConstants.BANLIST_ACCESS_TOKEN + ":" + form.getAccessToken(), "true",15, TimeUnit.MINUTES);
+//		redisService.set(RedisConstants.BANLIST_REFRESH_TOKEN + ":" + form.getRefreshToken(), "true",7, TimeUnit.DAYS);
 //
-//		return true;
-//	}
-//
-
-//
-//	@Override
-//	public AuthResponseDTO refreshToken(String oldToken, String refreshToken) {
-//
-//		AuthResponseDTO response = new AuthResponseDTO();
-//
-//		try {
-//
-//			String emailFromAccessToken = jwtTokenProvider.getUsernameWithoutExpired(oldToken);
-//			String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
-//
-//			if (!emailFromAccessToken.equals(emailFromRefreshToken)) {
-//				throw new MismatchedTokenAccountException("AccessToken và RefreshToken không khớp với cùng một tài khoản.");
-//			}
-//			//Tìm tài khoản dựa trên Email
-//			Account account = accountService.getAccountByEmail(emailFromAccessToken);
-//
-//			response.setId(account.getId());
-//			response.setEmail(emailFromAccessToken);
-//			response.setRole(account.getRole().toString());
-//
-//			// Tạo Token
-//			String jwt = jwtTokenProvider.generateToken(account);
-//			response.setToken(jwt);
-//			response.setTokenExpirationTime("30 phút");
-//
-//			// Tạo Refresh Token
-//			response.setRefreshToken(refreshToken);
-//			response.setRefreshTokenExpirationTime("7 ngày");
-//
-//		} catch (ExpiredJwtException e1) {
-//			throw new TokenExpiredException("Refresh Token đã hết hạn sử dụng.");
-//		} catch (SignatureException e2) {
-//			throw new InvalidJWTSignatureException("Refresh Token chứa signature không hợp lệ.");
-//		} catch (UsernameNotFoundException e3) {
-//			throw new UsernameNotFound("Refresh Token chứa thông tin không tồn tại trong hệ thống.");
-//		}
-//
-//		return response;
-//	}
+		return account;
+	}
+	
+	
 	private AuthResponseDTO buildAuthResponse(Account user) {
 		AuthResponseDTO response = new AuthResponseDTO();
 		response.setId(user.getId());
@@ -316,4 +285,44 @@ public class AuthServiceImpl implements AuthService {
 //
 //	return response;
 //    }
+	
+	//	@Override
+//	public AuthResponseDTO refreshToken(String oldToken, String refreshToken) {
+//
+//		AuthResponseDTO response = new AuthResponseDTO();
+//
+//		try {
+//
+//			String emailFromAccessToken = jwtTokenProvider.getUsernameWithoutExpired(oldToken);
+//			String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
+//
+//			if (!emailFromAccessToken.equals(emailFromRefreshToken)) {
+//				throw new MismatchedTokenAccountException("AccessToken và RefreshToken không khớp với cùng một tài khoản.");
+//			}
+//			//Tìm tài khoản dựa trên Email
+//			Account account = accountService.getAccountByEmail(emailFromAccessToken);
+//
+//			response.setId(account.getId());
+//			response.setEmail(emailFromAccessToken);
+//			response.setRole(account.getRole().toString());
+//
+//			// Tạo Token
+//			String jwt = jwtTokenProvider.generateToken(account);
+//			response.setToken(jwt);
+//			response.setTokenExpirationTime("30 phút");
+//
+//			// Tạo Refresh Token
+//			response.setRefreshToken(refreshToken);
+//			response.setRefreshTokenExpirationTime("7 ngày");
+//
+//		} catch (ExpiredJwtException e1) {
+//			throw new TokenExpiredException("Refresh Token đã hết hạn sử dụng.");
+//		} catch (SignatureException e2) {
+//			throw new InvalidJWTSignatureException("Refresh Token chứa signature không hợp lệ.");
+//		} catch (UsernameNotFoundException e3) {
+//			throw new UsernameNotFound("Refresh Token chứa thông tin không tồn tại trong hệ thống.");
+//		}
+//
+//		return response;
+//	}
 }

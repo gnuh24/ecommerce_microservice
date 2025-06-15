@@ -87,6 +87,12 @@ public class ProfileServiceImpl implements ProfileService {
 		// Lưu lại vào database
 		return profileRepository.save(profile);
 	}
+	
+	@Override
+	public Profile updateEmail(Profile profile, String newEmail) {
+		profile.setEmail(newEmail);
+		return profileRepository.save(profile);
+	}
 
 //		@Override
 //		public Profile updatePersionalInformationOfProfile(String id, ProfileUpdateForm form) {

@@ -83,11 +83,13 @@ export class ProfileService {
             icon: 'warning',
             title: 'Thông báo',
             text: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-            confirmButtonText: 'Đăng nhập'
+            confirmButtonText: 'Đăng nhập',
+            allowOutsideClick: false,
+            allowEscapeKey: false
         }).then(() => {
-            this.tokenService.clearTokens();
+            this.tokenService.clearTokens(); // Xóa access + refresh token nếu có
             this.router.navigate(['/auth/login']);
         });
     }
+
 }
-3

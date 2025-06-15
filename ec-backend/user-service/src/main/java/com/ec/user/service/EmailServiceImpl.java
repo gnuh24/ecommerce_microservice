@@ -68,6 +68,15 @@ public class EmailServiceImpl implements EmailService {
 		
 		sendEmail(email, subject, content);
 	}
+	
+	@Override
+	public void sendUpdateEmailOtp(String username, String otp) {
+		String subject = "Mã xác nhận đổi email";
+		
+		String content = getEmailContentWithSixDigitTokenPassword(otp);
+		
+		sendEmail(username, subject, content);
+	}
 
 //    @Override
 //    public void sendUpdatePasswordUserConfirm(Account account, OTP otp) {
