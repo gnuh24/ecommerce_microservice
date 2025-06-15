@@ -51,6 +51,17 @@ export class AuthService {
         return this.http.post(`${this.baseUrl}/auth/send-reset-password-otp/${username}`, {});
     }
 
+    resendUpdateEmailOtp(username: string): Observable<any> {
+        const headers = this.getAuthHeaders();
+        if (!headers) {
+            this.handleExpiredSession();
+            return throwError(() => new Error('Session expired'));
+        }
+
+
+        return this.http.post(`${this.baseUrl}/auth/send-update-email-otp/${username}`, {}, { headers });
+    }
+
     updatePassword(data: UpdatePasswordForm): Observable<any> {
         const headers = this.getAuthHeaders();
         if (!headers) {
@@ -59,6 +70,16 @@ export class AuthService {
         }
 
         return this.http.patch(`${this.baseUrl}/auth/update-password`, data, { headers });
+    }
+
+    updateEmail(data: UpdateEmailForm): Observable<any> {
+        const headers = this.getAuthHeaders();
+        if (!headers) {
+            this.handleExpiredSession();
+            return throwError(() => new Error('Session expired'));
+        }
+
+        return this.http.patch(`${this.baseUrl}/auth/update-email`, data, { headers });
     }
 
     private getAuthHeaders(): HttpHeaders | null {
@@ -86,12 +107,15 @@ export class AuthService {
     }
 
 
-    // logout(): void {
-    //     // Có thể gọi API logout backend hoặc xóa token client-side
-    //     localStorage.removeItem('authToken');
-    // }
+    logout(): void {
+        // Xóa session/token
+        sessionStorage.clear();
+        localStorage.clear(); // nếu có dùng localStorage
 
-    // Thêm các method khác nếu cần
+        // Điều hướng về trang login
+        this.router.navigate(['/auth/login']);
+    }
+
 }
 
 interface LoginRequest {
@@ -131,4 +155,9 @@ interface ResetPasswordForm {
 interface UpdatePasswordForm {
     oldPassword: string;
     newPassword: string;
+}
+
+interface UpdateEmailForm {
+    otp: string;
+    newEmail: string;
 }

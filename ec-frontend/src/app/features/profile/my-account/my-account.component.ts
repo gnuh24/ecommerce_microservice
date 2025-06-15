@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../service/auth.service'; // Đường dẫn tùy vào project của bạn
+import { interval, Subscription } from 'rxjs';
 
 interface UpdatePasswordForm {
     oldPassword: string;
     newPassword: string;
 }
 
+interface UpdateEmailForm {
+    otp: string;
+    newEmail: string;
+}
 @Component({
     selector: 'app-my-account',
     standalone: false,
@@ -23,6 +28,13 @@ export class MyAccountComponent {
     newPassword = '';
     confirmPassword = '';
 
+    otpCode = '';
+    emailLoading = false;
+    otpSent = false;
+
+    countdown = 0;
+    private countdownSub?: Subscription;
+
     constructor(private authService: AuthService) {
         const storedEmail = sessionStorage.getItem('username');
         if (storedEmail) {
@@ -33,8 +45,120 @@ export class MyAccountComponent {
     onUpdateEmail() {
         if (!this.newEmail) return;
 
-        // Gợi ý: xử lý cập nhật email nếu cần3
-        console.log('Gửi email mới:', this.newEmail);
+        this.emailLoading = true;
+
+        // Bước 1: Kiểm tra email có tồn tại chưa
+        this.authService.checkUsernameExists(this.newEmail).subscribe({
+            next: (exists) => {
+
+                if (exists.data) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Email đã tồn tại',
+                        text: 'Vui lòng chọn email khác.'
+                    });
+                    this.emailLoading = false;
+                    return;
+                }
+
+                // Bước 2: Gửi OTP
+                this.authService.resendUpdateEmailOtp(this.newEmail).subscribe({
+                    next: () => {
+                        this.emailLoading = false;
+                        this.otpSent = true;
+                        this.startCountdown();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã gửi mã OTP',
+                            text: `Vui lòng kiểm tra email: ${this.newEmail}.`
+                        });
+                    },
+                    error: () => {
+                        this.emailLoading = false;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: 'Không thể gửi mã OTP. Vui lòng thử lại.'
+                        });
+                    }
+                });
+            },
+            error: () => {
+                this.emailLoading = false;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi kiểm tra email',
+                    text: 'Vui lòng thử lại sau.'
+                });
+            }
+        });
+    }
+
+    resendOTP() {
+        this.authService.resendUpdateEmailOtp(this.newEmail).subscribe({
+            next: () => {
+                this.startCountdown();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã gửi lại mã OTP',
+                    text: 'Vui lòng kiểm tra email của bạn.'
+                });
+            },
+            error: () => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại',
+                    text: 'Không thể gửi lại mã OTP.'
+                });
+            }
+        });
+    }
+
+    onVerifyOTP() {
+        const form: UpdateEmailForm = {
+            otp: this.otpCode,
+            newEmail: this.newEmail
+        };
+
+        this.authService.updateEmail(form).subscribe({
+            next: () => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Email đã được cập nhật! Vui lòng đăng nhập lại.'
+                }).then(() => {
+                    this.profile.email = this.newEmail;
+                    this.otpSent = false;
+                    this.newEmail = '';
+                    this.otpCode = '';
+                    this.stopCountdown();
+
+                    this.authService.logout();
+                });
+            },
+            error: (err) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'OTP không hợp lệ',
+                    text: err.error?.message || 'Vui lòng kiểm tra lại.'
+                });
+            }
+        });
+    }
+
+    startCountdown() {
+        this.countdown = 180; // 180s = 3 phút
+        this.stopCountdown();
+        this.countdownSub = interval(1000).subscribe(() => {
+            this.countdown--;
+            if (this.countdown <= 0) this.stopCountdown();
+        });
+    }
+
+    stopCountdown() {
+        if (this.countdownSub) {
+            this.countdownSub.unsubscribe();
+        }
     }
 
     onUpdatePassword() {
