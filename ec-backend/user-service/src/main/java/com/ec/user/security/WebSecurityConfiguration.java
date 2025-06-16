@@ -113,6 +113,13 @@ public class WebSecurityConfiguration {
 			    .requestMatchers(HttpMethod.PATCH, "/profiles/me").hasAnyAuthority("USER")
 			    
 			    
+			    .requestMatchers(HttpMethod.GET, "/addresses/me").hasAnyAuthority("USER")
+			    .requestMatchers(HttpMethod.POST, "/addresses/me").hasAnyAuthority("USER")
+			
+			    .requestMatchers(HttpMethod.PATCH, "/addresses/{addressId}").hasAnyAuthority("USER")
+			    .requestMatchers(HttpMethod.PATCH, "/addresses/{addressId}/set-default").hasAnyAuthority("USER")
+			    .requestMatchers(HttpMethod.DELETE, "/addresses/{addressId}").hasAnyAuthority("USER")
+			    
 			    // Còn lại cần xác thực
 //			    .anyRequest().authenticated()
 			

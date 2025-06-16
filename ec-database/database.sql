@@ -25,7 +25,6 @@ CREATE TABLE `Account` (
 
 CREATE TABLE `Address` (
     `id` 		VARCHAR(255) PRIMARY KEY,
-    `title` 	VARCHAR(255) NOT NULL,
     `address` 	VARCHAR(255) NOT NULL,
     `isDefault` BOOLEAN NOT NULL,
     `isDeleted` BOOLEAN NOT NULL,
@@ -45,7 +44,12 @@ INSERT INTO `Account` 	(`id`, 		`createdAt`, `updatedAt`, `username`, `password`
 						('acc2', 	NOW(), 			NOW(), 'user1@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'USER', 'ACTIVE', 'P002'),
 						('acc3', 	NOW(), 			NOW(), 'user2@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUravfLpyIFi', 'USER', 'INACTIVE',  'P003');
 
-						INSERT INTO `Address` (`id`, `title`, `address`, `isDefault`, `isDeleted`, `fullName`, `phone`, `profileId`) VALUES
-						('addr1', 'Nhà riêng', '123 Đường ABC, Quận 1, TP.HCM', TRUE, FALSE, 'Alice Nguyễn', '0909123456', 'P002'),
-						('addr2', 'Công ty', '456 Đường DEF, Quận 3, TP.HCM', FALSE, FALSE, 'Alice Nguyễn', '0909123456', 'P002'),
-						('addr3', 'Nhà', '789 Đường XYZ, Quận 10, TP.HCM', TRUE, FALSE, 'Bob Trần', '0909988776', 'P003');
+-- Dữ liệu cho tài khoản P002
+INSERT INTO `Address` (`id`, `address`, `isDefault`, `isDeleted`, `fullName`, `phone`, `profileId`) VALUES
+('A001', '123 Lê Lợi, Q.1, TP.HCM',       true,  false, 'Nguyễn Văn A', '0909123456', 'P002'),
+('A002', '456 Nguyễn Trãi, Q.5, TP.HCM',   false, false, 'Nguyễn Văn A', '0909123456', 'P002'),
+('A003', '789 Cách Mạng Tháng 8, Q.10',    false, true,  'Nguyễn Văn A', '0909123456', 'P002'),
+('A004', '12 Phan Xích Long, Q. Phú Nhuận',false, false, 'Nguyễn Văn A', '0909123456', 'P002'),
+('A005', '34 Trường Chinh, Q. Tân Bình',   false, true,  'Nguyễn Văn A', '0909123456', 'P002');
+
+

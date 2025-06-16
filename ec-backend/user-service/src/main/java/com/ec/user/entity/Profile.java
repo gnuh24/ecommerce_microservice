@@ -35,6 +35,9 @@ public class Profile implements Serializable {
 	
 	@OneToOne(mappedBy = "profile")
 	private Account account;
+	
+	@OneToMany(mappedBy = "profile")
+	private java.util.List<Address> addresses;
 }
 
 

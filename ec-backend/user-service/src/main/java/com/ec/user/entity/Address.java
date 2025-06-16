@@ -20,12 +20,10 @@ public class Address implements Serializable {
 	@Id
 	private String id = IdGenerator.generateId();
 	
-	private String title;
-	
 	private String address;
 	
 	@Column(nullable = false)
-	private boolean isDefault ;
+	private boolean isDefault;
 	
 	@Column(nullable = false)
 	private boolean isDeleted = false;
@@ -33,4 +31,8 @@ public class Address implements Serializable {
 	private String fullName;
 	
 	private String phone;
+	
+	@ManyToOne
+	@JoinColumn(name = "profileId", nullable = false)
+	private Profile profile;
 }
