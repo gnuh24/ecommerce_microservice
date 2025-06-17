@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProfileLayoutComponent } from './profile-layout.component';
+import { MyAddressComponent } from './my-address.component';
 
-describe('ProfileLayoutComponent', () => {
-  let component: ProfileLayoutComponent;
-  let fixture: ComponentFixture<ProfileLayoutComponent>;
+describe('MyAddressComponent', () => {
+  let component: MyAddressComponent;
+  let fixture: ComponentFixture<MyAddressComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileLayoutComponent]
+      imports: [MyAddressComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProfileLayoutComponent);
+    fixture = TestBed.createComponent(MyAddressComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

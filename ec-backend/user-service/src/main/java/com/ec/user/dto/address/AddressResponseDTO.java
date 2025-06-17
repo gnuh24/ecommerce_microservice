@@ -12,7 +12,7 @@ public class AddressResponseDTO {
 	
 	private String address;
 	
-	private boolean isDefault ;
+	private Boolean isDefault ;
 	
 	private String fullName;
 	

@@ -22,6 +22,8 @@ export class MyProfileComponent implements OnInit {
     constructor(private profileService: ProfileService) { }
 
     ngOnInit(): void {
+        console.log('MyProfileComponent loaded');
+
         Swal.fire({
             title: 'Đang tải thông tin...',
             allowOutsideClick: false,

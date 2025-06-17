@@ -1,0 +1,91 @@
+<div class="profile-container">
+    <!-- Menu trái -->
+    <app-profile-menu></app-profile-menu>
+
+
+    <!-- Nội dung phải -->
+    <div class="profile-content">
+        <h2>Địa chỉ của tôi</h2>
+
+        <!-- Nút toggle hiện form -->
+        <button mat-raised-button color="primary" (click)="toggleCreateForm()">
+            {{ showCreateForm ? 'Hủy thêm mới' : 'Thêm địa chỉ mới' }}
+        </button>
+
+        <!-- Form thêm địa chỉ mới -->
+        <div *ngIf="showCreateForm" class="address-form">
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Họ tên</mat-label>
+                <input matInput [(ngModel)]="newAddress.fullName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Số điện thoại</mat-label>
+                <input matInput [(ngModel)]="newAddress.phone" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Địa chỉ</mat-label>
+                <input matInput [(ngModel)]="newAddress.address" />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="createAddress()" [disabled]="isCreating">
+                {{ isCreating ? 'Đang tạo...' : 'Thêm địa chỉ' }}
+            </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Danh sách địa chỉ -->
+        <div class="address-list">
+            <mat-card *ngFor="let address of addresses" class="address-card">
+                <mat-card-title>
+                    {{ address.fullName }}
+                    <span *ngIf="address.isDefault" class="default-label">[Địa chỉ mặc định]</span>
+                </mat-card-title>
+
+                <mat-card-content *ngIf="editingAddressId !== address.id">
+                    <p>{{ address.phone }}</p>
+                    <p>{{ address.address }}</p>
+                </mat-card-content>
+
+                <mat-card-content *ngIf="editingAddressId === address.id">
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Họ tên</mat-label>
+                        <input matInput [(ngModel)]="editedAddress.fullName" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Số điện thoại</mat-label>
+                        <input matInput [(ngModel)]="editedAddress.phone" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Địa chỉ</mat-label>
+                        <input matInput [(ngModel)]="editedAddress.address" />
+                    </mat-form-field>
+                </mat-card-content>
+
+
+                <mat-card-actions>
+                    <!-- Nút Cập nhật: luôn hiển thị -->
+                    <button mat-button color="accent" (click)="startEdit(address)"
+                        *ngIf="editingAddressId !== address.id">
+                        Cập nhật
+                    </button>
+
+                    <!-- Hai nút dưới chỉ hiển thị nếu không phải mặc định -->
+                    <ng-container *ngIf="!address.isDefault && editingAddressId !== address.id">
+                        <button mat-button color="primary" (click)="setDefaultAddress(address)">Đặt làm mặc
+                            định</button>
+                        <button mat-button color="warn" (click)="deleteAddress(address)">Xóa</button>
+                    </ng-container>
+                </mat-card-actions>
+
+
+                <mat-card-actions *ngIf="editingAddressId === address.id">
+                    <button mat-button color="primary" (click)="updateAddress()">Lưu</button>
+                    <button mat-button (click)="cancelEdit()">Hủy</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

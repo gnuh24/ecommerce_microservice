@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface AddressRepository extends JpaRepository<Address, String>  {
 	
-	List<Address> findByProfileIdAndIsDeleted(String profileId, Boolean isDeleted);
+	List<Address> findByProfileIdAndIsDeletedOrderByIsDefaultDesc(String profileId, Boolean isDeleted);
 	
 	@Modifying
 	@Query("UPDATE Address a SET a.isDefault = false WHERE a.profile.id = :profileId")

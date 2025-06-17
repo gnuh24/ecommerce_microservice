@@ -13,23 +13,28 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { ProfileLayoutComponent } from './profile-layout/profile-layout.component';
-import { MyProfileComponent } from './my-profile/my-profile.component';
 import { ProfileRoutingModule } from './profile-routing.module';
+import { MyProfileComponent } from './my-profile/my-profile.component';
 import { MyAccountComponent } from './my-account/my-account.component';
+import { MyAddressComponent } from './my-address/my-address.component';
+import { ProfileMenuComponent } from './profile-menu/profile-menu.component';
+
+// ✅ Chỉ import module layout, KHÔNG declare component layout ở đây
+import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
 
 @NgModule({
     declarations: [
-        ProfileLayoutComponent,
         MyProfileComponent,
-        MyAccountComponent
+        MyAccountComponent,
+        MyAddressComponent,
+        ProfileMenuComponent,
     ],
     imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
         ProfileRoutingModule,
-
+        UserLayoutModule, // ✅ dùng layout ở đây
 
         // Material Modules
         MatFormFieldModule,

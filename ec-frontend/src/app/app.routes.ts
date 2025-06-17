@@ -1,46 +1,23 @@
 import { Routes } from '@angular/router';
+import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
 import { HomeComponent } from './features/home/home.component';
 
-
 export const routes: Routes = [
-
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'home', component: HomeComponent },
+    {
+        path: '',
+        // component: UserLayoutComponent, // 👈 Gán layout ở đây
+        children: [
+            { path: '', redirectTo: 'home', pathMatch: 'full' },
+            { path: 'home', component: HomeComponent },
+            {
+                path: 'profile',
+                loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule)
+            }
+        ]
+    },
     {
         path: 'auth',
         loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
     },
-    {
-        path: 'profile',
-        loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule)
-    },
-
-    // {
-    //     path: 'admin',
-    //     loadChildren: () =>
-    //         import('./features/admin/router/admin.modules').then(
-    //             (m) => m.AdminModule
-    //         ),
-    // },
-    // { path: 'home', component: HomeComponent },
-    // { path: 'lich-trinh', component: TripSearchComponent },
-    // { path: 'tra-cuu-ve', component: TicketLookupComponent },
-    // { path: 'profile', component: ProfileComponent },
-    // { path: 'payment', component: PaymentComponent },
-    // { path: 'trip-detail/:id', component: TripDetailComponent },
-    // { path: 'login', component: LoginComponent },
-    // { path: 'signup', component: SignupComponent },
-    // { path: 'forget-password', component: ForgetPasswordComponent },
-    // { path: 'verify-password', component: VerifyPasswordComponent },
-
-    // {
-    //     path: 'order-history',
-    //     component: OrderHistoryComponent,
-    //     canActivate: [() => !!sessionStorage.getItem('user_data')],
-    // },
-    // { path: 'order-history/invoice/:id', component: InvoiceDetailFormComponent },
-
-    { path: '**', redirectTo: '/home' },
-
+    { path: '**', redirectTo: 'home' }
 ];
-

@@ -11,7 +11,6 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Address implements Serializable {
 	
 	@Serial
@@ -23,10 +22,10 @@ public class Address implements Serializable {
 	private String address;
 	
 	@Column(nullable = false)
-	private boolean isDefault;
+	private Boolean isDefault = false;
 	
 	@Column(nullable = false)
-	private boolean isDeleted = false;
+	private Boolean isDeleted = false;
 	
 	private String fullName;
 	

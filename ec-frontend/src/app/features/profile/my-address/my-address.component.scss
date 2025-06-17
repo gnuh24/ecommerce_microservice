@@ -1,0 +1,40 @@
+.profile-container {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+}
+
+
+.profile-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.address-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+
+    .form-field {
+        width: 300px;
+    }
+}
+
+.address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .address-card {
+        padding: 16px;
+    }
+}
+
+.default-label {
+    color: #1976d2;
+    font-weight: bold;
+    margin-left: 8px;
+}

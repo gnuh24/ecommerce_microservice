@@ -8,11 +8,7 @@ import lombok.Data;
 @Data
 public class AddressUpdateForm {
 	
-	private String id;
-	
 	private String address;
-	
-	private Boolean isDefault;
 	
 	private String fullName;
 	

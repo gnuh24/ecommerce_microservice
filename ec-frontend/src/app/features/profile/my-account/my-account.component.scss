@@ -4,16 +4,6 @@
     padding: 24px;
 }
 
-.profile-menu {
-    width: 220px;
-    border-right: 1px solid #ddd;
-
-    a.active {
-        background-color: #e3f2fd;
-        font-weight: bold;
-    }
-}
-
 .profile-content {
     flex-grow: 1;
     display: flex;

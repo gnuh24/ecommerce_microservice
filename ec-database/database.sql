@@ -48,7 +48,7 @@ INSERT INTO `Account` 	(`id`, 		`createdAt`, `updatedAt`, `username`, `password`
 INSERT INTO `Address` (`id`, `address`, `isDefault`, `isDeleted`, `fullName`, `phone`, `profileId`) VALUES
 ('A001', '123 Lê Lợi, Q.1, TP.HCM',       true,  false, 'Nguyễn Văn A', '0909123456', 'P002'),
 ('A002', '456 Nguyễn Trãi, Q.5, TP.HCM',   false, false, 'Nguyễn Văn A', '0909123456', 'P002'),
-('A003', '789 Cách Mạng Tháng 8, Q.10',    false, true,  'Nguyễn Văn A', '0909123456', 'P002'),
+('A003', '789 Cách Mạng Tháng 8, Q.10',    false, false,  'Nguyễn Văn A', '0909123456', 'P002'),
 ('A004', '12 Phan Xích Long, Q. Phú Nhuận',false, false, 'Nguyễn Văn A', '0909123456', 'P002'),
 ('A005', '34 Trường Chinh, Q. Tân Bình',   false, true,  'Nguyễn Văn A', '0909123456', 'P002');
 

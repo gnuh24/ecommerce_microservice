@@ -14,6 +14,4 @@ public class AddressCreateForm {
 	
 	private String phone;
 	
-	private boolean isDefault ;
-	
 }

@@ -26,7 +26,7 @@ public class AddressServiceImpl implements AddressService {
 	
 	@Override
 	public List<Address> getAddressByProfileId(String profileId) {
-		return addressRepository.findByProfileIdAndIsDeleted(profileId, false);
+		return addressRepository.findByProfileIdAndIsDeletedOrderByIsDefaultDesc(profileId, false);
 	}
 	
 	@Override
@@ -36,7 +36,6 @@ public class AddressServiceImpl implements AddressService {
 		address.setPhone(form.getPhone());
 		address.setFullName(form.getFullName());
 		address.setProfile(profile);
-		address.setDefault(form.isDefault());
 		return addressRepository.save(address);
 	}
 	
@@ -57,10 +56,6 @@ public class AddressServiceImpl implements AddressService {
 			address.setFullName(form.getFullName());
 		}
 		
-		if (form.getIsDefault() != null) {
-			address.setDefault(form.getIsDefault());
-		}
-		
 		return addressRepository.save(address);
 	}
 
@@ -71,14 +66,14 @@ public class AddressServiceImpl implements AddressService {
 		addressRepository.resetDefaultAddressByProfileId(profileId);
 		
 		Address address = getAddressById(addressId);
-		address.setDefault(true);
+		address.setIsDefault(true);
 		return addressRepository.save(address);
 	}
 	
 	@Override
 	public Address deleteAddress(String addressId) {
 		Address address = getAddressById(addressId);
-		address.setDeleted(true);
+		address.setIsDeleted(true);
 		return addressRepository.save(address);
 	}
 }
