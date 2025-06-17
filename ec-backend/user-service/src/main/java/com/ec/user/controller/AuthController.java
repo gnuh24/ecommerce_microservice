@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +63,15 @@ public class AuthController {
 	 */
 	@Operation(summary = "Đăng nhập người dùng", description = "Đăng nhập người dùng vào hệ thống.")
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<AuthResponseDTO>> loginUser(@RequestBody @Valid LoginRequestForm loginInputForm) {
+	public ResponseEntity<ApiResponse<AuthResponseDTO>> loginUser(
+	    	@RequestBody @Valid LoginRequestForm loginInputForm,
+	    	HttpServletResponse response) {
+		
 		AuthResponseDTO loginInfo = authService.login(loginInputForm);
+		
+		// ✅ Gắn cookie refresh_token
+		addRefreshTokenCookie(response, loginInfo.getRefreshToken());
+		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Login successful", loginInfo));
 	}
 	
@@ -74,8 +83,15 @@ public class AuthController {
 	 */
 	@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
 	@PostMapping("/staff-login")
-	public ResponseEntity<ApiResponse<AuthResponseDTO>> loginStaff(@RequestBody @Valid LoginRequestForm loginInputForm) {
+	public ResponseEntity<ApiResponse<AuthResponseDTO>> loginStaff(
+	    	@RequestBody @Valid LoginRequestForm loginInputForm,
+	    	HttpServletResponse response) {
+		
 		AuthResponseDTO loginInfo = authService.staffLogin(loginInputForm);
+		
+		// ✅ Gắn cookie refresh_token
+		addRefreshTokenCookie(response, loginInfo.getRefreshToken());
+		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Login successful", loginInfo));
 	}
 	
@@ -111,7 +127,7 @@ public class AuthController {
 	@Operation(summary = "Đăng nhập nhân viên", description = "Đăng nhập nhân viên vào hệ thống.")
 	@PostMapping("/active-account")
 	public ResponseEntity<ApiResponse<AuthResponseDTO>> activeAccount(@RequestParam String otp) {
-
+		
 		Account account = authService.activeAccount(otp);
 		AuthResponseDTO responseDTO = new AuthResponseDTO();
 		responseDTO.setId(account.getId());
@@ -136,16 +152,16 @@ public class AuthController {
 	public ResponseEntity<ApiResponse<String>> sendOtpForUpdateEmail(@PathVariable String username) {
 		authService.sendOtpUpdateEmail(username);
 		return ResponseEntity.ok(
-			    new ApiResponse<>(
-				200, // HTTP status code
-				"Hệ thống đã gửi OTP sang email " + username + " .Bạn có 3 phút để kiểm tra nhé", // Success message
-				null
-			    )
+		    new ApiResponse<>(
+			200, // HTTP status code
+			"Hệ thống đã gửi OTP sang email " + username + " .Bạn có 3 phút để kiểm tra nhé", // Success message
+			null
+		    )
 		);
 	}
 	
 	@PatchMapping("/update-email")
-	public ResponseEntity<ApiResponse<String>> updateEmail( @RequestBody @Valid UpdateEmailForm form ) {
+	public ResponseEntity<ApiResponse<String>> updateEmail(@RequestBody @Valid UpdateEmailForm form) {
 		
 		authService.updateEmail(form);
 		
@@ -153,48 +169,44 @@ public class AuthController {
 	}
 	
 	@PatchMapping("/reset-password/{username}")
-	public ResponseEntity<ApiResponse<String>> resetPassword(	@PathVariable String username,
-														@RequestBody @Valid ResetPasswordForm form ) {
+	public ResponseEntity<ApiResponse<String>> resetPassword(@PathVariable String username,
+								 @RequestBody @Valid ResetPasswordForm form) {
 		
 		authService.resetPassword(username, form);
-	
+		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
 	}
 	
 	@PatchMapping("/update-password")
-	public ResponseEntity<ApiResponse<String>> updatePassword( @RequestBody @Valid UpdatePasswordForm form ) {
+	public ResponseEntity<ApiResponse<String>> updatePassword(@RequestBody @Valid UpdatePasswordForm form) {
 		
 		authService.updatePassword(form);
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Password updated successfully", null));
 	}
-
-//		/**
-//		 * 📌 Làm mới Token
-//		 * @param accessToken Token truy cập hiện tại
-//		 * @param refreshToken Token làm mới
-//		 * @return Thông tin xác thực với token mới
-//		 */
-//		@Operation(summary = "Làm mới token", description = "Làm mới token truy cập bằng cách sử dụng refresh token.")
-//		@PostMapping("/refresh-token")
-//		public ResponseEntity<ApiResponse<AuthResponseDTO>> refreshToken(
-//				@RequestHeader("Authorization") String accessToken,
-//				@RequestParam("refreshToken") String refreshToken) {
-//
-//				// Loại bỏ "Bearer " nếu token có tiền tố này
-//				if (accessToken.startsWith("Bearer ")) {
-//						accessToken = accessToken.substring(7);
-//				}
-//
-//				// Gọi service để xử lý refresh token và nhận AuthResponseDTO
-//				AuthResponseDTO authResponse = authService.refreshToken(accessToken, refreshToken);
-//
-//				return ResponseEntity.ok(new ApiResponse<>(
-//						200,
-//						"Refresh token thành công",
-//						authResponse
-//				));
-//		}
-
-
+	
+	@Operation(summary = "Làm mới token", description = "Làm mới token truy cập bằng cách sử dụng refresh token.")
+	@PostMapping("/refresh-token")
+	public ResponseEntity<ApiResponse<AuthResponseDTO>> refreshToken(HttpServletRequest request) {
+		
+		// Gọi service để xử lý refresh token và nhận AuthResponseDTO
+		AuthResponseDTO authResponse = authService.refreshToken(request);
+		
+		return ResponseEntity.ok(new ApiResponse<>(
+		    200,
+		    "Refresh token thành công",
+		    authResponse
+		));
+	}
+	
+	public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+		Cookie cookie = new Cookie("refresh_token", refreshToken);
+		cookie.setHttpOnly(true); // Bảo vệ khỏi JavaScript (chống XSS)
+		cookie.setSecure(true);   // Chỉ gửi qua HTTPS
+		cookie.setPath("/");      // Đảm bảo gửi cho mọi request
+		cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+		
+		response.addCookie(cookie);
+	}
+	
 }

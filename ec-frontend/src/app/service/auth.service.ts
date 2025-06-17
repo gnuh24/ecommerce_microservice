@@ -23,12 +23,17 @@ export class AuthService {
     ) { }
 
     login(data: LoginRequest): Observable<Response<LoginResponse>> {
-        return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/login`, data);
+        return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/login`, data, {
+            withCredentials: true // ✅ Cần có dòng này
+        });
     }
 
     loginForStaff(data: LoginRequest): Observable<Response<LoginResponse>> {
-        return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/staff-login`, data);
+        return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/staff-login`, data, {
+            withCredentials: true // ✅ Cần có dòng này
+        });
     }
+
 
     checkUsernameExists(username: string): Observable<any> {
         return this.http.get(`${this.baseUrl}/auth/check-username?username=${username}`, {});

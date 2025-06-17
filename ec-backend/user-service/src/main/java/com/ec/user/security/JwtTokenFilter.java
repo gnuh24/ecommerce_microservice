@@ -1,10 +1,14 @@
 package com.ec.user.security;
 
+import com.ec.user.aop.AppLogger;
+import com.ec.user.api.ApiPath;
 import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
 import com.ec.user.exceptions.JwtException.InvalidJWTSignatureException;
+import com.ec.user.exceptions.JwtException.InvalidTokenTypeException;
 import com.ec.user.exceptions.JwtException.TokenExpiredException;
 import com.ec.user.exceptions.JwtException.UsernameNotFound;
 import com.ec.user.service.AccountService;
+import com.ec.user.utils.EnvironmentUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -38,19 +42,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private AuthExceptionHandler authExceptionHandler;
 	
-	// ✅ Danh sách các đường dẫn public bắt đầu bằng /api/user
-	private boolean isPublicPath(String path) {
-		return path.startsWith("/api/user/auth/login")
-		    || path.startsWith("/api/user/auth/register")
-		    || path.startsWith("/api/user/auth/check-username")
-		    || path.startsWith("/api/user/auth/staff-login")
-		    || path.startsWith("/api/user/auth/active-account")
-		    || path.startsWith("/api/user/auth/send-reset-password-otp")
-		    || path.startsWith("/api/user/auth/reset-password")
-		    || path.startsWith("/api/user/swagger")
-		    || path.startsWith("/api/user/v3/api-docs");
-	}
-
+	@Autowired
+	private AppLogger log;
+	
+	@Autowired
+	private EnvironmentUtils environmentUtils;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
@@ -58,8 +54,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 					@NonNull FilterChain filterChain) throws ServletException, IOException {
 		
 		final String path = request.getRequestURI();
+		
 		// ✅ Bỏ qua filter nếu là API public
-		if (isPublicPath(path)) {
+		if (ApiPath.isPublicPath(path)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -67,31 +64,63 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		final String authHeader = request.getHeader("Authorization");
 		final String jwtToken;
 		final String userEmail;
+		String errorString = "Token không hợp lệ hoặc đã hết hạn sử dụng.";
 		
-		// Kiểm tra token
 		if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
 			jwtToken = authHeader.substring(7);
+			
 			try {
+				String typeToken = jwtTokenProvider.getTokenType(jwtToken);
+				if (typeToken == null || !typeToken.equals("access")) {
+					throw new InvalidTokenTypeException("Access token có type không hợp lệ.");
+				}
+				
 				userEmail = jwtTokenProvider.getUsername(jwtToken);
+				
 				if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 					UserDetails userDetails = accountService.loadUserByUsername(userEmail);
 					
-					// Tạo SecurityContext và Authen Token
-					SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-					UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-					    userDetails, null, userDetails.getAuthorities());
-					token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					securityContext.setAuthentication(token);
-					SecurityContextHolder.setContext(securityContext);
+					UsernamePasswordAuthenticationToken authToken =
+					    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					
+					SecurityContext context = SecurityContextHolder.createEmptyContext();
+					context.setAuthentication(authToken);
+					SecurityContextHolder.setContext(context);
+					
+					log.info(request, "✅ Token hợp lệ. Đã xác thực người dùng: {}", userEmail);
 				}
-			} catch (ExpiredJwtException e1) {
-				authExceptionHandler.commence(request, response, new TokenExpiredException("Access Token đã hết hạn sử dụng."));
+				
+			} catch (ExpiredJwtException e) {
+				log.warn(request, "⚠️ Token đã hết hạn. Chi tiết: {}", e.getMessage());
+				if (environmentUtils.isDevMode()) {
+					errorString = "Token đã hết hạn. ";
+				}
+				authExceptionHandler.commence(request, response, new TokenExpiredException(errorString));
+				
 				return;
-			} catch (SignatureException e2) {
-				authExceptionHandler.commence(request, response, new InvalidJWTSignatureException("Access Token chứa signature không hợp lệ."));
+			} catch (SignatureException e) {
+				log.warn(request, "⚠️ Chữ ký JWT không hợp lệ. Chi tiết: {}", e.getMessage());
+				if (environmentUtils.isDevMode()) {
+					errorString = "Chữ ký JWT không hợp lệ.";
+				}
+				authExceptionHandler.commence(request, response, new InvalidJWTSignatureException(errorString));
+				
 				return;
-			} catch (UsernameNotFoundException e3) {
-				authExceptionHandler.commence(request, response, new UsernameNotFound("Access Token chứa thông tin không tồn tại trong hệ thống."));
+			} catch (UsernameNotFoundException e) {
+				log.warn(request, "⚠️ Không tìm thấy người dùng từ token. Chi tiết: {}", e.getMessage());
+				if (environmentUtils.isDevMode()) {
+					errorString = "Token chứa thông tin không tồn tại.";
+				}
+				authExceptionHandler.commence(request, response, new UsernameNotFound(errorString));
+				
+				return;
+			} catch (InvalidTokenTypeException e) {
+				log.warn(request, "⚠️ Token type không hợp lệ. Chi tiết: {}", e.getMessage());
+				if (environmentUtils.isDevMode()) {
+					errorString = "Access Token chứa type không đúng.";
+				}
+				authExceptionHandler.commence(request, response, new InvalidTokenTypeException(errorString));
 				return;
 			}
 		}

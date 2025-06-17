@@ -1,15 +1,23 @@
 package com.ec.user.service;
 
+import com.ec.user.aop.AppLogger;
 import com.ec.user.dto.account.AccountCreateForm;
 import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.*;
 import com.ec.user.dto.profile.ProfileCreateForm;
 import com.ec.user.entity.Account;
 import com.ec.user.entity.Profile;
+import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
+import com.ec.user.exceptions.JwtException.*;
 import com.ec.user.integration.redis.RedisConstants;
 import com.ec.user.integration.redis.RedisService;
 import com.ec.user.security.JwtTokenProvider;
+import com.ec.user.utils.EnvironmentUtils;
 import com.ec.user.utils.IdGenerator;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +25,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
 		ProfileCreateForm profileCreateForm = new ProfileCreateForm();
 		profileCreateForm.setEmail(account.getUsername());
 		Profile profile = profileService.createProfile(profileCreateForm);
-
+		
 		
 		AccountCreateForm accountCreateForm = new AccountCreateForm();
 		accountCreateForm.setId(account.getId());
@@ -125,6 +134,14 @@ public class AuthServiceImpl implements AuthService {
 		return buildAuthResponse(user);
 	}
 	
+	@Autowired
+	private AppLogger log;
+	
+	@Autowired
+	private EnvironmentUtils environmentUtils;
+	
+	@Autowired
+	private AuthExceptionHandler authExceptionHandler;
 	
 	@Override
 	@Transactional
@@ -150,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
 		String otp = IdGenerator.generateOTP();
 		redisService.setObjectWithTTL(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp, account, 5, TimeUnit.MINUTES);
 		
-		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(),  otp);
+		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(), otp);
 		return account;
 	}
 	
@@ -158,7 +175,7 @@ public class AuthServiceImpl implements AuthService {
 	public void sendOtpResetPassword(String username) {
 		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
 		String otp = IdGenerator.generateOTP();
-		redisService.set(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username, otp,3, TimeUnit.MINUTES);
+		redisService.set(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username, otp, 3, TimeUnit.MINUTES);
 		emailService.sendResetPasswordUserConfirm(username, otp);
 	}
 	
@@ -166,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
 	public Account resetPassword(String username, ResetPasswordForm form) {
 		String otpRedis = redisService.get(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username).toString();
 		
-		if (!otpRedis.equals(form.getOtp())){
+		if (!otpRedis.equals(form.getOtp())) {
 			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
 		}
 		
@@ -193,7 +210,7 @@ public class AuthServiceImpl implements AuthService {
 	public void sendOtpUpdateEmail(String username) {
 		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + username);
 		String otp = IdGenerator.generateOTP();
-		redisService.set(RedisConstants.OTP_CHANGE_EMAIL + ":" + username, otp,3, TimeUnit.MINUTES);
+		redisService.set(RedisConstants.OTP_CHANGE_EMAIL + ":" + username, otp, 3, TimeUnit.MINUTES);
 		emailService.sendUpdateEmailOtp(username, otp);
 	}
 	
@@ -204,7 +221,7 @@ public class AuthServiceImpl implements AuthService {
 		Account account = (Account) authentication.getPrincipal();
 		
 		String otpRedis = redisService.get(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail()).toString();
-		if (!otpRedis.equals(form.getOtp())){
+		if (!otpRedis.equals(form.getOtp())) {
 			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
 		}
 		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
@@ -215,7 +232,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		accountService.updateUsername(account, form.getNewEmail());
 		profileService.updateEmail(account.getProfile(), form.getNewEmail());
-		
+
 //		redisService.set(RedisConstants.BANLIST_ACCESS_TOKEN + ":" + form.getAccessToken(), "true",15, TimeUnit.MINUTES);
 //		redisService.set(RedisConstants.BANLIST_REFRESH_TOKEN + ":" + form.getRefreshToken(), "true",7, TimeUnit.DAYS);
 //
@@ -239,90 +256,88 @@ public class AuthServiceImpl implements AuthService {
 		
 		
 		// Tạo Refresh Token
-		String refreshToken = jwtTokenProvider.generateRefreshToken(new HashMap<>(), user);
+		String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 		response.setRefreshToken(refreshToken);
 		response.setRefreshTokenExpirationTime("7 ngày");
 		
 		return response;
 	}
-
-//    @Override
-//    public AuthResponseDTO refreshToken(String oldToken, String refreshToken){
-//
-//	AuthResponseDTO response = new AuthResponseDTO();
-//
-//	try{
-//
-//	    String emailFromAccessToken = jwtTokenProvider.getUsernameWithoutExpired(oldToken);
-//	    String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
-//
-//	    if (!emailFromAccessToken.equals(emailFromRefreshToken)){
-//		throw new MismatchedTokenAccountException("AccessToken và RefreshToken không khớp với cùng một tài khoản.");
-//	    }
-//	    //Tìm tài khoản dựa trên Email
-//	    Account account = accountService.getAccountByEmail(emailFromAccessToken);
-//
-//	    response.setId(account.getId());
-//	    response.setEmail(emailFromAccessToken);
-//	    response.setRole(account.getRole().toString());
-//
-//	    // Tạo Token
-//	    String jwt = jwtTokenProvider.generateToken(account);
-//	    response.setToken(jwt);
-//	    response.setTokenExpirationTime("30 phút");
-//
-//	    // Tạo Refresh Token
-//	    response.setRefreshToken(refreshToken);
-//	    response.setRefreshTokenExpirationTime("7 ngày");
-//
-//	} catch (ExpiredJwtException e1) {
-//	    throw new TokenExpiredException("Refresh Token đã hết hạn sử dụng.");
-//	} catch (SignatureException e2) {
-//	    throw new InvalidJWTSignatureException("Refresh Token chứa signature không hợp lệ.");
-//	} catch (UsernameNotFoundException e3) {
-//	    throw new UsernameNotFound("Refresh Token chứa thông tin không tồn tại trong hệ thống.");
-//	}
-//
-//	return response;
-//    }
 	
-	//	@Override
-//	public AuthResponseDTO refreshToken(String oldToken, String refreshToken) {
-//
-//		AuthResponseDTO response = new AuthResponseDTO();
-//
-//		try {
-//
-//			String emailFromAccessToken = jwtTokenProvider.getUsernameWithoutExpired(oldToken);
-//			String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
-//
-//			if (!emailFromAccessToken.equals(emailFromRefreshToken)) {
-//				throw new MismatchedTokenAccountException("AccessToken và RefreshToken không khớp với cùng một tài khoản.");
-//			}
-//			//Tìm tài khoản dựa trên Email
-//			Account account = accountService.getAccountByEmail(emailFromAccessToken);
-//
-//			response.setId(account.getId());
-//			response.setEmail(emailFromAccessToken);
-//			response.setRole(account.getRole().toString());
-//
-//			// Tạo Token
-//			String jwt = jwtTokenProvider.generateToken(account);
-//			response.setToken(jwt);
-//			response.setTokenExpirationTime("30 phút");
-//
-//			// Tạo Refresh Token
-//			response.setRefreshToken(refreshToken);
-//			response.setRefreshTokenExpirationTime("7 ngày");
-//
-//		} catch (ExpiredJwtException e1) {
-//			throw new TokenExpiredException("Refresh Token đã hết hạn sử dụng.");
-//		} catch (SignatureException e2) {
-//			throw new InvalidJWTSignatureException("Refresh Token chứa signature không hợp lệ.");
-//		} catch (UsernameNotFoundException e3) {
-//			throw new UsernameNotFound("Refresh Token chứa thông tin không tồn tại trong hệ thống.");
-//		}
-//
-//		return response;
-//	}
+	@Override
+	public AuthResponseDTO refreshToken(HttpServletRequest request) {
+		String refreshToken = "";
+		
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("refresh_token".equals(cookie.getName())) {
+					refreshToken = cookie.getValue(); // ✅ This is your refresh token
+				}
+			}
+		}
+		
+		if (refreshToken.isEmpty()) {
+			throw new RefreshTokenNotFound("Không tìm thấy refresh token");
+		}
+		
+		AuthResponseDTO response = new AuthResponseDTO();
+		String errorString = "Token không hợp lệ hoặc đã hết hạn sử dụng.";
+		
+		try {
+			String typeToken = jwtTokenProvider.getTokenType(refreshToken);
+			if (typeToken == null || !typeToken.equals("refresh")) {
+				throw new InvalidTokenTypeException("Token có type không hợp lệ.");
+			}
+			
+			
+			String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
+			
+			//Tìm tài khoản dựa trên Email
+			Account account = accountService.getAccountByUsername(emailFromRefreshToken);
+			
+			response.setId(account.getId());
+			response.setUsername(emailFromRefreshToken);
+			response.setRole(account.getRole().toString());
+			
+			// Tạo Token
+			String jwt = jwtTokenProvider.generateToken(account);
+			response.setToken(jwt);
+			response.setTokenExpirationTime("30 phút");
+			
+			// Tạo Refresh Token
+			response.setRefreshToken(refreshToken);
+			response.setRefreshTokenExpirationTime("7 ngày");
+			
+		} catch (ExpiredJwtException e) {
+			log.warn(request, "⚠️ Token đã hết hạn. Chi tiết: {}", e.getMessage());
+			if (environmentUtils.isDevMode()) {
+				errorString = "Token đã hết hạn. ";
+			}
+			throw new TokenExpiredException(errorString);
+			
+		} catch (SignatureException e) {
+			log.warn(request, "⚠️ Chữ ký JWT không hợp lệ. Chi tiết: {}", e.getMessage());
+			if (environmentUtils.isDevMode()) {
+				errorString = "Chữ ký JWT không hợp lệ.";
+			}
+			throw new InvalidJWTSignatureException(errorString);
+			
+		} catch (UsernameNotFoundException e) {
+			log.warn(request, "⚠️ Không tìm thấy người dùng từ token. Chi tiết: {}", e.getMessage());
+			if (environmentUtils.isDevMode()) {
+				errorString = "Token chứa thông tin không tồn tại.";
+			}
+			throw new UsernameNotFound(errorString);
+			
+		} catch (InvalidTokenTypeException e) {
+			log.warn(request, "⚠️ Token type không hợp lệ. Chi tiết: {}", e.getMessage());
+			if (environmentUtils.isDevMode()) {
+				errorString = "Token chứa type không đúng.";
+			}
+			throw new InvalidTokenTypeException(errorString);
+		}
+		
+		return response;
+	}
+	
+	
 }

@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Data
@@ -23,8 +24,12 @@ public class JwtTokenProvider {
 	
 	private SecretKey secretKey;  // Use a single secret key for both access and refresh tokens
 	
-	private static final long EXPIRATION_TIME_FOR_TOKEN = 30L * 24 * 60 * 60 * 1000;  // 30 days
-	private static final long EXPIRATION_TIME_FOR_REFRESH_TOKEN = 30L * 24 * 60 * 60 * 1000;  // 30 days
+//	private static final long EXPIRATION_TIME_FOR_TOKEN = 0;
+//	private static final long EXPIRATION_TIME_FOR_REFRESH_TOKEN = 0;
+	
+	
+	private static final long EXPIRATION_TIME_FOR_TOKEN = 30L * 24 * 60 * 60 * 1000;
+	private static final long EXPIRATION_TIME_FOR_REFRESH_TOKEN = 30L * 24 * 60 * 60 * 1000;
 	
 	@PostConstruct
 	public void init() {
@@ -35,30 +40,67 @@ public class JwtTokenProvider {
 		this.secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
 	}
 	
-	// Generate Access Token
+	// ✅ Generate Access Token
 	public String generateToken(UserDetails userDetails) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("typ", "access");  // Mark this as access token
+		
 		return Jwts.builder()
-		    .subject(userDetails.getUsername())
-		    .issuedAt(new Date(System.currentTimeMillis()))
-		    .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_FOR_TOKEN))
-		    .signWith(secretKey)  // Use the same secret key for signing
+		    .setClaims(claims)
+		    .setSubject(userDetails.getUsername())
+		    .setIssuedAt(new Date(System.currentTimeMillis()))
+		    .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_FOR_TOKEN))
+		    .signWith(secretKey)
 		    .compact();
 	}
 	
-	// Generate Refresh Token
-	public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails) {
+	// ✅ Generate Refresh Token
+	public String generateRefreshToken(UserDetails userDetails) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("typ", "refresh");  // Mark this as refresh token
+		
 		return Jwts.builder()
-		    .claims(claims)
-		    .subject(userDetails.getUsername())
-		    .issuedAt(new Date(System.currentTimeMillis()))
-		    .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_FOR_REFRESH_TOKEN))
-		    .signWith(secretKey)  // Use the same secret key for signing
+		    .setClaims(claims)
+		    .setSubject(userDetails.getUsername())
+		    .setIssuedAt(new Date(System.currentTimeMillis()))
+		    .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_FOR_REFRESH_TOKEN))
+		    .signWith(secretKey)
 		    .compact();
 	}
+	
+	
+	public void logJwtTokenInfo(String token) {
+		String[] parts = token.split("\\.");
+		String encodedPayload = parts[1];
+		String payload = new String(Base64.getUrlDecoder().decode(encodedPayload), StandardCharsets.UTF_8);
+		
+		System.out.println("===== JWT Token Info =====");
+		System.out.println(payload);
+		System.out.println("==========================");
+	}
+	
 	
 	public String getUsername(String token) {
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
 	}
+	
+	public String getTokenType(String token) {
+		String[] parts = token.split("\\.");
+		String encodedPayload = parts[1];
+		String payload = new String(Base64.getUrlDecoder().decode(encodedPayload), StandardCharsets.UTF_8);
+		
+		// Tìm chuỗi "typ":"xxx"
+		int typIndex = payload.indexOf("\"typ\"");
+		if (typIndex == -1) return null;
+		
+		int colonIndex = payload.indexOf(":", typIndex);
+		int firstQuote = payload.indexOf("\"", colonIndex + 1);
+		int secondQuote = payload.indexOf("\"", firstQuote + 1);
+		
+		return payload.substring(firstQuote + 1, secondQuote);
+	}
+
+	
 	
 	// Extract username from JWT Token without using library methods (manual extraction)
 	public String getUsernameWithoutExpired(String token) {

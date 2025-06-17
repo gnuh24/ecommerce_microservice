@@ -7,6 +7,7 @@ package com.ec.user.service;
 import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.*;
 import com.ec.user.entity.Account;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 public interface AuthService {
@@ -30,5 +31,6 @@ public interface AuthService {
 	void sendOtpUpdateEmail(String username);
 	
 	Account updateEmail(UpdateEmailForm form);
-//    AuthResponseDTO refreshToken(String oldToken, String refreshToken);
+	AuthResponseDTO refreshToken(HttpServletRequest request);
+	
 }
