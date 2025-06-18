@@ -1,18 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
 import { environment } from '../../enviro/environment';
-import { HttpHeaders } from '@angular/common/http';
-import { throwError } from 'rxjs';
 
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
     private baseUrl = environment.apiUserService;
 
@@ -24,23 +18,27 @@ export class AuthService {
 
     login(data: LoginRequest): Observable<Response<LoginResponse>> {
         return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/login`, data, {
-            withCredentials: true // ✅ Cần có dòng này
+            withCredentials: true
         });
     }
 
     loginForStaff(data: LoginRequest): Observable<Response<LoginResponse>> {
         return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/staff-login`, data, {
-            withCredentials: true // ✅ Cần có dòng này
+            withCredentials: true
         });
     }
 
+    refreshToken(): Observable<Response<LoginResponse>> {
+        return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/refresh-token`, null, {
+            withCredentials: true
+        });
+    }
 
     checkUsernameExists(username: string): Observable<any> {
-        return this.http.get(`${this.baseUrl}/auth/check-username?username=${username}`, {});
+        return this.http.get(`${this.baseUrl}/auth/check-username?username=${username}`);
     }
 
     activeAccount(otp: string): Observable<any> {
-
         return this.http.post(`${this.baseUrl}/auth/active-account?otp=${otp}`, {});
     }
 
@@ -57,71 +55,24 @@ export class AuthService {
     }
 
     resendUpdateEmailOtp(username: string): Observable<any> {
-        const headers = this.getAuthHeaders();
-        if (!headers) {
-            this.handleExpiredSession();
-            return throwError(() => new Error('Session expired'));
-        }
-
-
-        return this.http.post(`${this.baseUrl}/auth/send-update-email-otp/${username}`, {}, { headers });
+        return this.http.post(`${this.baseUrl}/auth/send-update-email-otp/${username}`, {});
     }
 
     updatePassword(data: UpdatePasswordForm): Observable<any> {
-        const headers = this.getAuthHeaders();
-        if (!headers) {
-            this.handleExpiredSession();
-            return throwError(() => new Error('Session expired'));
-        }
-
-        return this.http.patch(`${this.baseUrl}/auth/update-password`, data, { headers });
+        return this.http.patch(`${this.baseUrl}/auth/update-password`, data);
     }
 
     updateEmail(data: UpdateEmailForm): Observable<any> {
-        const headers = this.getAuthHeaders();
-        if (!headers) {
-            this.handleExpiredSession();
-            return throwError(() => new Error('Session expired'));
-        }
-
-        return this.http.patch(`${this.baseUrl}/auth/update-email`, data, { headers });
+        return this.http.patch(`${this.baseUrl}/auth/update-email`, data);
     }
-
-    private getAuthHeaders(): HttpHeaders | null {
-        const token = this.tokenService.getAccessToken();
-        if (!token) return null;
-
-        return new HttpHeaders({
-            Authorization: `Bearer ${token}`,
-        });
-    }
-
-
-    private handleExpiredSession() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Thông báo',
-            text: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-            confirmButtonText: 'Đăng nhập',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-        }).then(() => {
-            this.tokenService.clearTokens(); // Xóa access + refresh token nếu có
-            this.router.navigate(['/auth/login']);
-        });
-    }
-
 
     logout(): void {
-        // Xóa session/token
         sessionStorage.clear();
-        localStorage.clear(); // nếu có dùng localStorage
-
-        // Điều hướng về trang login
+        localStorage.clear();
         this.router.navigate(['/auth/login']);
     }
-
 }
+
 
 interface LoginRequest {
     username: string;

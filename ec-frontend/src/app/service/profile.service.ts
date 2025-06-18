@@ -28,68 +28,17 @@ export interface ProfileUpdateForm {
     birthday: string;
 }
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ProfileService {
     private baseUrl = environment.apiUserService;
 
-    constructor(
-        private http: HttpClient,
-        private tokenService: TokenService,
-        private router: Router
-    ) { }
-
-    private getAuthHeaders(): HttpHeaders | null {
-        const token = this.tokenService.getAccessToken();
-        if (!token) return null;
-
-        return new HttpHeaders({
-            Authorization: `Bearer ${token}`,
-        });
-    }
+    constructor(private http: HttpClient) { }
 
     getMyProfile(): Observable<Response<ProfileDetail>> {
-        const headers = this.getAuthHeaders();
-        if (!headers) {
-            this.handleExpiredSession();
-            return throwError(() => new Error('Session expired'));
-        }
-
-        return this.http.get<Response<ProfileDetail>>(
-            `${this.baseUrl}/profiles/me`,
-            { headers }
-        );
+        return this.http.get<Response<ProfileDetail>>(`${this.baseUrl}/profiles/me`);
     }
 
     updateMyProfile(form: ProfileUpdateForm): Observable<Response<ProfileDetail>> {
-        const headers = this.getAuthHeaders();
-        if (!headers) {
-            this.handleExpiredSession();
-            return throwError(() => new Error('Session expired'));
-        }
-
-        return this.http.patch<Response<ProfileDetail>>(
-            `${this.baseUrl}/profiles/me`,
-            form,
-            { headers }
-        );
+        return this.http.patch<Response<ProfileDetail>>(`${this.baseUrl}/profiles/me`, form);
     }
-
-
-
-    private handleExpiredSession() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Thông báo',
-            text: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-            confirmButtonText: 'Đăng nhập',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-        }).then(() => {
-            this.tokenService.clearTokens(); // Xóa access + refresh token nếu có
-            this.router.navigate(['/auth/login']);
-        });
-    }
-
 }

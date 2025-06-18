@@ -1,9 +1,11 @@
 package com.ec.user.controller;
 
+import com.ec.user.api.ApiPath;
 import com.ec.user.api.ApiResponse;
 import com.ec.user.dto.account.AccountRedisDTO;
 import com.ec.user.dto.auth.*;
 import com.ec.user.entity.Account;
+import com.ec.user.exceptions.JwtException.RefreshTokenNotFound;
 import com.ec.user.service.AccountService;
 import com.ec.user.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,6 +52,7 @@ public class AuthController {
 	@Operation(summary = "Kiểm tra email tồn tại", description = "Kiểm tra xem email đã được đăng ký trong hệ thống chưa.")
 	@GetMapping("/check-username")
 	public ResponseEntity<ApiResponse<Boolean>> checkUsernameExists(@Parameter(description = "Email cần kiểm tra", example = "user@example.com") @RequestParam String username) {
+		
 		boolean exists = authService.isUsernameExists(username);
 		ApiResponse<Boolean> response = new ApiResponse<>(200, "Email existence check completed successfully", exists);
 		return ResponseEntity.ok(response);
@@ -199,11 +202,16 @@ public class AuthController {
 		));
 	}
 	
-	public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
 		Cookie cookie = new Cookie("refresh_token", refreshToken);
-		cookie.setHttpOnly(true); // Bảo vệ khỏi JavaScript (chống XSS)
-		cookie.setSecure(true);   // Chỉ gửi qua HTTPS
-		cookie.setPath("/");      // Đảm bảo gửi cho mọi request
+		cookie.setHttpOnly(true);
+		cookie.setSecure(false);
+		
+		cookie.setPath("/api/user/auth/");
+
+//		cookie.setPath("/api/user/auth/refresh-token");
+//		System.err.println(ApiPath.REFRESH_TOKEN);
+		
 		cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
 		
 		response.addCookie(cookie);
