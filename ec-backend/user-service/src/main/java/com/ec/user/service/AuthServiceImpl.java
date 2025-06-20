@@ -223,12 +223,17 @@ public class AuthServiceImpl implements AuthService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Account account = (Account) authentication.getPrincipal();
 		
+		if (!passwordEncoder.matches(form.getCurrentPassword(), account.getPassword())) {
+			throw new RuntimeException("Mật khẩu hiện tại không đúng.");
+		}
+		
 		String otpRedis = redisService.get(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail()).toString();
 		if (!otpRedis.equals(form.getOtp())) {
 			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
 		}
-		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
 		
+		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
+
 		
 		String currentEmail = account.getUsername();
 		redisService.delete(RedisConstants.USERNAME_EXIST + ":" + currentEmail);

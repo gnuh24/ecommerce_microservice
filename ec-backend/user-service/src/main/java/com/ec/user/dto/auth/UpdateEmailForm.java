@@ -7,6 +7,8 @@ public class UpdateEmailForm {
 	
 	private String otp;
 	
+	private String currentPassword;
+	
 	private String newEmail;
 	
 }

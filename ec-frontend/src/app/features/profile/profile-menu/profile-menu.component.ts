@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ViewEncapsulation } from '@angular/core';
+
 @Component({
     selector: 'app-profile-menu',
     standalone: false,
