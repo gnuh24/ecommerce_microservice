@@ -8,7 +8,10 @@ import { AuthService } from '../../../service/auth.service';
     selector: 'app-reset-password',
     standalone: false,
     templateUrl: './reset-password.component.html',
-    styleUrls: ['./reset-password.component.scss']
+    styleUrls: [
+        './reset-password.component.scss',
+        '../auth.scss'
+    ]
 })
 export class ResetPasswordComponent implements OnInit {
     resetForm!: FormGroup;
@@ -36,13 +39,17 @@ export class ResetPasswordComponent implements OnInit {
 
         this.startCountdown()
 
-        this.resetForm = this.fb.group({
-            otp: ['', Validators.required],
-            newPassword: ['', [Validators.required, Validators.minLength(6)]],
-            repeatNewPassword: ['', Validators.required]
-        }, {
-            validators: this.passwordsMatchValidator
-        });
+        this.resetForm = this.fb.group(
+            {
+                otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+                newPassword: ['', [Validators.required, Validators.minLength(6)]],
+                repeatNewPassword: ['', [Validators.required]]
+            },
+            {
+                validators: this.passwordsMatchValidator
+            }
+        );
+
     }
 
     passwordsMatchValidator(form: FormGroup) {

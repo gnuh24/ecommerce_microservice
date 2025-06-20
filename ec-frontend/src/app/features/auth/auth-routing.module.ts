@@ -5,7 +5,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { AuthLayoutComponent } from './auth-layout/auth-layout.component';
+import { UserLayoutComponent } from '../../layouts/user-layout/user-layout.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { StaffLoginComponent } from './staff-login/staff-login.component';
@@ -14,7 +14,7 @@ import { VerifyAccountComponent } from './verify-account/verify-account.componen
 const routes: Routes = [
     {
         path: '',
-        component: AuthLayoutComponent,
+        component: UserLayoutComponent,
         children: [
             { path: '', redirectTo: 'login', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },

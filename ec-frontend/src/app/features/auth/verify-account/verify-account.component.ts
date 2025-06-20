@@ -7,7 +7,10 @@ import { take } from 'rxjs/operators';
     selector: 'app-verify-account',
     standalone: false,
     templateUrl: './verify-account.component.html',
-    styleUrls: ['./verify-account.component.scss']
+    styleUrls: [
+        './verify-account.component.scss',
+        '../auth.scss'
+    ]
 })
 export class VerifyAccountComponent implements OnInit {
     message: string = '';

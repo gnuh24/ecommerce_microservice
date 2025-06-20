@@ -8,7 +8,10 @@ import { Router } from '@angular/router';
     selector: 'app-staff-login',
     standalone: false,
     templateUrl: './staff-login.component.html',
-    styleUrl: './staff-login.component.scss'
+    styleUrls: [
+        './staff-login.component.scss',
+        '../auth.scss',
+    ]
 })
 export class StaffLoginComponent implements OnInit {
     loginForm!: FormGroup;
@@ -20,7 +23,7 @@ export class StaffLoginComponent implements OnInit {
     ngOnInit(): void {
         this.loginForm = this.fb.group({
             username: ['', [Validators.required, Validators.email]],
-            password: ['', Validators.required]
+            password: ['', Validators.required, Validators.minLength(6)]
         });
     }
 

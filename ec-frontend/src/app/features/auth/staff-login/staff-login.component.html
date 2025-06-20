@@ -3,19 +3,35 @@
         <h1 class="auth-title">Đăng nhập cho nhân viên</h1>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+
             <!-- Email -->
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
-                <input matInput formControlName="username" type="email" required />
+                <input matInput formControlName="username" type="email" required placeholder="VD: email@gmail.com" />
+
+                <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+                    Vui lòng nhập email
+                </mat-error>
+                <mat-error *ngIf="loginForm.get('username')?.hasError('email')">
+                    Email không đúng định dạng. Ví dụ: <strong>email&#64;gmail.com</strong>1
+                </mat-error>
             </mat-form-field>
 
-            <!-- Password với con mắt -->
+            <!-- Password -->
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Mật khẩu</mat-label>
-                <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required />
+                <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required
+                    placeholder="Tối thiểu 6 ký tự" />
                 <button mat-icon-button matSuffix type="button" (click)="hide = !hide">
                     <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
+
+                <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                    Vui lòng nhập mật khẩu
+                </mat-error>
+                <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+                    Mật khẩu phải có ít nhất 6 ký tự
+                </mat-error>
             </mat-form-field>
 
             <!-- Button submit -->

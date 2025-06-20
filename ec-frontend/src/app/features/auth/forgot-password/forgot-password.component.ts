@@ -8,7 +8,10 @@ import { Router } from '@angular/router';
     selector: 'app-forgot-password',
     standalone: false,
     templateUrl: './forgot-password.component.html',
-    styleUrls: ['./forgot-password.component.scss']
+    styleUrls: [
+        './forgot-password.component.scss',
+        '../auth.scss'
+    ]
 })
 export class ForgotPasswordComponent implements OnInit {
     forgotForm!: FormGroup;

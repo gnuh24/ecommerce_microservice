@@ -5,7 +5,6 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { AuthLayoutComponent } from './auth-layout/auth-layout.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { StaffLoginComponent } from './staff-login/staff-login.component';
@@ -21,7 +20,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     declarations: [
         LoginComponent,
         RegisterComponent,
-        AuthLayoutComponent,
         ForgotPasswordComponent,
         ResetPasswordComponent,
         StaffLoginComponent,

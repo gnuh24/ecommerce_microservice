@@ -9,7 +9,10 @@ import { tap, finalize } from 'rxjs/operators';
     selector: 'app-register',
     standalone: false,
     templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss']
+    styleUrls: [
+        './register.component.scss',
+        '../auth.scss'
+    ]
 })
 export class RegisterComponent implements OnInit {
     registerForm!: FormGroup;
@@ -26,7 +29,7 @@ export class RegisterComponent implements OnInit {
         this.registerForm = this.fb.group(
             {
                 email: ['', [Validators.required, Validators.email]],
-                password: ['', Validators.required],
+                password: ['', [Validators.required, Validators.minLength(6)]],
                 confirmPassword: ['', Validators.required]
             },
             {
