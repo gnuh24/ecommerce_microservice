@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { ElementRef } from '@angular/core';
 @Component({
     selector: 'app-user-header',
     standalone: false,
@@ -7,5 +7,16 @@ import { Component } from '@angular/core';
     styleUrl: './user-header.component.scss'
 })
 export class UserHeaderComponent {
+    inputModel: any;
 
+    displayMenu = false;
+
+    menuAnchor: any;
+
+    constructor(public el: ElementRef) {
+    }
+
+    ngOnInit() {
+        this.menuAnchor = this.el.nativeElement;
+    }
 }

@@ -19,7 +19,6 @@ import { MyAccountComponent } from './my-account/my-account.component';
 import { MyAddressComponent } from './my-address/my-address.component';
 import { ProfileMenuComponent } from './profile-menu/profile-menu.component';
 
-// ✅ Chỉ import module layout, KHÔNG declare component layout ở đây
 import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
 
 @NgModule({
@@ -34,9 +33,8 @@ import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
         FormsModule,
         ReactiveFormsModule,
         ProfileRoutingModule,
-        UserLayoutModule, // ✅ dùng layout ở đây
+        UserLayoutModule,
 
-        // Material Modules
         MatFormFieldModule,
         MatInputModule,
         MatIconModule,

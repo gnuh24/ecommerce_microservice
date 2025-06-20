@@ -1,0 +1,14 @@
+<div class="menu-bar">
+    <ul class="menu-list">
+        <li *ngFor="let tab of menuTabs">
+            {{ tab.label }}
+        </li>
+    </ul>
+
+    <div class="menu-all-content">
+        <div class="menu-content" *ngFor="let tab of menuTabs">
+            <h4>{{ tab.label }}</h4>
+            <div>{{ tab.content }}</div>
+        </div>
+    </div>
+</div>
