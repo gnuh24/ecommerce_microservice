@@ -1,6 +1,21 @@
 <mat-nav-list class="profile-menu">
-    <a mat-list-item routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Thông
-        tin cá nhân</a>
-    <a mat-list-item routerLink="/profile/my-account" routerLinkActive="active">Cập nhật email và mật khẩu</a>
-    <a mat-list-item routerLink="/profile/my-address" routerLinkActive="active">Địa chỉ</a>
+    <!-- Tiêu đề menu (optional) -->
+    <h3 class="menu-title">Tài khoản</h3>
+
+    <a class="menu-item" mat-list-item routerLink="/profile" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon matListIcon>person</mat-icon>
+        <span>Thông tin cá nhân</span>
+    </a>
+
+    <a class="menu-item" mat-list-item routerLink="/profile/my-account" routerLinkActive="active">
+        <mat-icon matListIcon>lock</mat-icon>
+        <span>Cập nhật email và mật khẩu</span>
+    </a>
+
+    <a class="menu-item" mat-list-item routerLink="/profile/my-address" routerLinkActive="active">
+        <mat-icon matListIcon>location_on</mat-icon>
+        <span>Địa chỉ</span>
+    </a>
+
 </mat-nav-list>

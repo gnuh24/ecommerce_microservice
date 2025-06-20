@@ -20,6 +20,8 @@ import { MyAddressComponent } from './my-address/my-address.component';
 import { ProfileMenuComponent } from './profile-menu/profile-menu.component';
 
 import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
+import { AddressFormDialogComponent } from './address-form-dialog/address-form-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
     declarations: [
@@ -27,6 +29,7 @@ import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
         MyAccountComponent,
         MyAddressComponent,
         ProfileMenuComponent,
+        AddressFormDialogComponent,
     ],
     imports: [
         CommonModule,
@@ -44,7 +47,8 @@ import { UserLayoutModule } from '../../layouts/user-layout/user-layout.module';
         MatListModule,
         MatRadioModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MatDialogModule
     ]
 })
 export class ProfileModule { }

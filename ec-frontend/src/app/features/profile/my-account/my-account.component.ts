@@ -16,7 +16,10 @@ interface UpdateEmailForm {
     selector: 'app-my-account',
     standalone: false,
     templateUrl: './my-account.component.html',
-    styleUrls: ['./my-account.component.scss']
+    styleUrls: [
+        './my-account.component.scss',
+        '../profile.scss'
+    ]
 })
 export class MyAccountComponent {
     profile = {

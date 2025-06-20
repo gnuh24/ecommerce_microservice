@@ -14,17 +14,65 @@
     padding: $grid*2 0;
 
     .main-wrapper {
-        align-items: center;
         display: flex;
-        flex-direction: row;
+        align-items: center;
         justify-content: space-between;
+        gap: $grid * 2;
+    }
+
+    .logo {
+        font-size: 2.8rem;
+        font-weight: bold;
+        letter-spacing: 8px;
+        cursor: pointer;
+        color: $whiteSmokeColor;
+        text-transform: uppercase;
+        padding-right: $grid * 2;
+
+        &:hover {
+            color: $primaryColor;
+        }
+    }
+
+    .search {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+
+        input {
+            border: none;
+            box-sizing: border-box;
+            border-radius: 4px 0 0 4px;
+            height: 32px;
+            padding: 0 $grid*1.5;
+            width: 220px;
+        }
+
+        button {
+            background: $primaryColor;
+            padding: 0 $grid*2;
+            cursor: pointer;
+            color: #fff;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            text-align: center;
+            text-transform: uppercase;
+            box-sizing: border-box;
+
+            &:hover {
+                box-shadow: 0 5px 30px rgba(79, 70, 228, 0.8);
+            }
+        }
     }
 
     .account {
+        display: flex;
+        align-items: center;
+
         a {
             color: $whiteSmokeColor;
             text-decoration: none;
-            margin-right: $grid * 2;
+            margin-left: $grid * 2;
 
             &:hover {
                 color: $primaryColor;
@@ -33,55 +81,15 @@
     }
 }
 
-.head {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: $grid * 2;
-
-    .logo {
-        font-size: 3.9rem;
-        flex-shrink: 0;
-        letter-spacing: 12px;
-        padding-left: 12px;
-    }
-}
-
-.search {
-    display: flex;
-    flex-direction: row;
-
-    input {
-        border: none;
-        box-sizing: border-box;
-        border-radius: 4px 0 0 4px;
-        height: 32px;
-        padding: 0 $grid*1.5;
-        width: 220px;
-    }
-
-    button {
-        background: $primaryColor;
-        padding: 0 $grid*2;
-        cursor: pointer;
-        color: #fff;
-        border: none;
-        border-radius: 0 4px 4px 0;
-        text-align: center;
-        text-transform: uppercase;
-        box-sizing: border-box;
-
-        &:hover {
-            box-shadow: 0 5px 30px rgba(79, 70, 228, 0.8);
-        }
-    }
-}
-
-@media (max-width: 400px) {
+@media (max-width: 768px) {
     .search {
         input {
-            width: 100px;
+            width: 140px;
         }
+    }
+
+    .logo {
+        font-size: 2rem;
+        letter-spacing: 4px;
     }
 }

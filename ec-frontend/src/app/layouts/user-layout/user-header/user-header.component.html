@@ -1,5 +1,9 @@
 <div class="top-bar">
     <div class="main-wrapper">
+        <!-- 🔼 Logo -->
+        <div class="logo" routerLink="/">ALMA</div>
+
+        <!-- 🔍 Search -->
         <div class="search">
             <mat-form-field appearance="outline" class="search-field">
                 <mat-label>Search for a brand or product…</mat-label>
@@ -10,6 +14,7 @@
             </button>
         </div>
 
+        <!-- 👤 Tài khoản + Giỏ hàng -->
         <div class="account">
             <a mat-icon-button routerLink="/auth/sign-in" aria-label="Sign In">
                 <mat-icon>account_circle</mat-icon>
@@ -21,9 +26,7 @@
     </div>
 </div>
 
-<div class="head">
-    <div class="logo" routerLink="/">ALMA</div>
-</div>
+<!-- Navigation (menu bên dưới) -->
 <div class="navigation">
     <app-user-menu></app-user-menu>
 </div>

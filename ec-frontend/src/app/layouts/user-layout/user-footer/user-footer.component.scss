@@ -1,47 +1,61 @@
-@import "../../../../styles/param";
-@import "../../../../styles/common";
+footer {
+    background-color: #1f2937; // dark blue-gray
+    color: #f9fafb; // light text
+    padding: 3rem 1rem 1rem;
 
-:host {
-    background-color: #333434;
-    color: $whiteSmokeColor;
-}
+    .main-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
 
-.footer {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: $grid*3 0;
-}
+    .footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 2rem;
 
-h4 {
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin-bottom: $grid*2;
-    text-transform: uppercase;
-}
+        >div {
+            flex: 1 1 200px;
 
-ul {
-    list-style: none;
+            ul {
+                list-style: none;
+                padding: 0;
 
-    li {
-        font-size: 1rem;
-        margin: $grid 0;
+                li {
+                    margin-bottom: 0.75rem;
 
-        a {
-            color: $whiteSmokeColor;
-            text-decoration: none;
+                    h4 {
+                        font-size: 1.1rem;
+                        margin-bottom: 0.5rem;
+                        color: #fbbf24; // yellow-400
+                    }
 
-            &:hover {
-                color: $primaryColor;
+                    a {
+                        text-decoration: none;
+                        color: #d1d5db; // gray-300
+                        font-size: 0.95rem;
+                        transition: color 0.3s ease;
+
+                        &:hover {
+                            color: #fbbf24; // highlight
+                        }
+                    }
+                }
+            }
+        }
+
+        .copyright {
+            flex: 1 1 100%;
+            text-align: center;
+            margin-top: 2rem;
+            border-top: 1px solid #374151;
+            padding-top: 1rem;
+
+            p {
+                font-size: 0.85rem;
+                color: #9ca3af; // gray-400
             }
         }
     }
-}
-
-.copyright {
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
 }

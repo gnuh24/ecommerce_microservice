@@ -81,6 +81,9 @@ public class AuthServiceImpl implements AuthService {
 		accountCreateForm.setPassword(account.getPassword());
 		accountService.createAccount(accountCreateForm, profile);
 		
+		redisService.set(RedisConstants.USERNAME_EXIST + ":" + accountCreateForm.getUsername(), "true");
+		
+		
 		return accountService.activeAccount(account.getId());
 		
 	}
