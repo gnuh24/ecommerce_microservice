@@ -11,7 +11,7 @@
         <form (ngSubmit)="onSubmit()" #profileForm="ngForm">
             <mat-form-field appearance="outline" class="form-field" floatLabel="always">
                 <mat-label>Email</mat-label>
-                <input matInput type="email" [value]="profile.email" disabled />
+                <input matInput type="email" [value]="maskEmail(profile.email)" disabled />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
