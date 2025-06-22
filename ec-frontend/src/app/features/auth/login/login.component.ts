@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../service/auth.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { getMessageByCode } from '../../../core/system-error-code';
 
 @Component({
     selector: 'app-login',
@@ -52,13 +53,16 @@ export class LoginComponent implements OnInit {
                     this.router.navigate(['/home']);
                 },
                 error: (err) => {
-                    // Hiển thị lỗi từ backend trả về
+                    const code = err?.error?.code;
+                    const errorMessage = getMessageByCode(code);
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Đăng nhập thất bại',
-                        text: err.error.message || 'Lỗi không xác định'
+                        text: errorMessage,
                     });
                 }
+
             });
         }
     }

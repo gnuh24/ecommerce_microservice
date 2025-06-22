@@ -92,7 +92,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				}
 				
 			} catch (ExpiredJwtException e) {
-				log.warn(request, "⚠️ Token đã hết hạn. Chi tiết: {}", e.getMessage());
 				if (environmentUtils.isDevMode()) {
 					errorString = "Token đã hết hạn. ";
 				}
@@ -100,7 +99,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				
 				return;
 			} catch (SignatureException e) {
-				log.warn(request, "⚠️ Chữ ký JWT không hợp lệ. Chi tiết: {}", e.getMessage());
 				if (environmentUtils.isDevMode()) {
 					errorString = "Chữ ký JWT không hợp lệ.";
 				}
@@ -108,7 +106,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				
 				return;
 			} catch (UsernameNotFoundException e) {
-				log.warn(request, "⚠️ Không tìm thấy người dùng từ token. Chi tiết: {}", e.getMessage());
 				if (environmentUtils.isDevMode()) {
 					errorString = "Token chứa thông tin không tồn tại.";
 				}
@@ -116,7 +113,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				
 				return;
 			} catch (InvalidTokenTypeException e) {
-				log.warn(request, "⚠️ Token type không hợp lệ. Chi tiết: {}", e.getMessage());
 				if (environmentUtils.isDevMode()) {
 					errorString = "Access Token chứa type không đúng.";
 				}

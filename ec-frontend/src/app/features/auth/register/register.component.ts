@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { AuthService } from '../../../service/auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { tap, finalize } from 'rxjs/operators';
+import { getMessageByCode } from '../../../core/system-error-code';
 
 @Component({
     selector: 'app-register',
@@ -88,10 +88,13 @@ export class RegisterComponent implements OnInit {
                             },
                             error: (err) => {
                                 Swal.close();
+
+                                const code = err?.error?.code;
+                                const errorMessage = getMessageByCode(code);
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Lỗi đăng ký',
-                                    text: err.error.message || 'Có lỗi xảy ra, vui lòng thử lại.'
+                                    text: errorMessage,
                                 });
                             }
                         });
@@ -99,10 +102,12 @@ export class RegisterComponent implements OnInit {
                 },
                 error: (err) => {
                     Swal.close();
+                    const code = err?.error?.code;
+                    const errorMessage = getMessageByCode(code);
                     Swal.fire({
                         icon: 'error',
                         title: 'Lỗi kiểm tra email',
-                        text: err.error.message || 'Không thể kiểm tra email, vui lòng thử lại.'
+                        text: errorMessage,
                     });
                 }
             });

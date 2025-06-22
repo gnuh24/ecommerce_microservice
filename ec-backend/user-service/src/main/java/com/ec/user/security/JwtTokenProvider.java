@@ -74,9 +74,9 @@ public class JwtTokenProvider {
 		String encodedPayload = parts[1];
 		String payload = new String(Base64.getUrlDecoder().decode(encodedPayload), StandardCharsets.UTF_8);
 		
-		System.out.println("===== JWT Token Info =====");
-		System.out.println(payload);
-		System.out.println("==========================");
+		System.err.println("===== JWT Token Info =====");
+		System.err.println(payload);
+		System.err.println("==========================");
 	}
 	
 	

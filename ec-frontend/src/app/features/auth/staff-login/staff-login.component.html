@@ -1,19 +1,19 @@
 <div class="auth-layout">
     <div class="auth-container">
-        <h1 class="auth-title">Đăng nhập cho nhân viên</h1>
+        <h1 class="auth-title">Đăng nhập nhân viên</h1>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
 
             <!-- Email -->
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
-                <input matInput formControlName="username" type="email" required placeholder="VD: email@gmail.com" />
+                <input matInput formControlName="username" type="email" required placeholder="VD: email@company.com" />
 
                 <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
                     Vui lòng nhập email
                 </mat-error>
                 <mat-error *ngIf="loginForm.get('username')?.hasError('email')">
-                    Email không đúng định dạng. Ví dụ: <strong>email&#64;gmail.com</strong>1
+                    Email không đúng định dạng. Ví dụ: <strong>email&#64;company.com</strong>
                 </mat-error>
             </mat-form-field>
 
@@ -39,7 +39,6 @@
                 class="custom-login-btn">
                 Đăng nhập
             </button>
-
         </form>
 
         <!-- Các liên kết phụ -->
