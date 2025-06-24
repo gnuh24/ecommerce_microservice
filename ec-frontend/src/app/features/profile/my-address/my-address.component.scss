@@ -1,22 +1,9 @@
-.profile-container {
-    display: flex;
-    gap: 24px;
-    padding: 24px;
-}
-
-
-.profile-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
 .address-form {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
     align-items: center;
+    margin: 16px 0;
 
     .form-field {
         width: 300px;
@@ -24,14 +11,34 @@
 }
 
 .address-list {
+    width: 95%;
+    max-height: 500px; // Bạn có thể tùy chỉnh chiều cao tối đa
+    overflow-y: auto;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    padding-right: 8px; // để không che mất nội dung bởi scrollbar
+
+    /* Thanh cuộn gọn gàng */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+    }
 
     .address-card {
-        padding: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 }
+
 
 .default-label {
     color: #1976d2;

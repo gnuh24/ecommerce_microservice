@@ -6,7 +6,10 @@ import Swal from 'sweetalert2';
     selector: 'app-my-profile',
     standalone: false,
     templateUrl: './my-profile.component.html',
-    styleUrls: ['./my-profile.component.scss']
+    styleUrls: [
+        './my-profile.component.scss',
+        '../profile.scss'
+    ]
 })
 export class MyProfileComponent implements OnInit {
     profile: any = {
@@ -81,4 +84,13 @@ export class MyProfileComponent implements OnInit {
             }
         });
     }
+
+    maskEmail(email: string): string {
+        if (!email) return '';
+        const [name, domain] = email.split('@');
+        const visible = name.slice(0, 2);
+        const masked = '*'.repeat(Math.max(0, name.length - 2));
+        return `${visible}${masked}@${domain}`;
+    }
+
 }

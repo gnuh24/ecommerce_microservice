@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../service/auth.service'; // Đường dẫn tùy vào project của bạn
+import { AuthService } from '../../../service/auth.service';
 import { interval, Subscription } from 'rxjs';
 
 interface UpdatePasswordForm {
@@ -12,46 +13,73 @@ interface UpdateEmailForm {
     otp: string;
     newEmail: string;
 }
+
 @Component({
     selector: 'app-my-account',
     standalone: false,
     templateUrl: './my-account.component.html',
-    styleUrls: ['./my-account.component.scss']
+    styleUrls: [
+        './my-account.component.scss',
+        '../profile.scss'
+    ]
 })
-export class MyAccountComponent {
+export class MyAccountComponent implements OnInit {
     profile = {
-        email: 'example@example.com' // load từ API thực tế
+        email: 'example@example.com'
     };
 
-    newEmail = '';
-    currentPassword = '';
-    newPassword = '';
-    confirmPassword = '';
+    emailForm!: FormGroup;
+    otpForm!: FormGroup;
+    passwordForm!: FormGroup;
 
-    otpCode = '';
     emailLoading = false;
     otpSent = false;
 
     countdown = 0;
     private countdownSub?: Subscription;
 
-    constructor(private authService: AuthService) {
+    constructor(private fb: FormBuilder, private authService: AuthService) {
         const storedEmail = sessionStorage.getItem('username');
         if (storedEmail) {
             this.profile.email = storedEmail;
         }
     }
 
-    onUpdateEmail() {
-        if (!this.newEmail) return;
+    ngOnInit(): void {
+        this.emailForm = this.fb.group({
+            newEmail: ['', [Validators.required, Validators.email]]
+        });
 
+        this.otpForm = this.fb.group({
+            otp: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
+            currentPassword: ['', [Validators.required, Validators.minLength(6)]]
+        });
+
+        this.passwordForm = this.fb.group({
+            currentPassword: ['', [Validators.required, Validators.minLength(6)]],
+            newPassword: ['', [Validators.required, Validators.minLength(6)]],
+            confirmPassword: ['', Validators.required]
+        });
+    }
+
+    onUpdateEmail() {
+        if (this.emailForm.invalid) return;
+
+        const newEmail = this.emailForm.value.newEmail;
         this.emailLoading = true;
 
-        // Bước 1: Kiểm tra email có tồn tại chưa
-        this.authService.checkUsernameExists(this.newEmail).subscribe({
-            next: (exists) => {
+        Swal.fire({
+            title: 'Đang kiểm tra email...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
+        this.authService.checkUsernameExists(newEmail).subscribe({
+            next: (exists) => {
                 if (exists.data) {
+                    Swal.close();
                     Swal.fire({
                         icon: 'error',
                         title: 'Email đã tồn tại',
@@ -61,20 +89,21 @@ export class MyAccountComponent {
                     return;
                 }
 
-                // Bước 2: Gửi OTP
-                this.authService.resendUpdateEmailOtp(this.newEmail).subscribe({
+                this.authService.resendUpdateEmailOtp(newEmail).subscribe({
                     next: () => {
                         this.emailLoading = false;
                         this.otpSent = true;
                         this.startCountdown();
+                        Swal.close();
                         Swal.fire({
                             icon: 'success',
                             title: 'Đã gửi mã OTP',
-                            text: `Vui lòng kiểm tra email: ${this.newEmail}.`
+                            text: `Vui lòng kiểm tra email: ${newEmail}.`
                         });
                     },
                     error: () => {
                         this.emailLoading = false;
+                        Swal.close();
                         Swal.fire({
                             icon: 'error',
                             title: 'Thất bại',
@@ -85,6 +114,7 @@ export class MyAccountComponent {
             },
             error: () => {
                 this.emailLoading = false;
+                Swal.close();
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi kiểm tra email',
@@ -95,9 +125,20 @@ export class MyAccountComponent {
     }
 
     resendOTP() {
-        this.authService.resendUpdateEmailOtp(this.newEmail).subscribe({
+        const newEmail = this.emailForm.value.newEmail;
+
+        Swal.fire({
+            title: 'Đang gửi lại OTP...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        this.authService.resendUpdateEmailOtp(newEmail).subscribe({
             next: () => {
                 this.startCountdown();
+                Swal.close();
                 Swal.fire({
                     icon: 'success',
                     title: 'Đã gửi lại mã OTP',
@@ -105,6 +146,7 @@ export class MyAccountComponent {
                 });
             },
             error: () => {
+                Swal.close();
                 Swal.fire({
                     icon: 'error',
                     title: 'Thất bại',
@@ -115,39 +157,51 @@ export class MyAccountComponent {
     }
 
     onVerifyOTP() {
-        const form: UpdateEmailForm = {
-            otp: this.otpCode,
-            newEmail: this.newEmail
+        if (this.otpForm.invalid) return;
+
+        Swal.fire({
+            title: 'Đang xác thực...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const form: UpdateEmailForm & { currentPassword: string } = {
+            otp: this.otpForm.value.otp,
+            newEmail: this.emailForm.value.newEmail,
+            currentPassword: this.otpForm.value.currentPassword
         };
 
         this.authService.updateEmail(form).subscribe({
             next: () => {
+                Swal.close();
                 Swal.fire({
                     icon: 'success',
                     title: 'Thành công',
                     text: 'Email đã được cập nhật! Vui lòng đăng nhập lại.'
                 }).then(() => {
-                    this.profile.email = this.newEmail;
+                    this.profile.email = this.emailForm.value.newEmail;
                     this.otpSent = false;
-                    this.newEmail = '';
-                    this.otpCode = '';
+                    this.emailForm.reset();
+                    this.otpForm.reset();
                     this.stopCountdown();
-
                     this.authService.logout();
                 });
             },
             error: (err) => {
+                Swal.close();
                 Swal.fire({
                     icon: 'error',
-                    title: 'OTP không hợp lệ',
-                    text: err.error?.message || 'Vui lòng kiểm tra lại.'
+                    title: 'Thất bại',
+                    text: err.error?.message || 'OTP hoặc mật khẩu không hợp lệ.'
                 });
             }
         });
     }
 
     startCountdown() {
-        this.countdown = 180; // 180s = 3 phút
+        this.countdown = 180;
         this.stopCountdown();
         this.countdownSub = interval(1000).subscribe(() => {
             this.countdown--;
@@ -162,7 +216,11 @@ export class MyAccountComponent {
     }
 
     onUpdatePassword() {
-        if (this.newPassword !== this.confirmPassword) {
+        if (this.passwordForm.invalid) return;
+
+        const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
+
+        if (newPassword !== confirmPassword) {
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi',
@@ -171,25 +229,31 @@ export class MyAccountComponent {
             return;
         }
 
+        Swal.fire({
+            title: 'Đang đổi mật khẩu...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         const form: UpdatePasswordForm = {
-            oldPassword: this.currentPassword,
-            newPassword: this.newPassword
+            oldPassword: currentPassword,
+            newPassword: newPassword
         };
 
         this.authService.updatePassword(form).subscribe({
             next: () => {
+                Swal.close();
                 Swal.fire({
                     icon: 'success',
                     title: 'Thành công',
                     text: 'Đổi mật khẩu thành công!'
                 });
-
-                // Reset form
-                this.currentPassword = '';
-                this.newPassword = '';
-                this.confirmPassword = '';
+                this.passwordForm.reset();
             },
             error: (err) => {
+                Swal.close();
                 Swal.fire({
                     icon: 'error',
                     title: 'Thất bại',

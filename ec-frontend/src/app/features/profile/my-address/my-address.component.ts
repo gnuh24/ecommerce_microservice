@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Address, AddressService } from '../../../service/address.service';
 import Swal from 'sweetalert2';
+import { MatDialog } from '@angular/material/dialog';
+import { AddressFormDialogComponent } from '../address-form-dialog/address-form-dialog.component';
 
 @Component({
     selector: 'app-my-address',
     standalone: false,
     templateUrl: './my-address.component.html',
-    styleUrls: ['./my-address.component.scss']
+    styleUrls: [
+        './my-address.component.scss',
+        '../profile.scss'
+    ]
 })
 export class MyAddressComponent implements OnInit {
     addresses: Address[] = [];
@@ -20,7 +25,10 @@ export class MyAddressComponent implements OnInit {
     editingAddressId: string | null = null;
     editedAddress: Partial<Address> = {};
 
-    constructor(private addressService: AddressService) { }
+    constructor(
+        private addressService: AddressService,
+        private dialog: MatDialog
+    ) { }
 
     ngOnInit() {
         this.loadAddresses();
@@ -37,31 +45,39 @@ export class MyAddressComponent implements OnInit {
         });
     }
 
-    toggleCreateForm() {
-        this.showCreateForm = !this.showCreateForm;
-    }
+    openDialog(isEdit: boolean, address?: Address) {
+        const dialogRef = this.dialog.open(AddressFormDialogComponent, {
+            width: '400px',
+            data: { address }
+        });
 
-    createAddress() {
-        if (!this.newAddress.fullName || !this.newAddress.phone || !this.newAddress.address) {
-            Swal.fire('Thiếu thông tin', 'Vui lòng điền đầy đủ các trường.', 'warning');
-            return;
-        }
-
-        this.isCreating = true;
-        this.addressService.createAddress(this.newAddress).subscribe({
-            next: () => {
-                this.newAddress = { fullName: '', phone: '', address: '' };
-                this.isCreating = false;
-                this.showCreateForm = false;
-                this.loadAddresses();
-                Swal.fire('Thành công', 'Đã thêm địa chỉ mới', 'success');
-            },
-            error: () => {
-                this.isCreating = false;
-                Swal.fire('Lỗi', 'Không thể thêm địa chỉ', 'error');
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                if (isEdit && address) {
+                    this.addressService.updateAddress(address.id, result).subscribe({
+                        next: () => {
+                            this.loadAddresses();
+                            Swal.fire('Thành công', 'Cập nhật địa chỉ thành công', 'success');
+                        },
+                        error: () => {
+                            Swal.fire('Lỗi', 'Không thể cập nhật địa chỉ', 'error');
+                        }
+                    });
+                } else {
+                    this.addressService.createAddress(result).subscribe({
+                        next: () => {
+                            this.loadAddresses();
+                            Swal.fire('Thành công', 'Đã thêm địa chỉ mới', 'success');
+                        },
+                        error: () => {
+                            Swal.fire('Lỗi', 'Không thể thêm địa chỉ', 'error');
+                        }
+                    });
+                }
             }
         });
     }
+
 
     setDefaultAddress(address: Address) {
         this.addressService.setDefault(address.id).subscribe({
@@ -98,28 +114,4 @@ export class MyAddressComponent implements OnInit {
         });
     }
 
-    startEdit(address: Address) {
-        this.editingAddressId = address.id;
-        this.editedAddress = { ...address };
-    }
-
-    cancelEdit() {
-        this.editingAddressId = null;
-        this.editedAddress = {};
-    }
-
-    updateAddress() {
-        if (!this.editingAddressId) return;
-
-        this.addressService.updateAddress(this.editingAddressId, this.editedAddress).subscribe({
-            next: () => {
-                this.loadAddresses();
-                this.cancelEdit();
-                Swal.fire('Thành công', 'Cập nhật địa chỉ thành công', 'success');
-            },
-            error: () => {
-                Swal.fire('Lỗi', 'Không thể cập nhật địa chỉ', 'error');
-            }
-        });
-    }
 }

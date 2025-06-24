@@ -2,8 +2,8 @@ package com.ec.user.exceptions.JwtException;
 
 import org.springframework.security.core.AuthenticationException;
 
-public class TokenExpiredException extends AuthenticationException {
-	public TokenExpiredException(String message) {
+public class AccessTokenExpiredException extends AuthenticationException {
+	public AccessTokenExpiredException(String message) {
 		super(message);
 	}
 }

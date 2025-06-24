@@ -8,7 +8,9 @@ import com.ec.user.dto.profile.ProfileCreateForm;
 import com.ec.user.entity.Account;
 import com.ec.user.entity.Profile;
 import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
+import com.ec.user.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.user.exceptions.JwtException.*;
+import com.ec.user.exceptions.otpException.OtpNotFoundException;
 import com.ec.user.integration.redis.RedisConstants;
 import com.ec.user.integration.redis.RedisService;
 import com.ec.user.security.JwtTokenProvider;
@@ -50,15 +52,23 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private ProfileService profileService;
-//
-//	@Autowired
-//	private AuthExceptionHandler authExceptionHandler;
+	
+	@Autowired
+	private AppLogger log;
+	
+	@Autowired
+	private EnvironmentUtils environmentUtils;
+	
+	@Autowired
+	private AuthExceptionHandler authExceptionHandler;
 	
 	@Autowired
 	private EmailService emailService;
 	
 	@Autowired
 	private RedisService redisService;
+	
+	
 	
 	@Override
 	@Transactional
@@ -67,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 		AccountRedisDTO account = (AccountRedisDTO) redisService.get(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp);
 		
 		if (account == null) {
-			throw new RuntimeException("OTP không tồn tại hoặc đã hết hạn sử dụng !");
+			throw new OtpNotFoundException("OTP không tồn tại hoặc đã hết hạn sử dụng !");
 		}
 		
 		ProfileCreateForm profileCreateForm = new ProfileCreateForm();
@@ -80,6 +90,9 @@ public class AuthServiceImpl implements AuthService {
 		accountCreateForm.setUsername(account.getUsername());
 		accountCreateForm.setPassword(account.getPassword());
 		accountService.createAccount(accountCreateForm, profile);
+		
+		redisService.set(RedisConstants.USERNAME_EXIST + ":" + accountCreateForm.getUsername(), "true");
+		
 		
 		return accountService.activeAccount(account.getId());
 		
@@ -134,14 +147,7 @@ public class AuthServiceImpl implements AuthService {
 		return buildAuthResponse(user);
 	}
 	
-	@Autowired
-	private AppLogger log;
-	
-	@Autowired
-	private EnvironmentUtils environmentUtils;
-	
-	@Autowired
-	private AuthExceptionHandler authExceptionHandler;
+
 	
 	@Override
 	@Transactional
@@ -149,7 +155,6 @@ public class AuthServiceImpl implements AuthService {
 //		if (accountService.isEmailExists(userRegistrationForm.getEmail())) {
 //			throw new RuntimeException("Email :" + userRegistrationForm.getEmail() + " đã tồn tại trong hệ thống !");
 //		}
-		
 		
 		String accountId = IdGenerator.generateId();
 		redisService.set(RedisConstants.USERNAME_EXIST + ":" + userRegistrationForm.getUsername(), "true", 5, TimeUnit.MINUTES);
@@ -184,7 +189,7 @@ public class AuthServiceImpl implements AuthService {
 		String otpRedis = redisService.get(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username).toString();
 		
 		if (!otpRedis.equals(form.getOtp())) {
-			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
+			throw new OtpNotFoundException("OTP không hợp lệ hoặc đã hết hạn!");
 		}
 		
 		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
@@ -198,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
 		Account account = (Account) authentication.getPrincipal();
 		
 		if (!passwordEncoder.matches(form.getOldPassword(), account.getPassword())) {
-			throw new RuntimeException("Mật khẩu cũ không đúng !!");
+			throw new StepUpAuthenticationException("Mật khẩu hiện không đúng !!");
 		}
 		
 		String newPassword = passwordEncoder.encode(form.getNewPassword());
@@ -220,12 +225,17 @@ public class AuthServiceImpl implements AuthService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Account account = (Account) authentication.getPrincipal();
 		
+		if (!passwordEncoder.matches(form.getCurrentPassword(), account.getPassword())) {
+			throw new StepUpAuthenticationException("Mật khẩu hiện tại không đúng.");
+		}
+		
 		String otpRedis = redisService.get(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail()).toString();
 		if (!otpRedis.equals(form.getOtp())) {
-			throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn!");
+			throw new OtpNotFoundException("OTP không hợp lệ hoặc đã hết hạn!");
 		}
-		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
 		
+		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + form.getNewEmail());
+
 		
 		String currentEmail = account.getUsername();
 		redisService.delete(RedisConstants.USERNAME_EXIST + ":" + currentEmail);
@@ -288,7 +298,6 @@ public class AuthServiceImpl implements AuthService {
 				throw new InvalidTokenTypeException("Token có type không hợp lệ.");
 			}
 			
-			
 			String emailFromRefreshToken = jwtTokenProvider.getUsername(refreshToken);
 			
 			//Tìm tài khoản dựa trên Email
@@ -308,31 +317,15 @@ public class AuthServiceImpl implements AuthService {
 			response.setRefreshTokenExpirationTime("7 ngày");
 			
 		} catch (ExpiredJwtException e) {
-			log.warn(request, "⚠️ Token đã hết hạn. Chi tiết: {}", e.getMessage());
-			if (environmentUtils.isDevMode()) {
-				errorString = "Token đã hết hạn. ";
-			}
-			throw new TokenExpiredException(errorString);
+			throw new RefreshTokenExpiredException(errorString);
 			
 		} catch (SignatureException e) {
-			log.warn(request, "⚠️ Chữ ký JWT không hợp lệ. Chi tiết: {}", e.getMessage());
-			if (environmentUtils.isDevMode()) {
-				errorString = "Chữ ký JWT không hợp lệ.";
-			}
 			throw new InvalidJWTSignatureException(errorString);
 			
 		} catch (UsernameNotFoundException e) {
-			log.warn(request, "⚠️ Không tìm thấy người dùng từ token. Chi tiết: {}", e.getMessage());
-			if (environmentUtils.isDevMode()) {
-				errorString = "Token chứa thông tin không tồn tại.";
-			}
 			throw new UsernameNotFound(errorString);
 			
 		} catch (InvalidTokenTypeException e) {
-			log.warn(request, "⚠️ Token type không hợp lệ. Chi tiết: {}", e.getMessage());
-			if (environmentUtils.isDevMode()) {
-				errorString = "Token chứa type không đúng.";
-			}
 			throw new InvalidTokenTypeException(errorString);
 		}
 		

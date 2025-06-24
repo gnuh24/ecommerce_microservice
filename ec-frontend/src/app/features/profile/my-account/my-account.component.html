@@ -1,69 +1,112 @@
 <div class="profile-container">
-    <!-- Menu trái -->
     <app-profile-menu></app-profile-menu>
 
-
-    <!-- Nội dung phải -->
     <div class="profile-content">
+        <h1 class="profile-title">Cập nhật email / mật khẩu</h1>
+        <hr class="section-divider" />
 
-        <!-- Cập nhật email -->
-        <form (ngSubmit)="onUpdateEmail()" #emailForm="ngForm" class="account-form" *ngIf="!otpSent">
-            <h3>Cập nhật Email</h3>
+        <div class="form-wrapper">
+            <!-- Bên trái -->
+            <div class="left-form">
+                <!-- Nếu chưa gửi OTP -->
+                <form [formGroup]="emailForm" (ngSubmit)="onUpdateEmail()" class="account-form" *ngIf="!otpSent">
+                    <h3>Cập nhật Email</h3>
 
-            <mat-form-field appearance="outline" class="form-field" floatLabel="always">
-                <mat-label>Email hiện tại</mat-label>
-                <input matInput [value]="profile.email" disabled />
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field" floatLabel="always">
+                        <mat-label>Email hiện tại</mat-label>
+                        <input matInput [value]="profile.email" disabled />
+                    </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field" floatLabel="always">
-                <mat-label>Email mới</mat-label>
-                <input matInput [(ngModel)]="newEmail" name="newEmail" type="email" required />
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field" floatLabel="always">
+                        <mat-label>Email mới</mat-label>
+                        <input matInput formControlName="newEmail" type="email" />
+                        <mat-error *ngIf="emailForm.get('newEmail')?.hasError('required')">
+                            Vui lòng nhập email mới
+                        </mat-error>
+                        <mat-error *ngIf="emailForm.get('newEmail')?.hasError('email')">
+                            Email không đúng định dạng
+                        </mat-error>
+                    </mat-form-field>
 
-            <button mat-raised-button color="primary" type="submit" [disabled]="emailLoading">
-                {{ emailLoading ? 'Đang kiểm tra...' : 'Cập nhật Email' }}
-            </button>
-        </form>
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="emailLoading || emailForm.invalid">
+                        {{ emailLoading ? 'Đang kiểm tra...' : 'Cập nhật Email' }}
+                    </button>
+                </form>
 
-        <!-- Nhập mã OTP -->
-        <div *ngIf="otpSent" class="account-form">
-            <h3>Nhập mã xác thực OTP</h3>
+                <!-- Nếu đã gửi OTP -->
+                <form [formGroup]="otpForm" class="account-form" *ngIf="otpSent">
+                    <h3>Nhập mã xác thực OTP</h3>
 
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Mã OTP</mat-label>
-                <input matInput [(ngModel)]="otpCode" name="otpCode" required />
-            </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Mã OTP</mat-label>
+                        <input matInput formControlName="otp" />
+                        <mat-error *ngIf="otpForm.get('otp')?.hasError('required')">
+                            Vui lòng nhập mã OTP
+                        </mat-error>
+                        <mat-error
+                            *ngIf="otpForm.get('otp')?.hasError('minlength') || otpForm.get('otp')?.hasError('maxlength')">
+                            Mã OTP phải đúng 6 ký tự
+                        </mat-error>
+                    </mat-form-field>
 
-            <button mat-raised-button color="primary" (click)="onVerifyOTP()">Xác nhận OTP</button>
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Mật khẩu hiện tại</mat-label>
+                        <input matInput formControlName="currentPassword" type="password" />
+                        <mat-error *ngIf="otpForm.get('currentPassword')?.hasError('required')">
+                            Vui lòng nhập mật khẩu
+                        </mat-error>
+                        <mat-error *ngIf="otpForm.get('currentPassword')?.hasError('minlength')">
+                            Mật khẩu phải có ít nhất 6 ký tự
+                        </mat-error>
+                    </mat-form-field>
 
-            <button mat-button color="accent" (click)="resendOTP()" [disabled]="countdown > 0">
-                Gửi lại OTP ({{ countdown > 0 ? countdown + 's' : 'Gửi lại' }})
-            </button>
+                    <button mat-raised-button color="primary" type="button" (click)="onVerifyOTP()"
+                        [disabled]="otpForm.invalid">Xác nhận OTP</button>
+
+                    <button mat-button color="accent" type="button" (click)="resendOTP()" [disabled]="countdown > 0">
+                        Gửi lại OTP ({{ countdown > 0 ? countdown + 's' : 'Gửi lại' }})
+                    </button>
+                </form>
+            </div>
+
+            <!-- Bên phải -->
+            <form [formGroup]="passwordForm" (ngSubmit)="onUpdatePassword()" class="account-form right-form">
+                <h3>Đổi Mật Khẩu</h3>
+
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Mật khẩu hiện tại</mat-label>
+                    <input matInput formControlName="currentPassword" type="password" />
+                    <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                        Vui lòng nhập mật khẩu hiện tại
+                    </mat-error>
+                    <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('minlength')">
+                        Mật khẩu phải có ít nhất 6 ký tự
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Mật khẩu mới</mat-label>
+                    <input matInput formControlName="newPassword" type="password" />
+                    <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                        Vui lòng nhập mật khẩu mới
+                    </mat-error>
+                    <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                        Mật khẩu phải có ít nhất 6 ký tự
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Xác nhận mật khẩu mới</mat-label>
+                    <input matInput formControlName="confirmPassword" type="password" />
+                    <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                        Vui lòng xác nhận mật khẩu mới
+                    </mat-error>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="passwordForm.invalid">Đổi mật
+                    khẩu</button>
+            </form>
         </div>
-
-        <hr />
-
-        <!-- Cập nhật mật khẩu -->
-        <form (ngSubmit)="onUpdatePassword()" #passwordForm="ngForm" class="account-form">
-            <h3>Đổi Mật Khẩu</h3>
-
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Mật khẩu hiện tại</mat-label>
-                <input matInput [(ngModel)]="currentPassword" name="currentPassword" type="password" required />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Mật khẩu mới</mat-label>
-                <input matInput [(ngModel)]="newPassword" name="newPassword" type="password" required />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Xác nhận mật khẩu mới</mat-label>
-                <input matInput [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required />
-            </mat-form-field>
-
-            <button mat-raised-button color="primary" type="submit">Đổi mật khẩu</button>
-        </form>
-
     </div>
 </div>

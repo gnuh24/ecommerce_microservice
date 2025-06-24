@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { getMessageByCode, SystemErrorCode } from '../core/system-error-code';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -48,7 +49,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(authReq).pipe(
             catchError((error: HttpErrorResponse) => {
-                if (error.status === 401) {
+                if (error.error.code === SystemErrorCode.AUTH_EXPIRED_TOKEN.code) {
                     return this.handle401Error(authReq, next);
                 }
                 return throwError(() => error);

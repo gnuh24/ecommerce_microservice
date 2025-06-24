@@ -5,10 +5,13 @@
 
     <!-- Nội dung phải -->
     <div class="profile-content">
+        <h1 class="profile-title">Thông tin cá nhân</h1>
+        <hr class="section-divider" />
+
         <form (ngSubmit)="onSubmit()" #profileForm="ngForm">
             <mat-form-field appearance="outline" class="form-field" floatLabel="always">
                 <mat-label>Email</mat-label>
-                <input matInput type="email" [value]="profile.email" disabled />
+                <input matInput type="email" [value]="maskEmail(profile.email)" disabled />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">

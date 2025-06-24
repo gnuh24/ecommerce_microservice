@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../service/auth.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { getMessageByCode } from '../../../core/system-error-code';
 
 @Component({
     selector: 'app-forgot-password',
@@ -58,15 +59,21 @@ export class ForgotPasswordComponent implements OnInit {
                             },
                             error: (err) => {
                                 Swal.close(); // Đóng loading
+
+                                const code = err?.error?.code;
+                                const errorMessage = getMessageByCode(code);
+
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Thất bại',
-                                    text: err.error.message || 'Không thể gửi OTP.'
+                                    text: errorMessage || 'Không thể gửi OTP.'
                                 });
                             }
                         });
                     } else {
                         Swal.close(); // Đóng loading
+
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Thất bại',
@@ -76,10 +83,14 @@ export class ForgotPasswordComponent implements OnInit {
                 },
                 error: (err) => {
                     Swal.close(); // Đóng loading
+
+                    const code = err?.error?.code;
+                    const errorMessage = getMessageByCode(code);
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Thất bại',
-                        text: err.error.message || 'Email không tồn tại trong hệ thống.'
+                        text: errorMessage,
                     });
                 }
             });

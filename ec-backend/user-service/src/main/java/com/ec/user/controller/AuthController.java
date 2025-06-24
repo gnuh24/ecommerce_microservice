@@ -36,9 +36,6 @@ public class AuthController {
 	
 	@Autowired
 	private AccountService accountService;
-
-//		@Autowired
-//		private OTPService otpService;
 	
 	@Autowired
 	private ModelMapper modelMapper;

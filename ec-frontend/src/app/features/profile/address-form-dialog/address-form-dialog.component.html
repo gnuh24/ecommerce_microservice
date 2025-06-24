@@ -1,0 +1,40 @@
+<h2 class="title-form" mat-dialog-title>{{ data.address ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới' }}</h2>
+<form [formGroup]="addressForm" (ngSubmit)="onSubmit()" class="dialog-form">
+
+    <!-- Họ tên -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Họ tên</mat-label>
+        <input matInput formControlName="fullName" />
+        <mat-error *ngIf="addressForm.get('fullName')?.hasError('required') && addressForm.get('fullName')?.touched">
+            Vui lòng nhập họ tên
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Số điện thoại -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Số điện thoại</mat-label>
+        <input matInput formControlName="phone" />
+        <mat-error *ngIf="addressForm.get('phone')?.hasError('required') && addressForm.get('phone')?.touched">
+            Vui lòng nhập số điện thoại
+        </mat-error>
+        <mat-error *ngIf="addressForm.get('phone')?.hasError('pattern') && addressForm.get('phone')?.touched">
+            Số điện thoại không hợp lệ
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Địa chỉ -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Địa chỉ</mat-label>
+        <input matInput formControlName="address" />
+        <mat-error *ngIf="addressForm.get('address')?.hasError('required') && addressForm.get('address')?.touched">
+            Vui lòng nhập địa chỉ
+        </mat-error>
+    </mat-form-field>
+
+    <div mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">Hủy</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="addressForm.invalid">
+            {{ data.address ? 'Cập nhật' : 'Thêm mới' }}
+        </button>
+    </div>
+</form>

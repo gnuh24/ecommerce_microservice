@@ -1,0 +1,16 @@
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 1.5rem 2.5rem;
+
+    .form-field {
+        width: 100%;
+    }
+}
+
+.title-form {
+    padding: 1.5rem;
+    text-align: center;
+    color: #333;
+}

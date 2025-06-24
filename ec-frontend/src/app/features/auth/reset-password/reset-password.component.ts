@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../service/auth.service';
+import { getMessageByCode } from '../../../core/system-error-code';
 
 @Component({
     selector: 'app-reset-password',
@@ -71,7 +72,14 @@ export class ResetPasswordComponent implements OnInit {
                     this.router.navigate(['/auth/login']);
                 },
                 error: (err) => {
-                    Swal.fire('Lỗi', err.error.message || 'Không thể đặt lại mật khẩu', 'error');
+                    const code = err?.error?.code;
+                    const errorMessage = getMessageByCode(code);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Không thể đặt lại mật khẩu',
+                        text: errorMessage,
+                    });
                 }
             });
         }
@@ -84,7 +92,14 @@ export class ResetPasswordComponent implements OnInit {
                 this.startCountdown();
             },
             error: (err) => {
-                Swal.fire('Lỗi', err.error.message || 'Không thể gửi lại OTP', 'error');
+                const code = err?.error?.code;
+                const errorMessage = getMessageByCode(code);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể gửi lại OTP',
+                    text: errorMessage,
+                });
             }
         });
     }
