@@ -87,7 +87,7 @@ INSERT INTO `Category` (`id`, `categoryName`) VALUES
 
 CREATE TABLE `Brand` (
     `id`            VARCHAR(10) PRIMARY KEY,
-    `name`          VARCHAR(100) NOT NULL UNIQUE,
+    `brandName`          VARCHAR(100) NOT NULL UNIQUE,
     `productCount`  INT DEFAULT 0,
     
     `createdAt`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -96,7 +96,7 @@ CREATE TABLE `Brand` (
     `isDeleted`     BOOLEAN DEFAULT FALSE
 );
 
-INSERT INTO `Brand` (`id`, `name`) VALUES
+INSERT INTO `Brand` (`id`, `brandName`) VALUES
 ('B001', 'Thương hiệu khác'),
 ('B002', 'Johnnie Walker'),
 ('B003', 'Absolut'),

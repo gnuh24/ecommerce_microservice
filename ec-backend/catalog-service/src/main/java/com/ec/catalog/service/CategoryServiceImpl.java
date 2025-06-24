@@ -31,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> getAllCategoryNoPaging() {
-	return categoryRepository.findAll();
+	return categoryRepository.findAllByIsDeletedFalse();
     }
 
 //    @Override
