@@ -113,7 +113,7 @@ INSERT INTO `Brand` (`id`, `brandName`) VALUES
 
 CREATE TABLE `Product` (
     `id`            VARCHAR(10) PRIMARY KEY,
-    `name`          VARCHAR(255) NOT NULL,
+    `productName`   VARCHAR(255) NOT NULL,
     `slug`          VARCHAR(255) NOT NULL UNIQUE,
     `description`   TEXT,
     `vintage`       YEAR,
@@ -132,14 +132,14 @@ CREATE TABLE `Product` (
 
 
 INSERT INTO `Product` (
-    `id`, `name`, `slug`, `description`, `vintage`, `alcohol`, `region`, `isPublished`,
+    `id`, `productName`, `slug`, `description`, `vintage`, `alcohol`, `region`, `isPublished`,
     `createdAt`, `updatedAt`, `isDeleted`, `deletedAt`, `categoryId`, `brandId`
 ) VALUES
 ('P001', 'Johnnie Walker Blue Label', 'johnnie-walker-blue-label', 'Dòng whisky thượng hạng với hương vị đậm đà và mượt mà.', 2020, 40.00, 'Scotland', TRUE, NOW(), NOW(), FALSE, NULL, 'C002', 'B002'),
 
 ('P002', 'Absolut Vodka Original', 'absolut-vodka-original', 'Vodka Thụy Điển nguyên chất, không có chất phụ gia.', 2022, 40.00, 'Sweden', TRUE, NOW(), NOW(), FALSE, NULL, 'C003', 'B003'),
 
-('P003', 'Hennessy VSOP', 'hennessy-vsop', 'Cognac Pháp nổi tiếng với hương thơm trái cây và vị cay nhẹ.', 2019, 40.00, 'France', TRUE, NOW(), NOW(), FALSE, NULL, 'C011', 'B006'),
+('P003', 'Hennessy VSOP', 'hennessy-vsop', 'Cognac Pháp nổi tiếng với hương thơm trái cây và vị cay nhẹ.', 2019, 40.00, 'France', FALSE, NOW(), NOW(), FALSE, NULL, 'C011', 'B006'),
 
 ('P004', 'Moët & Chandon Brut Impérial', 'moet-chandon-brut-imperial', 'Champagne nổi tiếng đến từ Pháp, mang phong cách tươi mới.', 2021, 12.00, 'France', TRUE, NOW(), NOW(), FALSE, NULL, 'C008', 'B008'),
 
@@ -176,7 +176,7 @@ INSERT INTO `ProductVariant` (
     `isPublished`, `isDeleted`, `createdAt`, `updatedAt`, `deletedAt`
 ) VALUES
 ('V001', 'P001', 700, 4500000, 20, TRUE, FALSE, NOW(), NOW(), NULL),
-('V002', 'P002', 750, 400000, 100, TRUE, FALSE, NOW(), NOW(), NULL),
+('V002', 'P001', 750, 400000, 100, TRUE, FALSE, NOW(), NOW(), NULL),
 ('V003', 'P003', 700, 2300000, 30, TRUE, FALSE, NOW(), NOW(), NULL),
 ('V004', 'P004', 750, 1800000, 50, TRUE, FALSE, NOW(), NOW(), NULL),
 ('V005', 'P005', 750, 5200000, 10, TRUE, FALSE, NOW(), NOW(), NULL),

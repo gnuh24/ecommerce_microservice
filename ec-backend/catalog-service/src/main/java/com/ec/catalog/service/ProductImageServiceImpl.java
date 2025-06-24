@@ -1,0 +1,29 @@
+package com.ec.catalog.service;
+
+import com.ec.catalog.entity.ProductImage;
+import com.ec.catalog.repository.ProductImageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProductImageServiceImpl implements ProductImageService {
+	
+	@Autowired
+	private ProductImageRepository productImageRepository;
+	
+	@Override
+	public List<ProductImage> getAllByProductId(String productId) {
+		return productImageRepository.findByProductIdAndIsDeletedFalse(productId);
+	}
+	
+	@Override
+	public Optional<ProductImage> getThumbnailByProductId(String productId) {
+		return productImageRepository.findByProductIdAndIsDeletedFalse(productId)
+		    .stream()
+		    .filter(ProductImage::getIsThumbnail)
+		    .findFirst();
+	}
+}
