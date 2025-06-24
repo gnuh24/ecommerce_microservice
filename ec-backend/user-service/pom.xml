@@ -127,15 +127,6 @@
 		</dependency>
 
 
-
-		<!-- Spring Boot Redis (Dùng để lưu cache hoặc quản lý session) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-
-
-
 		<!-- SpringDoc OpenAPI (Dùng để tạo tài liệu API Swagger) -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

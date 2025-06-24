@@ -156,6 +156,64 @@ INSERT INTO `Product` (
 ('P010', 'Rượu vang Đà Lạt Classic', 'ruou-vang-da-lat-classic', 'Rượu vang đỏ sản xuất tại Việt Nam, thích hợp dùng hằng ngày.', 2022, 12.50, 'Vietnam - Đà Lạt', TRUE, NOW(), NOW(), FALSE, NULL, 'C009', 'B001');
 
 
+CREATE TABLE `ProductVariant` (
+    `id` 			VARCHAR(10) PRIMARY KEY,
+    `volume` 		INT NOT NULL, -- đơn vị ml, immutable
+    `price` 		DECIMAL(12,2) NOT NULL,
+    `quantity` 		INT NOT NULL DEFAULT 0,
+    `isPublished` 	BOOLEAN DEFAULT FALSE,
+    `isDeleted` 	BOOLEAN DEFAULT FALSE,
+    `createdAt` 	DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` 	DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt` 	DATETIME DEFAULT NULL,
+    
+	`productId` 	VARCHAR(10) NOT NULL,
+    FOREIGN KEY (`productId`) REFERENCES `Product`(`id`)
+);
+
+INSERT INTO `ProductVariant` (
+    `id`, `productId`, `volume`, `price`, `quantity`,
+    `isPublished`, `isDeleted`, `createdAt`, `updatedAt`, `deletedAt`
+) VALUES
+('V001', 'P001', 700, 4500000, 20, TRUE, FALSE, NOW(), NOW(), NULL),
+('V002', 'P002', 750, 400000, 100, TRUE, FALSE, NOW(), NOW(), NULL),
+('V003', 'P003', 700, 2300000, 30, TRUE, FALSE, NOW(), NOW(), NULL),
+('V004', 'P004', 750, 1800000, 50, TRUE, FALSE, NOW(), NOW(), NULL),
+('V005', 'P005', 750, 5200000, 10, TRUE, FALSE, NOW(), NOW(), NULL),
+('V006', 'P006', 700, 3200000, 25, TRUE, FALSE, NOW(), NOW(), NULL),
+('V007', 'P007', 700, 1600000, 70, TRUE, FALSE, NOW(), NOW(), NULL),
+('V008', 'P008', 700, 1400000, 40, TRUE, FALSE, NOW(), NOW(), NULL),
+('V009', 'P009', 700, 3900000, 15, TRUE, FALSE, NOW(), NOW(), NULL),
+('V010', 'P010', 750, 280000, 120, TRUE, FALSE, NOW(), NOW(), NULL);
+
+
+CREATE TABLE `ProductImage` (
+    `id` VARCHAR(10) PRIMARY KEY,
+    `productId` VARCHAR(10) NOT NULL,
+    `imageUrl` VARCHAR(1024) NOT NULL,
+    `isThumbnail` BOOLEAN DEFAULT FALSE,
+    `isDeleted` BOOLEAN DEFAULT FALSE,
+    `createdAt` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `deletedAt` DATETIME DEFAULT NULL,
+    FOREIGN KEY (`productId`) REFERENCES `Product`(`id`)
+);
+
+
+INSERT INTO `ProductImage` (
+    `id`, `productId`, `imageUrl`, `isThumbnail`, `isDeleted`, `createdAt`, `deletedAt`
+) VALUES
+('IMG001', 'P001', 'https://example.com/images/p001.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG002', 'P002', 'https://example.com/images/p002.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG003', 'P003', 'https://example.com/images/p003.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG004', 'P004', 'https://example.com/images/p004.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG005', 'P005', 'https://example.com/images/p005.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG006', 'P006', 'https://example.com/images/p006.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG007', 'P007', 'https://example.com/images/p007.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG008', 'P008', 'https://example.com/images/p008.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG009', 'P009', 'https://example.com/images/p009.jpg', TRUE, FALSE, NOW(), NULL),
+('IMG010', 'P010', 'https://example.com/images/p010.jpg', TRUE, FALSE, NOW(), NULL);
+
+
 
 
 
