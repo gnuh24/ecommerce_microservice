@@ -13,8 +13,8 @@ CREATE TABLE `Profile` (
 
 CREATE TABLE `Account` (
     `id` 			VARCHAR(255) 			PRIMARY KEY,
-    `createdAt` 	DATETIME 				NOT NULL,
-    `updatedAt` 	DATETIME 				NOT NULL,
+    `createdAt` 	TIMESTAMP 				NOT NULL,
+    `updatedAt` 	TIMESTAMP 				NOT NULL,
     `username` 		VARCHAR(255) 			NOT NULL UNIQUE,
     `password` 		VARCHAR(255) 			NOT NULL,
     `role` 			ENUM('ADMIN', 'USER') 	NOT NULL,
@@ -51,5 +51,117 @@ INSERT INTO `Address` (`id`, `address`, `isDefault`, `isDeleted`, `fullName`, `p
 ('A003', '789 Cách Mạng Tháng 8, Q.10',    false, false,  'Nguyễn Văn A', '0909123456', 'P002'),
 ('A004', '12 Phan Xích Long, Q. Phú Nhuận',false, false, 'Nguyễn Văn A', '0909123456', 'P002'),
 ('A005', '34 Trường Chinh, Q. Tân Bình',   false, true,  'Nguyễn Văn A', '0909123456', 'P002');
+
+
+
+
+
+
+
+ -- ___________________________________________________________ CATALOG SERVICE ______________________________________________________________
+ 
+CREATE TABLE `Category` (
+    `id` 			VARCHAR(10) PRIMARY KEY,
+    `name` 			VARCHAR(100) NOT NULL UNIQUE,
+    `productCount` 	INT DEFAULT 0,
+    
+    `createdAt` 	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` 	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt` 	TIMESTAMP NULL DEFAULT NULL,
+    `isDeleted` 	BOOLEAN DEFAULT FALSE
+);
+
+INSERT INTO `Category` (`id`, `name`) VALUES
+('C001', 'Loại sản phẩm khác'),
+('C002', 'Whisky'),
+('C003', 'Vodka'),
+('C004', 'Rum'),
+('C005', 'Tequila'),
+('C006', 'Brandy'),
+('C007', 'Gin'),
+('C008', 'Champagne'),
+('C009', 'Wine'),
+('C010', 'Sake'),
+('C011', 'Cognac');
+
+
+CREATE TABLE `Brand` (
+    `id`            VARCHAR(10) PRIMARY KEY,
+    `name`          VARCHAR(100) NOT NULL UNIQUE,
+    `productCount`  INT DEFAULT 0,
+    
+    `createdAt`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt`     TIMESTAMP NULL DEFAULT NULL,
+    `isDeleted`     BOOLEAN DEFAULT FALSE
+);
+
+INSERT INTO `Brand` (`id`, `name`) VALUES
+('B001', 'Thương hiệu khác'),
+('B002', 'Johnnie Walker'),
+('B003', 'Absolut'),
+('B004', 'Bacardi'),
+('B005', 'Patrón'),
+('B006', 'Hennessy'),
+('B007', 'Tanqueray'),
+('B008', 'Moët & Chandon'),
+('B009', 'Château Margaux'),
+('B010', 'Suntory'),
+('B011', 'Remy Martin');
+
+
+
+CREATE TABLE `Product` (
+    `id`            VARCHAR(10) PRIMARY KEY,
+    `name`          VARCHAR(255) NOT NULL,
+    `slug`          VARCHAR(255) NOT NULL UNIQUE,
+    `description`   TEXT,
+    `vintage`       YEAR,
+    `alcohol`       DECIMAL(5,2),
+    `region`        VARCHAR(100),
+    `isPublished`   BOOLEAN DEFAULT FALSE,
+    `createdAt`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deletedAt`     TIMESTAMP NULL DEFAULT NULL,
+    `isDeleted`     BOOLEAN DEFAULT FALSE,
+    `categoryId`    VARCHAR(10) NOT NULL,
+    `brandId`       VARCHAR(10) NOT NULL,
+    FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`),
+    FOREIGN KEY (`brandId`) REFERENCES `Brand`(`id`)
+);
+
+
+INSERT INTO `Product` (
+    `id`, `name`, `slug`, `description`, `vintage`, `alcohol`, `region`, `isPublished`,
+    `createdAt`, `updatedAt`, `isDeleted`, `deletedAt`, `categoryId`, `brandId`
+) VALUES
+('P001', 'Johnnie Walker Blue Label', 'johnnie-walker-blue-label', 'Dòng whisky thượng hạng với hương vị đậm đà và mượt mà.', 2020, 40.00, 'Scotland', TRUE, NOW(), NOW(), FALSE, NULL, 'C002', 'B002'),
+
+('P002', 'Absolut Vodka Original', 'absolut-vodka-original', 'Vodka Thụy Điển nguyên chất, không có chất phụ gia.', 2022, 40.00, 'Sweden', TRUE, NOW(), NOW(), FALSE, NULL, 'C003', 'B003'),
+
+('P003', 'Hennessy VSOP', 'hennessy-vsop', 'Cognac Pháp nổi tiếng với hương thơm trái cây và vị cay nhẹ.', 2019, 40.00, 'France', TRUE, NOW(), NOW(), FALSE, NULL, 'C011', 'B006'),
+
+('P004', 'Moët & Chandon Brut Impérial', 'moet-chandon-brut-imperial', 'Champagne nổi tiếng đến từ Pháp, mang phong cách tươi mới.', 2021, 12.00, 'France', TRUE, NOW(), NOW(), FALSE, NULL, 'C008', 'B008'),
+
+('P005', 'Château Margaux Grand Vin', 'chateau-margaux-grand-vin', 'Rượu vang đỏ cao cấp vùng Bordeaux, đậm đà và phức tạp.', 2018, 13.50, 'France - Bordeaux', TRUE, NOW(), NOW(), FALSE, NULL, 'C009', 'B009'),
+
+('P006', 'Suntory Hibiki Harmony', 'suntory-hibiki-harmony', 'Whisky Nhật Bản pha trộn tinh tế giữa truyền thống và hiện đại.', 2020, 43.00, 'Japan', TRUE, NOW(), NOW(), FALSE, NULL, 'C002', 'B010'),
+
+('P007', 'Patrón Silver Tequila', 'patron-silver-tequila', 'Tequila Mexico tinh khiết, thích hợp để uống nguyên chất hoặc pha chế.', 2021, 40.00, 'Mexico', TRUE, NOW(), NOW(), FALSE, NULL, 'C005', 'B005'),
+
+('P008', 'Tanqueray London Dry Gin', 'tanqueray-london-dry-gin', 'Gin nổi tiếng với hương vị mạnh mẽ và thanh thoát.', 2021, 47.30, 'England', TRUE, NOW(), NOW(), FALSE, NULL, 'C007', 'B007'),
+
+('P009', 'Remy Martin XO', 'remy-martin-xo', 'Dòng cognac hảo hạng với hương thơm trái cây khô và vani.', 2017, 40.00, 'France - Cognac', TRUE, NOW(), NOW(), FALSE, NULL, 'C011', 'B011'),
+
+('P010', 'Rượu vang Đà Lạt Classic', 'ruou-vang-da-lat-classic', 'Rượu vang đỏ sản xuất tại Việt Nam, thích hợp dùng hằng ngày.', 2022, 12.50, 'Vietnam - Đà Lạt', TRUE, NOW(), NOW(), FALSE, NULL, 'C009', 'B001');
+
+
+
+
+
+
+
+
+
 
 
