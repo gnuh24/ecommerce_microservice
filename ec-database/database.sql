@@ -62,7 +62,7 @@ INSERT INTO `Address` (`id`, `address`, `isDefault`, `isDeleted`, `fullName`, `p
  
 CREATE TABLE `Category` (
     `id` 			VARCHAR(10) PRIMARY KEY,
-    `name` 			VARCHAR(100) NOT NULL UNIQUE,
+    `categoryName` 			VARCHAR(100) NOT NULL UNIQUE,
     `productCount` 	INT DEFAULT 0,
     
     `createdAt` 	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -71,7 +71,7 @@ CREATE TABLE `Category` (
     `isDeleted` 	BOOLEAN DEFAULT FALSE
 );
 
-INSERT INTO `Category` (`id`, `name`) VALUES
+INSERT INTO `Category` (`id`, `categoryName`) VALUES
 ('C001', 'Loại sản phẩm khác'),
 ('C002', 'Whisky'),
 ('C003', 'Vodka'),
