@@ -1,21 +1,21 @@
-@import "./param";
+@use "./param";
 
 .main-wrapper {
-    box-sizing: border-box;
-    margin: 0 auto;
-    padding: 0 $grid;
-    width: 1180px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 0 param.$grid;
+  width: 1180px;
 }
 
 @media (max-width: 1200px) {
-    .main-wrapper {
-        padding: 0 $grid*3;
-        width: 100%;
-    }
+  .main-wrapper {
+    padding: 0 param.$grid * 3;
+    width: 100%;
+  }
 
-    @media (max-width: 500px) {
-        .main-wrapper {
-            padding: 0 $grid*2;
-        }
+  @media (max-width: 500px) {
+    .main-wrapper {
+      padding: 0 param.$grid * 2;
     }
+  }
 }

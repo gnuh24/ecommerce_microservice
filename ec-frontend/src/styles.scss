@@ -1,4 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+$color-white: rgb(255, 255, 255);
+$color-background: rgb(252, 248, 243); // nền trang chính
+$color-product-background: rgb(248, 244, 238); // ô sản phẩm
+
+$color-title-menu: rgb(34, 34, 34); // tiêu đề, menu
+$color-description: rgb(105, 105, 105); // mô tả phụ
+
+$color-border-dark: rgb(34, 34, 34); // viền nút, đường kẻ
+
+a {
+  cursor: pointer;
+}

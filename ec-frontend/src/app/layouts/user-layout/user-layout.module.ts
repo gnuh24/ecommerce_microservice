@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // ✅ ngModel
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,24 +17,25 @@ import { UserLayoutComponent } from './user-layout.component';
 import { UserMenuComponent } from './user-menu/user-menu.component';
 
 @NgModule({
-    declarations: [
-        UserHeaderComponent,
-        UserFooterComponent,
-        UserLayoutComponent,
-        UserMenuComponent
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatTooltipModule,
-    ],
-    exports: [UserLayoutComponent]
+  declarations: [
+    UserHeaderComponent,
+    UserFooterComponent,
+    UserLayoutComponent,
+    UserMenuComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
+    RouterOutlet,
+  ],
+  exports: [UserLayoutComponent],
 })
-export class UserLayoutModule { }
+export class UserLayoutModule {}

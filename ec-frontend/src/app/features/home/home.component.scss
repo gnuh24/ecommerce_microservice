@@ -1,249 +1,254 @@
-@import "../../../styles/param";
-@import "../../../styles/common";
+@use "../../../styles/param";
+@use "../../../styles/common";
 
 :host {
-    margin: $grid*5 0;
+  margin: param.$grid * 5 0;
 }
 
-.banner {
-    align-items: center;
-    background: url("../../../assets/mountain.jpg");
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 600px;
-    padding: $grid * 4;
-    max-width: 100%;
+.wine-banner {
+  background-image: url("../../../assets/background.png"); // Thay đường dẫn nếu cần
+  background-size: cover;
+  background-position: center right; // Đẩy hình sang bên phải
+  background-repeat: no-repeat;
+  height: 700px;
 
-    .slogan {
-        background-color: rgba(255, 255, 255, 0.7);
-        color: $textColor;
-        font-size: 2rem;
-        font-weight: 300;
-        line-height: 3.7rem;
-        margin: 0 auto;
-        padding: $grid $grid*2;
-        text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; // Canh nội dung về bên trái
 
-        a {
-            color: $themeBackground;
-            text-decoration: none;
-            border-bottom: 1px solid $themeBackground;
+  .content {
+    padding-left: 4rem;
+    max-width: 40%;
+    color: rgb(34, 34, 34);
 
-            &:hover {
-                background: $themeBackground;
-                color: $whiteSmokeColor;
-            }
-        }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
+
+    button {
+      border: 1px solid rgb(34, 34, 34);
+      background-color: transparent;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: rgb(34, 34, 34) k;
+      font-weight: bold;
+      transition: 0.2s;
+
+      &:hover {
+        background-color: rgb(34, 34, 34);
+        color: rgb(255, 255, 255);
+      }
+    }
+  }
 }
 
 .hot-offers,
 .trent-offers {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .trent-offers {
-    width: 930px;
+  width: 930px;
 
-    .product {
-        width: 50%;
-    }
+  .product {
+    width: 50%;
+  }
 
-    button {
-        margin-top: -$grid*2.5;
-        width: 90%;
-    }
+  button {
+    margin-top: -(param.$grid * 2.5);
+    width: 90%;
+  }
 }
 
 .head {
-    display: flex;
-    flex-direction: row;
-    padding: $grid*3 $grid*2;
+  display: flex;
+  flex-direction: row;
+  padding: param.$grid * 3 param.$grid * 2;
 
-    .line {
-        flex-grow: 1;
-    }
+  .line {
+    flex-grow: 1;
+  }
 
-    hr {
-        border-top: 2px solid $textColor;
-        margin: $grid*3 0;
-    }
+  hr {
+    border-top: 2px solid param.$textColor;
+    margin: param.$grid * 3 0;
+  }
 
-    .title {
-        margin: 0 $grid;
-        text-align: center;
-        width: 35%;
-    }
+  .title {
+    margin: 0 param.$grid;
+    text-align: center;
+    width: 35%;
+  }
 }
 
 .offers {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .product {
-    margin-bottom: $grid*3;
-    text-align: center;
-    width: 370px;
-    padding: 0 $grid;
+  margin-bottom: param.$grid * 3;
+  text-align: center;
+  width: 370px;
+  padding: 0 param.$grid;
+  box-sizing: border-box;
+
+  > div {
+    margin-bottom: param.$grid;
+  }
+
+  .wrapper {
+    align-items: center;
     box-sizing: border-box;
-
-    >div {
-        margin-bottom: $grid;
-    }
-
-    .wrapper {
-        align-items: center;
-        box-sizing: border-box;
-        padding: $grid*2;
-        width: 100%;
-        height: 330px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-    }
+    padding: param.$grid * 2;
+    width: 100%;
+    height: 330px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 }
 
 img {
-    max-height: 100%;
-    max-width: 100%;
+  max-height: 100%;
+  max-width: 100%;
 }
 
 .sub-title {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 .price {
-    font-size: 1.9rem;
-    font-weight: 700;
+  font-size: 1.9rem;
+  font-weight: 700;
 }
 
 button {
-    background: transparent;
-    border: 2px solid $textColor;
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: $grid*3.5;
-    padding: $grid*2 $grid*4;
-    text-transform: uppercase;
+  background: transparent;
+  border: 2px solid param.$textColor;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: param.$grid * 3.5;
+  padding: param.$grid * 2 param.$grid * 4;
+  text-transform: uppercase;
 
-    &:hover {
-        background: $primaryColor;
-        border-color: $primaryColor;
-        box-shadow: 0 10px 30px rgba(79, 70, 228, 0.8);
-        color: #ffffff;
-    }
+  &:hover {
+    background: param.$primaryColor;
+    border-color: param.$primaryColor;
+    box-shadow: 0 10px 30px rgba(79, 70, 228, 0.8);
+    color: #ffffff;
+  }
 }
 
 .shipping-box {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .element {
-    background-color: $whiteSmokeColor;
-    box-sizing: border-box;
-    font-size: 1.2rem;
-    font-weight: 700;
-    line-height: 1.9rem;
-    padding: $grid*4;
-    text-align: center;
-    width: 350px;
-    margin: $grid;
+  background-color: param.$whiteSmokeColor;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.9rem;
+  padding: param.$grid * 4;
+  text-align: center;
+  width: 350px;
+  margin: param.$grid;
 }
 
 .subscribe {
-    background-color: $whiteSmokeColor;
-    margin: $grid*10 0;
-    padding: $grid*5 0;
+  background-color: param.$whiteSmokeColor;
+  margin: param.$grid * 10 0;
+  padding: param.$grid * 5 0;
 }
 
 .subscribe-box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .title {
+    flex-grow: 1;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .join {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    width: 360px;
 
-    .title {
-        flex-grow: 1;
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-align: center;
+    input {
+      border: 1px solid param.$primaryColor;
+      border-radius: 4px 0 0 4px;
+      box-sizing: border-box;
+      height: 44px;
+      padding: 0 param.$grid * 1.5;
+      width: 230px;
     }
 
-    .join {
-        display: flex;
-        flex-direction: row;
-        width: 360px;
-
-        input {
-            border: 1px solid $primaryColor;
-            border-radius: 4px 0 0 4px;
-            box-sizing: border-box;
-            height: 44px;
-            padding: 0 $grid*1.5;
-            width: 230px;
-        }
-
-        button {
-            background: $primaryColor;
-            box-sizing: border-box;
-            border: 1px solid $primaryColor;
-            border-radius: 0 4px 4px 0;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: normal;
-            text-align: center;
-            text-transform: uppercase;
-            padding: $grid*1.5 $grid*2;
-        }
+    button {
+      background: param.$primaryColor;
+      box-sizing: border-box;
+      border: 1px solid param.$primaryColor;
+      border-radius: 0 4px 4px 0;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: normal;
+      text-align: center;
+      text-transform: uppercase;
+      padding: param.$grid * 1.5 param.$grid * 2;
     }
+  }
 }
 
 @media (max-width: 1200px) {
-    .trent-offers {
-        width: 100%;
-    }
+  .trent-offers {
+    width: 100%;
+  }
 }
 
 @media (max-width: 800px) {
-    .subscribe-box {
-        .join {
-            width: auto;
+  .subscribe-box {
+    .join {
+      width: auto;
 
-            input {
-                height: 41px;
-                width: 200px;
-            }
-        }
+      input {
+        height: 41px;
+        width: 200px;
+      }
     }
+  }
 }
 
 @media (max-width: 700px) {
-    .trent-offers {
-        .product {
-            width: 100%;
-        }
+  .trent-offers {
+    .product {
+      width: 100%;
     }
+  }
 }
 
 @media (max-width: 500px) {
-    :host {
-        margin: 0;
-    }
+  :host {
+    margin: 0;
+  }
 
-    .subscribe {
-        margin: 0;
-    }
+  .subscribe {
+    margin: 0;
+  }
 }

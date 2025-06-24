@@ -1,61 +1,149 @@
+@use "../../../../styles/param";
+@use "../../../../styles/common";
 footer {
-    background-color: #1f2937; // dark blue-gray
-    color: #f9fafb; // light text
-    padding: 3rem 1rem 1rem;
+  background-color: #ede7de; // màu nền trung tính nhẹ
+}
+.footer {
+  background-color: #ede7de; // màu nền trung tính nhẹ
+  color: #222; // màu chữ dịu mắt, không quá đen
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: param.$grid * 3 0;
+  border-top: 1px solid #dad2c5; // ngăn nhẹ nội dung trước
 
-    .main-wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
+  a {
+    color: #444; // màu link cơ bản
+
+    &:hover {
+      color: #8b5e3c; // màu nâu rượu (accent)
+    }
+  }
+}
+
+h4 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: param.$grid * 2;
+  text-transform: uppercase;
+  color: #333; // tiêu đề section footer
+}
+
+ul {
+  list-style: none;
+
+  li {
+    font-size: 1rem;
+    margin: param.$grid 0;
+
+    a {
+      text-decoration: none;
+    }
+  }
+}
+.header {
+  background-color: #ede7de; // nền nhẹ trung tính cho header
+  color: #222; // màu chữ nhẹ dễ đọc
+
+  .top_bar {
+    background-color: #f5efe7; // nhạt hơn header chính 1 chút
+    border-bottom: 1px solid #dad2c5;
+    font-size: 0.9rem;
+
+    a {
+      color: #222;
+      text-decoration: none;
+
+      &:hover {
+        color: #8b5e3c; // accent nâu rượu
+      }
+    }
+  }
+
+  .header_main {
+    background-color: #ede7de;
+    border-bottom: 1px solid #dad2c5;
+
+    .logo a {
+      color: #8b5e3c;
+      font-weight: bold;
+      font-size: 1.8rem;
+      text-transform: uppercase;
     }
 
-    .footer {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 2rem;
+    .header_search_input {
+      background-color: #fdfbf7;
+      border: 1px solid #dad2c5;
+      color: #333;
 
-        >div {
-            flex: 1 1 200px;
-
-            ul {
-                list-style: none;
-                padding: 0;
-
-                li {
-                    margin-bottom: 0.75rem;
-
-                    h4 {
-                        font-size: 1.1rem;
-                        margin-bottom: 0.5rem;
-                        color: #fbbf24; // yellow-400
-                    }
-
-                    a {
-                        text-decoration: none;
-                        color: #d1d5db; // gray-300
-                        font-size: 0.95rem;
-                        transition: color 0.3s ease;
-
-                        &:hover {
-                            color: #fbbf24; // highlight
-                        }
-                    }
-                }
-            }
-        }
-
-        .copyright {
-            flex: 1 1 100%;
-            text-align: center;
-            margin-top: 2rem;
-            border-top: 1px solid #374151;
-            padding-top: 1rem;
-
-            p {
-                font-size: 0.85rem;
-                color: #9ca3af; // gray-400
-            }
-        }
+      &::placeholder {
+        color: #999;
+      }
     }
+
+    .header_search_button {
+      background-color: #8b5e3c;
+      border: none;
+      padding: 0.4rem 1rem;
+
+      img {
+        filter: brightness(0) invert(1); // icon trắng
+      }
+
+      &:hover {
+        background-color: #a06a4a;
+      }
+    }
+  }
+
+  .main_nav {
+    background-color: #ede7de;
+
+    .main_nav_menu li a {
+      color: #333;
+
+      &:hover {
+        color: #8b5e3c;
+      }
+    }
+
+    .main_nav_menu li ul li a {
+      background-color: #f8f4ee;
+      color: #333;
+
+      &:hover {
+        background-color: #e5dbd0;
+        color: #8b5e3c;
+      }
+    }
+  }
+
+  .wishlist,
+  .cart {
+    .wishlist_text a,
+    .cart_text a {
+      color: #333;
+
+      &:hover {
+        color: #8b5e3c;
+      }
+    }
+
+    .wishlist_count,
+    .cart_count {
+      background-color: #8b5e3c;
+      color: #fff;
+    }
+  }
+}
+
+.copyright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: param.$grid * 2;
+  font-size: 0.9rem;
+  color: #555;
 }

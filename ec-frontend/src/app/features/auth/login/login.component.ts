@@ -9,24 +9,24 @@ import { getMessageByCode } from '../../../core/system-error-code';
     selector: 'app-login',
     standalone: false,
     templateUrl: './login.component.html',
-    styleUrls: [
-        './login.component.scss',
-        '../auth.scss',
-    ]
+    styleUrls: ['./login.component.scss', '../auth.scss'],
 })
 export class LoginComponent implements OnInit {
     loginForm!: FormGroup;
     hide = true;
 
     // Inject AuthService qua constructor DI (không new trực tiếp)
-    constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
+    constructor(
+        private fb: FormBuilder,
+        private authService: AuthService,
+        private router: Router
+    ) { }
 
     ngOnInit(): void {
         this.loginForm = this.fb.group({
             username: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
         });
-
     }
 
     onSubmit(): void {
@@ -65,5 +65,7 @@ export class LoginComponent implements OnInit {
 
             });
         }
+
+
     }
 }
