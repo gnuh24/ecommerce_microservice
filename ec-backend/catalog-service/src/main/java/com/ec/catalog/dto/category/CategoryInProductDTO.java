@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CategoryInProductDTO {
+	
+	private String id;
 
-    private Integer id;
-
-    private String categoryName;
+    	private String categoryName;
 
 }

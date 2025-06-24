@@ -1,6 +1,7 @@
 package com.ec.catalog.controller;
 
 import com.ec.catalog.api.ApiResponse;
+import com.ec.catalog.dto.product.ProductDetailPublicDTO;
 import com.ec.catalog.dto.product.ProductFilterForm;
 import com.ec.catalog.dto.product.ProductListPublicDTO;
 import com.ec.catalog.entity.Product;
@@ -37,7 +38,7 @@ public class ProductController {
 	
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 //	@GetMapping(value = "/management")
 //	public ResponseEntity<ApiResponse<Page<ProductListManagementDTO>>> getAllProductsForManagement(
 //	    Pageable pageable,
@@ -66,8 +67,8 @@ public class ProductController {
 //		Page<ProductListManagementDTO> dtoPage = new PageImpl<>(dtos, pageable, entities.getTotalElements());
 //		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtoPage));
 //	}
-	
-	
+
+
 //	@GetMapping(value = "/management/{productId}")
 //	public ResponseEntity<ApiResponse<ProductDetailManagementDTO>> getProductInDetailForManagement(@PathVariable Integer productId) {
 //		Product entity = productService.getProductById(productId);
@@ -109,27 +110,15 @@ public class ProductController {
 		Page<ProductListPublicDTO> dtoPage = new PageImpl<>(dtos, pageable, entities.getTotalElements());
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtoPage));
 	}
-	
-//	@GetMapping(value = "/public/{productId}")
-//	public ResponseEntity<ApiResponse<ProductDetailPublicDTO>> getProductDetailForPublic(@PathVariable Integer productId) {
-//		Product entity = productService.getProductById(productId);
-//		ProductDetailPublicDTO dto = modelMapper.map(entity, ProductDetailPublicDTO.class);
-//
-//		StockLot stockLot = stockLotService.getTheValidStockLot(dto.getId());
-//
-//		if (stockLot == null) {
-//			stockLot = stockLotService.getTheValidStockLotBackup(dto.getId());
-//		}
-//
-//		if (stockLot != null) {
-//			dto.setPrice(stockLot.getUnitPrice());
-//			dto.setQuantity(stockLot.getQuantity());
-//		}
-//
-//		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));
-//	}
-	
-	
+
+	@GetMapping(value = "/public/{slug}")
+	public ResponseEntity<ApiResponse<ProductDetailPublicDTO>> getProductDetailForPublic(@PathVariable String slug) {
+		Product entity = productService.getProductBySlug(slug);
+		ProductDetailPublicDTO dto = modelMapper.map(entity, ProductDetailPublicDTO.class);
+		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));
+	}
+
+
 //	@PostMapping()
 //	public ResponseEntity<ApiResponse<ProductListManagementDTO>> createProduct(@RequestBody @Valid ProductCreateForm form) {
 //		Product entity = productService.createProduct(form);

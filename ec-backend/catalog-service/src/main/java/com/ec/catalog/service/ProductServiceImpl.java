@@ -6,14 +6,10 @@ import com.ec.catalog.repository.ProductRepository;
 import com.ec.catalog.specification.ProductSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -37,6 +33,12 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findAll(where, pageable);
 	}
 	
+	@Override
+	public Product getProductBySlug(String slug) {
+		return productRepository.findBySlugAndIsDeletedFalseAndIsPublishedTrue(slug)
+		    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại"));
+	}
+
 //
 //	@Override
 //	public Product getProductById(Integer productId) {
