@@ -4,10 +4,12 @@ import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.dto.product.ProductDetailPublicDTO;
 import com.ec.catalog.dto.product.ProductFilterForm;
 import com.ec.catalog.dto.product.ProductListPublicDTO;
+import com.ec.catalog.entity.Account;
 import com.ec.catalog.entity.Product;
 import com.ec.catalog.service.ProductImageService;
 import com.ec.catalog.service.ProductService;
 import com.ec.catalog.service.ProductVariantService;
+import com.ec.catalog.service.WishlistService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -17,6 +19,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +38,9 @@ public class ProductController {
 	
 	@Autowired
 	private ProductVariantService productVariantService;
+	
+	@Autowired
+	private WishlistService wishlistService;
 	
 	
 	@Autowired
@@ -110,11 +117,21 @@ public class ProductController {
 		Page<ProductListPublicDTO> dtoPage = new PageImpl<>(dtos, pageable, entities.getTotalElements());
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtoPage));
 	}
-
+	
 	@GetMapping(value = "/public/{slug}")
-	public ResponseEntity<ApiResponse<ProductDetailPublicDTO>> getProductDetailForPublic(@PathVariable String slug) {
+	public ResponseEntity<ApiResponse<ProductDetailPublicDTO>> getProductDetailForPublic(
+	    	@PathVariable String slug) {
+		
 		Product entity = productService.getProductBySlug(slug);
 		ProductDetailPublicDTO dto = modelMapper.map(entity, ProductDetailPublicDTO.class);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof Account) {
+			Account account = (Account) authentication.getPrincipal();
+			boolean isInWishlist = wishlistService.isProductInWishlist(account.getId(), entity.getId());
+			dto.setIsInWishlist(isInWishlist);
+		}
+		
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));
 	}
 

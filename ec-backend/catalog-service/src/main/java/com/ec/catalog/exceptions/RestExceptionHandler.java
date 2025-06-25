@@ -4,6 +4,8 @@ import com.ec.catalog.aop.AppLogger;
 import com.ec.catalog.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.catalog.exceptions.JwtException.*;
 import com.ec.catalog.exceptions.errorCode.SystemErrorCode;
+import com.ec.catalog.exceptions.fileException.EmptyFileUploadException;
+import com.ec.catalog.exceptions.fileException.InvalidFileTypeException;
 import com.ec.catalog.exceptions.otpException.OtpNotFoundException;
 import com.ec.catalog.utils.EnvironmentUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -125,15 +128,40 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildErrorResponse(request, HttpStatus.NOT_FOUND, SystemErrorCode.SYS_FILE_NOT_FOUND, "Không tìm thấy tệp", ex, null);
 	}
 	
+	@ExceptionHandler(EmptyFileUploadException.class)
+	public ResponseEntity<Object> handleEmptyFileUpload(HttpServletRequest request, EmptyFileUploadException ex) {
+		return buildErrorResponse(
+		    request,
+		    HttpStatus.BAD_REQUEST,
+		    SystemErrorCode.SYS_FILE_UPLOAD_FAILED,
+		    "File upload không được để trống",
+		    ex,
+		    null
+		);
+	}
+	
+	@ExceptionHandler(InvalidFileTypeException.class)
+	public ResponseEntity<Object> handleInvalidFileType(HttpServletRequest request, InvalidFileTypeException ex) {
+		return buildErrorResponse(
+		    request,
+		    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+		    SystemErrorCode.SYS_FILE_UNSUPPORTED_TYPE ,
+		    "Chỉ cho phép upload các định dạng ảnh như jpg, png...",
+		    ex,
+		    null
+		);
+	}
+	
+
 	@ExceptionHandler(InvalidTokenTypeException.class)
 	public ResponseEntity<Object> handleReTypeException(HttpServletRequest request, InvalidTokenTypeException ex) {
 		String code = SystemErrorCode.AUTH_INVALID_CREDENTIALS;
 		String message = "Xác thực thất bại";
 		
-	
-			code = SystemErrorCode.AUTH_REFRESH_TOKEN_INVALID_TYP;
-			message = "Token chứa type không hợp lệ.";
-	
+		
+		code = SystemErrorCode.AUTH_REFRESH_TOKEN_INVALID_TYP;
+		message = "Token chứa type không hợp lệ.";
+		
 		
 		return buildErrorResponse(request, HttpStatus.UNAUTHORIZED, code, message, ex, null);
 	}
@@ -184,14 +212,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 	
-	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleGeneric(HttpServletRequest request, Exception ex) {
-		return buildErrorResponse(request, HttpStatus.INTERNAL_SERVER_ERROR, SystemErrorCode.SYSTEM_UNKNOWN_ERROR, "Lỗi không xác định", ex, null);
+		if (ex instanceof MaxUploadSizeExceededException) {
+			return buildErrorResponse(
+			    request,
+			    HttpStatus.PAYLOAD_TOO_LARGE,
+			    SystemErrorCode.SYS_FILE_TOO_LARGE,
+			    "File quá lớn",
+			    ex,
+			    null
+			);
+		}
+		
+		return buildErrorResponse(
+		    request,
+		    HttpStatus.INTERNAL_SERVER_ERROR,
+		    SystemErrorCode.SYSTEM_UNKNOWN_ERROR,
+		    "Lỗi không xác định",
+		    ex,
+		    null
+		);
 	}
-	
-	
 
+	
 	
 	@ExceptionHandler(OtpNotFoundException.class)
 	public ResponseEntity<Object> handleOtpNotFound(HttpServletRequest request, OtpNotFoundException ex) {
@@ -211,9 +255,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		    ex,
 		    null);
 	}
-	
-	
-	
 	
 	
 }

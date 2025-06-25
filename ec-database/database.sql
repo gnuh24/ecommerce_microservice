@@ -184,7 +184,8 @@ INSERT INTO `ProductVariant` (
 ('V007', 'P007', 700, 1600000, 70, TRUE, FALSE, NOW(), NOW(), NULL),
 ('V008', 'P008', 700, 1400000, 40, TRUE, FALSE, NOW(), NOW(), NULL),
 ('V009', 'P009', 700, 3900000, 15, TRUE, FALSE, NOW(), NOW(), NULL),
-('V010', 'P010', 750, 280000, 120, TRUE, FALSE, NOW(), NOW(), NULL);
+('V010', 'P010', 750, 280000, 120, TRUE, FALSE, NOW(), NOW(), NULL),
+('V011', 'P002', 750, 400000, 100, TRUE, FALSE, NOW(), NOW(), NULL);
 
 
 CREATE TABLE `ProductImage` (
@@ -214,11 +215,33 @@ INSERT INTO `ProductImage` (
 ('IMG010', 'P010', 'https://example.com/images/p010.jpg', TRUE, FALSE, NOW(), NULL);
 
 
+CREATE TABLE IF NOT EXISTS `Wishlist` (
+    `accountId`  VARCHAR(10) NOT NULL,
+    `productId`   VARCHAR(10) NOT NULL,
+	`createdAt` 	DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+
+    PRIMARY KEY (`accountId`, `productId`),
+    FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE
+);
 
 
 
 
+INSERT INTO `Wishlist` (`accountId`, `productId`, `createdAt`) VALUES
+('acc1', 'P001', NOW()),
+('acc1', 'P004', NOW()),
+('acc1', 'P007', NOW()),
 
+('acc2', 'P002', NOW()),
+('acc2', 'P005', NOW()),
+('acc2', 'P010', NOW()),
+
+('acc3', 'P003', NOW()),
+('acc3', 'P006', NOW()),
+('acc3', 'P008', NOW()),
+('acc3', 'P009', NOW());
 
 
 

@@ -38,4 +38,6 @@ public class ProductDetailPublicDTO {
 	
 	private List<ProductVariantResponseDTO> variants;
 	
+	private Boolean isInWishlist;
+	
 }

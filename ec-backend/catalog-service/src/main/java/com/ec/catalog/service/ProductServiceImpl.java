@@ -34,6 +34,12 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
+	public Product getProductById(String productId) {
+		return productRepository.findById(productId)
+		    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại"));
+	}
+	
+	@Override
 	public Product getProductBySlug(String slug) {
 		return productRepository.findBySlugAndIsDeletedFalseAndIsPublishedTrue(slug)
 		    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại"));

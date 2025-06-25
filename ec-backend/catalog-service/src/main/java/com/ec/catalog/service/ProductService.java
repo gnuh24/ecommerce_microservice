@@ -10,7 +10,7 @@ public interface ProductService {
 	
 	Page<Product> getAllProduct(Pageable pageable, String search, ProductFilterForm form);
 	
-//	Product getProductById(Integer productId);
+	Product getProductById(String productId);
 	
 	Product getProductBySlug(String slug);
 	

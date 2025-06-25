@@ -33,24 +33,26 @@ public class MediaServiceImpl implements MediaService {
 		
 		Path uploadDirPath = Paths.get(uploadDir);
 		
-		// Check if the folder exists
-		if (Files.exists(uploadDirPath) && Files.isDirectory(uploadDirPath)) {
-			String fileName = Math.random() + "." + System.currentTimeMillis()
-			    + getFileExtension(image.getOriginalFilename());
-			Path uploadPath = Paths.get(uploadDir, fileName);
+		try {
+			// Tạo thư mục nếu chưa tồn tại
+			if (Files.notExists(uploadDirPath)) {
+				Files.createDirectories(uploadDirPath);
+			}
+			
+			// Tạo tên file duy nhất
+			String fileName = Math.random() + "." + System.currentTimeMillis() + getFileExtension(image.getOriginalFilename());
+			Path uploadPath = uploadDirPath.resolve(fileName);
+			
+			// Ghi file
 			Files.write(uploadPath, image.getBytes());
+			
 			return fileName;
 			
-		} else {
-			try {
-				// Create if folder isn't exists
-				Files.createDirectories(uploadDirPath);
-			} catch (IOException e) {
-				// Handle the exception, e.g., log the error, provide a fallback, etc.
-				System.err.println("Error creating folder: " + e.getMessage());
-			}
+		} catch (IOException e) {
+			// Xử lý lỗi
+			System.err.println("Lỗi khi lưu ảnh: " + e.getMessage());
+			return null;
 		}
-		return null;
 	}
 
 //    public static void deleteImage(String folderPath, String imageName) {
