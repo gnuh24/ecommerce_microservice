@@ -126,8 +126,7 @@ public class ProductController {
 		ProductDetailPublicDTO dto = modelMapper.map(entity, ProductDetailPublicDTO.class);
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof Account) {
-			Account account = (Account) authentication.getPrincipal();
+		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof Account account) {
 			boolean isInWishlist = wishlistService.isProductInWishlist(account.getId(), entity.getId());
 			dto.setIsInWishlist(isInWishlist);
 		}
