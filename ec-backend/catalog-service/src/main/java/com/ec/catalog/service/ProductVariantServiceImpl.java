@@ -15,6 +15,11 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	private ProductVariantRepository productVariantRepository;
 	
 	@Override
+	public List<ProductVariant> getVariantsByIds(List<String> variantIds) {
+		return productVariantRepository.findByIdIn(variantIds);
+	}
+	
+	@Override
 	public List<ProductVariant> getVariantsByProductId(String productId) {
 		return productVariantRepository.findByProductIdAndIsDeletedFalse(productId);
 	}
@@ -29,9 +34,5 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 		return productVariantRepository.findMaxPriceByProductId(productId);
 	}
 	
-	@Override
-	public ProductVariant getThumbnailVariant(String productId) {
-		// Optional: Chỉ nếu bạn có trường thumbnail trong variant
-		return null;
-	}
+
 }

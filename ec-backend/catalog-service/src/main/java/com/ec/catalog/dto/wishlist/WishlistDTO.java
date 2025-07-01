@@ -10,16 +10,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WishlistDTO {
-
-    private String id;                 // Product ID
-
-    private String productName;        // Tên sản phẩm
-
-    private String slug;               // Slug để route
-
-    private String thumbnailUrl;       // Ảnh thumbnail nếu có
-
-    private BigDecimal minPrice;       // Giá thấp nhất trong các variant
-
-    private BigDecimal maxPrice;       // Giá cao nhất trong các variant
+	
+	private String id;                 // Product ID
+	
+	private String productName;        // Tên sản phẩm
+	
+	private String slug;               // Slug để route
+	
+	private String thumbnailUrl;       // Ảnh thumbnail nếu có
+	
+	private BigDecimal minPrice;       // Giá thấp nhất trong các variant
+	
+	private BigDecimal maxPrice;       // Giá cao nhất trong các variant
 }

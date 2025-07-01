@@ -11,7 +11,8 @@ import java.util.List;
 
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, String> {
-    List<ProductVariant> findByProductIdAndIsDeletedFalse(String productId);
+	List<ProductVariant> findByProductIdAndIsDeletedFalse(String productId);
+	List<ProductVariant> findByIdIn(List<String> ids);
 	
 	@Query("SELECT MIN(v.price) FROM ProductVariant v WHERE v.product.id = :productId AND v.isDeleted = false")
 	BigDecimal findMinPriceByProductId(@Param("productId") String productId);

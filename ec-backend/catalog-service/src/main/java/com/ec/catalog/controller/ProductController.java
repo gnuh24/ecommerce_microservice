@@ -84,8 +84,8 @@ public class ProductController {
 //	}
 
 //	@GetMapping("/list-by-ids")
-//	public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByIds(@RequestParam List<Integer> ids) {
-//		List<Product> products = productService.getProductsByIds(ids);
+//	public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getVariantsByIds(@RequestParam List<Integer> ids) {
+//		List<Product> products = productService.getVariantsByIds(ids);
 //		List<ProductResponseDTO> dto = modelMapper.map(products, new TypeToken<List<ProductResponseDTO>>() {
 //		}.getType());
 //		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));

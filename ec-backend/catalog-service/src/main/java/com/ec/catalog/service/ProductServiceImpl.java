@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
 //	}
 //
 //	@Override
-//	public List<Product> getProductsByIds(List<Integer> ids) {
+//	public List<Product> getVariantsByIds(List<Integer> ids) {
 //		return productRepository.findAllById(ids);
 //	}
 	

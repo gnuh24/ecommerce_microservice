@@ -14,7 +14,7 @@ public interface ProductService {
 	
 	Product getProductBySlug(String slug);
 	
-//	List<Product> getProductsByIds(List<Integer> ids);
+//	List<Product> getVariantsByIds(List<Integer> ids);
 	
 //	int updateDefaultBrandOfProduct(Integer brandId);
 //
