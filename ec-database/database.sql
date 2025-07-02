@@ -244,5 +244,112 @@ INSERT INTO `Wishlist` (`accountId`, `productId`, `createdAt`) VALUES
 ('acc3', 'P009', NOW());
 
 
+-- ENUM TYPE: Nếu MySQL không hỗ trợ ENUM TYPE, bỏ qua phần này
+
+-- Bảng Order
+CREATE TABLE `Order` (
+    `id` VARCHAR(10) PRIMARY KEY,
+    `totalAmount` DECIMAL(15, 2) NOT NULL,
+    `note` TEXT,
+    `orderTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `receiverName` VARCHAR(255) NOT NULL,
+    `receiverPhone` VARCHAR(20) NOT NULL,
+    `receiverAddress` VARCHAR(500) NOT NULL,
+    `accountId` VARCHAR(10) NOT NULL,
+    FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`)
+);
+
+-- Bảng Payment
+CREATE TABLE `Payment` (
+    `id` VARCHAR(10) PRIMARY KEY,
+    `paymentStatus` ENUM('PENDING', 'SUCCESS', 'FAILED', 'CANCELLED') NOT NULL,
+    `paymentMethod` ENUM('COD', 'VNPAY', 'MOMO') NOT NULL,
+    `orderId` VARCHAR(10) NOT NULL,
+    FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`)
+);
+
+-- Bảng OrderDetail
+CREATE TABLE `OrderDetail` (
+    `id` SERIAL PRIMARY KEY,
+    `orderId` VARCHAR(10) NOT NULL,
+    `productVariantId` VARCHAR(10) NOT NULL,
+    `productName` VARCHAR(255) NOT NULL,
+    `productThumbnail` TEXT,
+    `productVolume` INT,
+    `unitPrice` DECIMAL(15, 2) NOT NULL,
+    `quantity` INT NOT NULL,
+    `totalPrice` DECIMAL(15, 2) NOT NULL,
+    FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`)
+);
+
+-- Bảng OrderStatus
+CREATE TABLE `OrderStatus` (
+    `id` SERIAL PRIMARY KEY,
+    `orderId` VARCHAR(10) NOT NULL,
+    `status` ENUM('PENDING', 'PROCESSING', 'SHIPPING', 'COMPLETE', 'CANCELED') NOT NULL,
+    `updateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`)
+);
+
+-- ==============================
+-- DỮ LIỆU MẪU: 5 đơn hàng cho acc2
+-- ==============================
+
+-- Insert Order
+INSERT INTO `Order` (`id`, `totalAmount`, `note`, `orderTime`, `receiverName`, `receiverPhone`, `receiverAddress`, `accountId`) VALUES
+('ODR001', 9000000.00, 'Giao buổi sáng', NOW(), 'Nguyen Van A', '0901234567', '123 Le Loi, Q1, HCM', 'acc2'),
+('ODR002', 4500000.00, NULL, NOW(), 'Tran Thi B', '0902345678', '456 Tran Hung Dao, Q5, HCM', 'acc2'),
+('ODR003', 12000000.00, 'Giao trước 17h', NOW(), 'Le Van C', '0903456789', '789 Vo Thi Sau, Q3, HCM', 'acc2'),
+('ODR004', 3000000.00, 'Hủy do khách đổi ý', NOW(), 'Pham Thi D', '0904567890', '321 Nguyen Trai, Q1, HCM', 'acc2'),
+('ODR005', 6500000.00, 'Khách hủy', NOW(), 'Hoang Van E', '0905678901', '654 Cach Mang Thang 8, Q10, HCM', 'acc2');
+
+-- Insert Payment (Toàn bộ COD, status cho đúng từng order)
+INSERT INTO `Payment` (`id`, `paymentStatus`, `paymentMethod`, `orderId`) VALUES
+('PAY001', 'PENDING', 'COD', 'ODR001'),
+('PAY002', 'SUCCESS', 'COD', 'ODR002'),
+('PAY003', 'SUCCESS', 'COD', 'ODR003'),
+('PAY004', 'CANCELLED', 'COD', 'ODR004'),
+('PAY005', 'CANCELLED', 'COD', 'ODR005');
+
+-- Insert OrderDetail
+INSERT INTO `OrderDetail` (`orderId`, `productVariantId`, `productName`, `productThumbnail`, `productVolume`, `unitPrice`, `quantity`, `totalPrice`) VALUES
+('ODR001', 'V001', 'Johnnie Walker Blue Label', 'thumb1.jpg', 700, 4500000.00, 2, 9000000.00),
+('ODR002', 'V002', 'Johnnie Walker Blue Label', 'thumb2.jpg', 750, 4500000.00, 1, 4500000.00),
+('ODR003', 'V003', 'Hennessy VSOP', 'thumb3.jpg', 700, 2300000.00, 3, 6900000.00),
+('ODR003', 'V004', 'Moët & Chandon Brut Impérial', 'thumb4.jpg', 750, 1800000.00, 3, 5400000.00),
+('ODR004', 'V005', 'Château Margaux Grand Vin', 'thumb5.jpg', 750, 3000000.00, 1, 3000000.00),
+('ODR005', 'V006', 'Suntory Hibiki Harmony', 'thumb6.jpg', 700, 6500000.00, 1, 6500000.00);
+
+-- Insert OrderStatus
+-- OrderStatus history cho từng đơn:
+
+-- Đơn ODR001: Chỉ mới PENDING
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR001', 'PENDING', NOW());
+
+-- Đơn ODR002: Đã PROCESSING
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR002', 'PENDING', NOW()),
+('ODR002', 'PROCESSING', NOW());
+
+-- Đơn ODR003: Đã COMPLETE
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR003', 'PENDING', NOW()),
+('ODR003', 'PROCESSING', NOW()),
+('ODR003', 'COMPLETE', NOW());
+
+-- Đơn ODR004: Bị Hủy sau PENDING
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR004', 'PENDING', NOW()),
+('ODR004', 'CANCELED', NOW());
+
+-- Đơn ODR005: Bị Hủy sau PENDING
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR005', 'PENDING', NOW()),
+('ODR005', 'CANCELED', NOW());
+
+
+
+
 
 
