@@ -3,6 +3,9 @@ package com.ec.order.exceptions;
 import com.ec.order.aop.AppLogger;
 import com.ec.order.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.order.exceptions.JwtException.*;
+import com.ec.order.exceptions.business.order.OrderNotFoundException;
+import com.ec.order.exceptions.business.order.OrderOutOfStockException;
+import com.ec.order.exceptions.errorCode.OrderBusinessErrorCode;
 import com.ec.order.exceptions.errorCode.SystemErrorCode;
 import com.ec.order.exceptions.fileException.EmptyFileUploadException;
 import com.ec.order.exceptions.fileException.InvalidFileTypeException;
@@ -127,6 +130,33 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleFileNotFound(HttpServletRequest request, FileNotFoundException ex) {
 		return buildErrorResponse(request, HttpStatus.NOT_FOUND, SystemErrorCode.SYS_FILE_NOT_FOUND, "Không tìm thấy tệp", ex, null);
 	}
+	
+	@ExceptionHandler(OrderNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleOrderNotFound(HttpServletRequest request, OrderNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			OrderBusinessErrorCode.ORD_ORDER_CREATE_FAILED,
+			"Không tìm thấy đơn hàng.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(OrderOutOfStockException.class)
+	public ResponseEntity<ErrorResponse> handleOutOfStock(HttpServletRequest request, OrderOutOfStockException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			OrderBusinessErrorCode.ORD_ORDER_OUT_OF_STOCK,
+			"Sản phẩm không đủ tồn kho.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
 	
 	@ExceptionHandler(EmptyFileUploadException.class)
 	public ResponseEntity<Object> handleEmptyFileUpload(HttpServletRequest request, EmptyFileUploadException ex) {

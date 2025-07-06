@@ -1,8 +1,13 @@
 package com.ec.catalog.exceptions;
 
 import com.ec.catalog.aop.AppLogger;
+import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.catalog.exceptions.JwtException.*;
+import com.ec.catalog.exceptions.business.BusinessException;
+import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFound;
+import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
+import com.ec.catalog.exceptions.errorCode.CatalogBusinessErrorCode;
 import com.ec.catalog.exceptions.errorCode.SystemErrorCode;
 import com.ec.catalog.exceptions.fileException.EmptyFileUploadException;
 import com.ec.catalog.exceptions.fileException.InvalidFileTypeException;
@@ -99,6 +104,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 	
+	
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 		return buildErrorResponse(getRequest(request), HttpStatus.BAD_REQUEST, SystemErrorCode.SYS_MISSING_REQUIRED_FIELD, "Thiếu tham số bắt buộc", ex, null);
@@ -152,7 +158,34 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
-
+	@ExceptionHandler(ProductVariantNotFound.class)
+	public ResponseEntity<ErrorResponse> handleVariantNotFound(HttpServletRequest request, ProductVariantNotFound ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_VARIANT_NOT_FOUND,
+			"Không tìm thấy phiên bản sản phẩm.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(ProductVariantQuantityNotEnough.class)
+	public ResponseEntity<ErrorResponse> handleQuantityNotEnough(HttpServletRequest request, ProductVariantQuantityNotEnough ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			CatalogBusinessErrorCode.CAT_VARIANT_QUANTITY_NOT_ENOUGH,
+			"Không đủ số lượng trong kho để xử lý yêu cầu.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	
+	
 	@ExceptionHandler(InvalidTokenTypeException.class)
 	public ResponseEntity<Object> handleReTypeException(HttpServletRequest request, InvalidTokenTypeException ex) {
 		String code = SystemErrorCode.AUTH_INVALID_CREDENTIALS;

@@ -133,7 +133,15 @@ public class OrderController {
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy chi tiết đơn hàng thành công", responseDTO));
 	}
-
 	
+	@PostMapping("/check-out/cod")
+	public ResponseEntity<ApiResponse<String>> checkoutCOD(@RequestBody CheckoutCODRequest request) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Account account = (Account) authentication.getPrincipal();
+		
+		String orderId = orderService.createOrderWithCOD(account.getId(), request);
+		
+		return ResponseEntity.ok(new ApiResponse<>(200, "Đặt hàng thành công (COD)", orderId));
+	}
 	
 }

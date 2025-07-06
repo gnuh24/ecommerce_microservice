@@ -2,6 +2,8 @@ package com.ec.catalog.controller;
 
 import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.dto.productVariant.ProductVariantForCartResponseDTO;
+import com.ec.catalog.dto.productVariant.ProductVariantForOrderDTO;
+import com.ec.catalog.dto.productVariant.QuantityReduceRequest;
 import com.ec.catalog.entity.ProductImage;
 import com.ec.catalog.entity.ProductVariant;
 import com.ec.catalog.service.ProductImageService;
@@ -50,6 +52,41 @@ public class ProductVariantController {
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách variant thành công", dtos));
 	}
+	
+	@GetMapping("/full-info/by-ids")
+	public ResponseEntity<ApiResponse<List<ProductVariantForOrderDTO>>> getFullVariantsByIds(@RequestParam String ids) {
+		List<String> idList = Arrays.asList(ids.split(","));
+		List<ProductVariant> variants = productVariantService.getVariantsByIds(idList);
+		
+		List<ProductVariantForOrderDTO> dtos = variants.stream().map(variant -> {
+			String productName = variant.getProduct().getProductName();
+			
+			String thumbnail = productImageService
+			    .getThumbnailByProductId(variant.getProduct().getId())
+			    .get()
+			    .getImageUrl();
+			
+			return new ProductVariantForOrderDTO(
+			    variant.getId(),
+			    productName,
+			    variant.getVolume(),
+			    thumbnail,
+			    variant.getPrice(),
+			    variant.getQuantity(),
+			    variant.getIsDeleted(),
+			    variant.getIsPublished()
+			);
+		}).toList();
+		
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy thông tin đầy đủ variant thành công", dtos));
+	}
+	
+	@PostMapping("/reduce-quantity")
+	public ResponseEntity<ApiResponse<Void>> reduceQuantities(@RequestBody List<QuantityReduceRequest> requests) {
+		productVariantService.reduceQuantities(requests);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Giảm số lượng thành công", null));
+	}
+	
 	
 	
 }

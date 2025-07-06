@@ -1,5 +1,6 @@
 package com.ec.order.entity;
 
+import com.ec.order.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -16,7 +17,8 @@ import java.util.List;
 public class Order {
 
     @Id
-    private String id;
+    @Builder.Default
+    private String id = IdGenerator.generateId();
 
     @Column(nullable = false)
     private BigDecimal totalAmount;

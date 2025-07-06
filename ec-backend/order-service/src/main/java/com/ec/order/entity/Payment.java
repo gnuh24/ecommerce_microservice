@@ -1,5 +1,6 @@
 package com.ec.order.entity;
 
+import com.ec.order.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,8 @@ import lombok.*;
 public class Payment {
 	
 	@Id
-	private String id;
+	@Builder.Default
+	private String id = IdGenerator.generateId();
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
