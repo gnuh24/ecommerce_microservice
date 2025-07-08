@@ -34,7 +34,8 @@ public class Payment {
 		PENDING,
 		SUCCESS,
 		FAILED,
-		CANCELLED
+		CANCELLED,
+		REFUNDED
 	}
 	
 	public static enum PaymentMethod {

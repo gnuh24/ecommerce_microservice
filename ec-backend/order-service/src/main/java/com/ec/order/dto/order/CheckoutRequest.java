@@ -4,7 +4,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CheckoutCODRequest {
+public class CheckoutRequest {
 	
 	private String note;
 	

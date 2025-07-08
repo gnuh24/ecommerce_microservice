@@ -2,22 +2,24 @@ package com.ec.order.controller;
 
 import com.ec.order.api.ApiResponse;
 import com.ec.order.dto.order.*;
-import com.ec.order.entity.Account;
-import com.ec.order.entity.Order;
-import com.ec.order.entity.OrderStatus;
-import com.ec.order.entity.Payment;
+import com.ec.order.entity.*;
+import com.ec.order.integration.vnpay.VNPAYService;
 import com.ec.order.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,9 @@ public class OrderController {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private VNPAYService vnpayService;
 	
 	@GetMapping("/my-orders")
 	public ResponseEntity<ApiResponse<Page<MyOrderResponseDTO>>> getMyOrders(Pageable pageable) {
@@ -135,7 +140,7 @@ public class OrderController {
 	}
 	
 	@PostMapping("/check-out/cod")
-	public ResponseEntity<ApiResponse<String>> checkoutCOD(@RequestBody CheckoutCODRequest request) {
+	public ResponseEntity<ApiResponse<String>> checkoutCOD(@RequestBody CheckoutRequest request) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Account account = (Account) authentication.getPrincipal();
 		
@@ -143,5 +148,83 @@ public class OrderController {
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Đặt hàng thành công (COD)", orderId));
 	}
+	
+	@PostMapping("/check-out/vnpay")
+	public ResponseEntity<ApiResponse<OrderCreateResponseDTO>> createOrderWithVnPay(
+	    @RequestBody CheckoutRequest request,
+	    HttpServletRequest servletRequest,
+	    @RequestHeader("Authorization") String token
+	) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Account account = (Account) authentication.getPrincipal();
+		
+		Order order = orderService.createOrderAndGenerateVnPayUrl(account.getId(), request);
+		
+		// 4. Tạo URL thanh toán qua VNPAY
+		String baseUrl = servletRequest.getScheme() + "://" + servletRequest.getServerName() + ":" + servletRequest.getServerPort();
+		String vnpUrl = vnpayService.createOrder(servletRequest, order.getTotalAmount(), order.getId(), baseUrl);
+		
+		// 5. Trả về DTO
+		OrderCreateResponseDTO response = new OrderCreateResponseDTO();
+		response.setId(order.getId());
+		response.setTotalAmount(order.getTotalAmount());
+		response.setVnpUrl(vnpUrl);
+		response.setReceiverName(request.getReceiverName());
+		response.setReceiverPhone(request.getReceiverPhone());
+		response.setReceiverAddress(request.getReceiverAddress());
+		
+		return ResponseEntity.status(HttpStatus.CREATED)
+		    .body(new ApiResponse<>(201, "Tạo đơn hàng thành công", response));
+	}
+	
+	@GetMapping("/vnpay-payment-return")
+	public ResponseEntity<ApiResponse<OrderCreateResponseDTO>> vnpayReturn(HttpServletRequest request) {
+		System.err.println("===== [VNPAY RETURN] Tham số trả về =====");
+		request.getParameterMap().forEach((key, value) ->
+		    System.err.println(key + " = " + String.join(", ", value))
+		);
+		
+		String orderId = request.getParameter("vnp_OrderInfo");
+		String transactionId = request.getParameter("vnp_TransactionNo");
+		String paymentTime = request.getParameter("vnp_PayDate");
+		String responseCode = request.getParameter("vnp_ResponseCode");
+		String transactionStatusCode = request.getParameter("vnp_TransactionStatus");
+		String secureHash = request.getParameter("vnp_SecureHash");
+		String bankCode = request.getParameter("vnp_BankCode");
+		String cardType = request.getParameter("vnp_CardType");
+		
+		// Parse Enums
+		VnPayResponseCode responseEnum = VnPayResponseCode.fromCode(responseCode);
+		VnPayTransactionStatusCode transactionEnum = VnPayTransactionStatusCode.fromCode(transactionStatusCode);
+
+		
+		// Parse time
+		LocalDateTime parsedPaymentTime = LocalDateTime.parse(paymentTime, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+		
+		// Get Status Enum (map về PaymentStatus)
+		Payment.PaymentStatus paymentStatus = vnpayService.getPaymentStatus(responseCode);
+		
+		// Create form
+		VnPayPaymentCreateForm form = VnPayPaymentCreateForm.builder()
+		    .orderId(orderId)
+		    .transactionId(transactionId)
+		    .paymentTime(parsedPaymentTime)
+		    .vnpSecureHash(secureHash)
+		    .bankCode(bankCode)
+		    .cardType(cardType)
+		    .vnpResponseCode(responseEnum)
+		    .vnpTransactionStatusCode(transactionEnum)
+		    .vnpResponseStatus(responseEnum.getDescription())
+		    .vnpTransactionStatus(transactionEnum.getDescription())
+		    .paymentStatus(paymentStatus)
+		    .build();
+		
+		Order order = orderService.processVnPayReturn(form);
+		OrderCreateResponseDTO dto = modelMapper.map(order, OrderCreateResponseDTO.class);
+		
+		return ResponseEntity.ok(new ApiResponse<>(200, "Xử lý thanh toán VNPAY thành công", dto));
+	}
+	
+	
 	
 }

@@ -1,10 +1,12 @@
 package com.ec.order.dto.order;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class CheckoutItem {
 	private String productVariantId;
 	private Integer quantity;

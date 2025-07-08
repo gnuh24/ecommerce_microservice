@@ -255,6 +255,8 @@ CREATE TABLE `Order` (
     `receiverName` VARCHAR(255) NOT NULL,
     `receiverPhone` VARCHAR(20) NOT NULL,
     `receiverAddress` VARCHAR(500) NOT NULL,
+    
+    `isTemp` BOOLEAN NOT NULL,
     `accountId` VARCHAR(10) NOT NULL,
     FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`)
 );
@@ -267,6 +269,22 @@ CREATE TABLE `Payment` (
     `orderId` VARCHAR(10) NOT NULL,
     FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`)
 );
+
+CREATE TABLE `VnPayPayment` (
+    `id` VARCHAR(10) PRIMARY KEY, -- trùng với Payment.id
+    `vnpResponseCode` VARCHAR(10),                   -- Mã phản hồi của VNPAY
+    `vnpResponseStatus` VARCHAR(255),                -- Diễn giải mã phản hồi
+    `transactionId` VARCHAR(50),                     -- Mã giao dịch VNPAY
+    `vnpTransactionStatusCode` VARCHAR(10),          -- Mã trạng thái giao dịch tại ngân hàng (thường là 00, 01, ...)
+    `vnpTransactionStatus` VARCHAR(255),             -- Diễn giải trạng thái giao dịch tại ngân hàng
+    `paymentTime` DATETIME,                          -- Thời điểm thanh toán
+    `vnpSecureHash` VARCHAR(255),                    -- Chữ ký hash trả về từ VNPAY
+    `bankCode` VARCHAR(20),                          -- Mã ngân hàng
+    `cardType` VARCHAR(20),                          -- Loại thẻ (ATM, CREDIT, ...)
+    FOREIGN KEY (`id`) REFERENCES `Payment`(`id`)
+);
+
+
 
 -- Bảng OrderDetail
 CREATE TABLE `OrderDetail` (
@@ -296,20 +314,34 @@ CREATE TABLE `OrderStatus` (
 -- ==============================
 
 -- Insert Order
-INSERT INTO `Order` (`id`, `totalAmount`, `note`, `orderTime`, `receiverName`, `receiverPhone`, `receiverAddress`, `accountId`) VALUES
-('ODR001', 9000000.00, 'Giao buổi sáng', NOW(), 'Nguyen Van A', '0901234567', '123 Le Loi, Q1, HCM', 'acc2'),
-('ODR002', 4500000.00, NULL, NOW(), 'Tran Thi B', '0902345678', '456 Tran Hung Dao, Q5, HCM', 'acc2'),
-('ODR003', 12000000.00, 'Giao trước 17h', NOW(), 'Le Van C', '0903456789', '789 Vo Thi Sau, Q3, HCM', 'acc2'),
-('ODR004', 3000000.00, 'Hủy do khách đổi ý', NOW(), 'Pham Thi D', '0904567890', '321 Nguyen Trai, Q1, HCM', 'acc2'),
-('ODR005', 6500000.00, 'Khách hủy', NOW(), 'Hoang Van E', '0905678901', '654 Cach Mang Thang 8, Q10, HCM', 'acc2');
+-- Insert Order (cập nhật thêm cột is_temp)
+INSERT INTO `Order` (`id`, `totalAmount`, `note`, `orderTime`, `receiverName`, `receiverPhone`, `receiverAddress`, `accountId`, `isTemp`) VALUES
+('ODR001', 9000000.00, 'Giao buổi sáng', NOW(), 'Nguyen Van A', '0901234567', '123 Le Loi, Q1, HCM', 'acc2', FALSE),
+('ODR002', 4500000.00, NULL, NOW(), 'Tran Thi B', '0902345678', '456 Tran Hung Dao, Q5, HCM', 'acc2', FALSE),
+('ODR003', 12000000.00, 'Giao trước 17h', NOW(), 'Le Van C', '0903456789', '789 Vo Thi Sau, Q3, HCM', 'acc2', FALSE),
+('ODR004', 3000000.00, 'Hủy do khách đổi ý', NOW(), 'Pham Thi D', '0904567890', '321 Nguyen Trai, Q1, HCM', 'acc2', FALSE),
+('ODR005', 6500000.00, 'Khách hủy', NOW(), 'Hoang Van E', '0905678901', '654 Cach Mang Thang 8, Q10, HCM', 'acc2', FALSE),
+('ODR006', 450000.00, 'Giao buổi chiều', NOW(), 'Nguyễn Văn A', '0912345678', '123 Đường ABC, Quận 1, TP.HCM', 'acc2', FALSE),
+-- 2 đơn hàng tạm
+('ODR007', 7500000.00, 'Đơn hàng VNPAY chờ thanh toán', NOW(), 'Nguyen Van F', '0906789012', '12 Bach Dang, Q1, HCM', 'acc2', TRUE),
+('ODR008', 12000000.00, 'Đơn hàng MOMO chưa xác nhận', NOW(), 'Tran Van G', '0907890123', '89 Nguyen Hue, Q1, HCM', 'acc2', TRUE);
+
+
+
 
 -- Insert Payment (Toàn bộ COD, status cho đúng từng order)
+-- Insert Payment
 INSERT INTO `Payment` (`id`, `paymentStatus`, `paymentMethod`, `orderId`) VALUES
 ('PAY001', 'PENDING', 'COD', 'ODR001'),
 ('PAY002', 'SUCCESS', 'COD', 'ODR002'),
 ('PAY003', 'SUCCESS', 'COD', 'ODR003'),
 ('PAY004', 'CANCELLED', 'COD', 'ODR004'),
-('PAY005', 'CANCELLED', 'COD', 'ODR005');
+('PAY005', 'CANCELLED', 'COD', 'ODR005'),
+('PAY006', 'SUCCESS', 'VNPAY', 'ODR006'),
+-- 2 bản ghi mới cho đơn hàng tạm
+('PAY007', 'PENDING', 'VNPAY', 'ODR007'),
+('PAY008', 'CANCELLED', 'MOMO', 'ODR008');
+
 
 -- Insert OrderDetail
 INSERT INTO `OrderDetail` (`orderId`, `productVariantId`, `productName`, `productThumbnail`, `productVolume`, `unitPrice`, `quantity`, `totalPrice`) VALUES
@@ -318,10 +350,11 @@ INSERT INTO `OrderDetail` (`orderId`, `productVariantId`, `productName`, `produc
 ('ODR003', 'V003', 'Hennessy VSOP', 'thumb3.jpg', 700, 2300000.00, 3, 6900000.00),
 ('ODR003', 'V004', 'Moët & Chandon Brut Impérial', 'thumb4.jpg', 750, 1800000.00, 3, 5400000.00),
 ('ODR004', 'V005', 'Château Margaux Grand Vin', 'thumb5.jpg', 750, 3000000.00, 1, 3000000.00),
-('ODR005', 'V006', 'Suntory Hibiki Harmony', 'thumb6.jpg', 700, 6500000.00, 1, 6500000.00);
-
--- Insert OrderStatus
--- OrderStatus history cho từng đơn:
+('ODR005', 'V006', 'Suntory Hibiki Harmony', 'thumb6.jpg', 700, 6500000.00, 1, 6500000.00),
+('ODR006', 'V005', 'Château Margaux Grand Vin', 'thumb5.jpg', 750, 3000000.00, 1, 3000000.00),
+('ODR006', 'V006', 'Suntory Hibiki Harmony', 'thumb6.jpg', 700, 6500000.00, 1, 6500000.00),
+('ODR007', 'V001', 'Johnnie Walker Blue Label', 'thumb1.jpg', 700, 7500000.00, 1, 7500000.00),
+('ODR008', 'V003', 'Hennessy VSOP', 'thumb3.jpg', 700, 6000000.00, 2, 12000000.00);
 
 -- Đơn ODR001: Chỉ mới PENDING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
@@ -348,7 +381,37 @@ INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
 ('ODR005', 'PENDING', NOW()),
 ('ODR005', 'CANCELED', NOW());
 
+-- Đơn ODR006: Đã COMPLETE
+INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
+('ODR006', 'PENDING', NOW()),
+('ODR006', 'PROCESSING', NOW()),
+('ODR006', 'COMPLETE', NOW());
 
+
+INSERT INTO `VnPayPayment` (
+    `id`,
+    `vnpResponseCode`,
+    `vnpResponseStatus`,
+    `transactionId`,
+    `vnpTransactionStatusCode`,
+    `vnpTransactionStatus`,
+    `paymentTime`,
+    `vnpSecureHash`,
+    `bankCode`,
+    `cardType`
+)
+VALUES (
+    'PAY006',
+    '00',
+    'Giao dịch thành công.',
+    'TXN987654321',
+    '00',
+    'Giao dịch đã được ngân hàng xử lý thành công.',
+    NOW(),
+    'SOME_SECURE_HASH_HERE',
+    'VCB',
+    'ATM'
+);
 
 
 
