@@ -1,0 +1,48 @@
+package com.ec.news.controller;
+
+import com.ec.news.api.ApiResponse;
+import com.ec.news.dto.NewsDetailDTO;
+import com.ec.news.dto.NewsListDTO;
+import com.ec.news.entity.News;
+import com.ec.news.service.NewsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/news")
+public class NewsController {
+	
+	@Autowired
+	private NewsService newsService;
+	
+	@GetMapping("/home")
+	public ResponseEntity<ApiResponse<Page<NewsListDTO>>> getPublishedNews(Pageable pageable) {
+		Page<News> entities = newsService.getPublishedNews(pageable);
+		Page<NewsListDTO> result = entities.map(NewsListDTO::toListDTO);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách bài viết thành công", result));
+	}
+	
+	@GetMapping("/highlight")
+	public ResponseEntity<ApiResponse<List<NewsListDTO>>> getHighlightedNews() {
+		List<News> entities = newsService.getHighlightedNews();
+		List<NewsListDTO> result = entities.stream().map(NewsListDTO::toListDTO).toList();
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách bài viết nổi bật thành công", result));
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiResponse<NewsDetailDTO>> getNewsDetail(@PathVariable String id) {
+		News entity = newsService.getNewsDetailForUser(id);
+		NewsDetailDTO result = NewsDetailDTO.toDetailDTO(entity);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy chi tiết bài viết thành công", result));
+	}
+	
+	
+}
