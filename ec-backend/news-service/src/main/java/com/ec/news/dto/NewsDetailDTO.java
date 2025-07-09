@@ -1,7 +1,6 @@
 package com.ec.news.dto;
 
 import com.ec.news.entity.News;
-import com.ec.news.entity.NewsImage;
 import lombok.Builder;
 import lombok.Data;
 
@@ -28,10 +27,6 @@ public class NewsDetailDTO {
 				.thumbnail(news.getThumbnail())
 				.highlight(news.getHighlight())
 				.createdAt(news.getCreatedAt())
-				.images(news.getImages() == null ? List.of() :
-				        news.getImages().stream()
-				            .map(NewsImage::getImageUrl)
-				            .collect(Collectors.toList()))
 				.build();
 	}
 }

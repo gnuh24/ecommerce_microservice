@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface NewsService {
 	Page<News> getPublishedNews(Pageable pageable);
-	
+	News getNewsById(String id);
 	List<News> getHighlightedNews();
-	News getNewsDetailForUser(String id);
+	News getPublicNewsById(String id);
+	Page<News> filterNewsForAdmin(String keyword, Boolean highlight, Boolean isPublished, Pageable pageable);
+	void deleteNewsById(String id);
 	
 }

@@ -48,9 +48,6 @@ public class News {
 	@Column(nullable = false)
 	private Boolean isPublished = false;
 	
-	@OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<NewsImage> images;
-	
 	@PrePersist
 	public void prePersist() {
 		createdAt = LocalDateTime.now();

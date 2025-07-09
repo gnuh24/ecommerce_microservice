@@ -3,16 +3,14 @@ package com.ec.news.controller;
 import com.ec.news.api.ApiResponse;
 import com.ec.news.dto.NewsDetailDTO;
 import com.ec.news.dto.NewsListDTO;
+import com.ec.news.dto.NewsListDTOForAdmin;
 import com.ec.news.entity.News;
 import com.ec.news.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,10 +37,21 @@ public class NewsController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<NewsDetailDTO>> getNewsDetail(@PathVariable String id) {
-		News entity = newsService.getNewsDetailForUser(id);
+		News entity = newsService.getPublicNewsById(id);
 		NewsDetailDTO result = NewsDetailDTO.toDetailDTO(entity);
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy chi tiết bài viết thành công", result));
 	}
 	
+	@GetMapping()
+	public ResponseEntity<ApiResponse<Page<NewsListDTOForAdmin>>> getAllNewsForAdmin(
+	    @RequestParam(required = false) String search,
+	    @RequestParam(required = false) Boolean highlight,
+	    @RequestParam(required = false) Boolean isPublished,
+	    Pageable pageable
+	) {
+		Page<News> entities = newsService.filterNewsForAdmin(search, highlight, isPublished, pageable);
+		Page<NewsListDTOForAdmin> result = entities.map(NewsListDTOForAdmin::toListDTO);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách bài viết thành công", result));
+	}
 	
 }
