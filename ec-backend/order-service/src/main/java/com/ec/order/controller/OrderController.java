@@ -152,8 +152,7 @@ public class OrderController {
 	@PostMapping("/check-out/vnpay")
 	public ResponseEntity<ApiResponse<OrderCreateResponseDTO>> createOrderWithVnPay(
 	    @RequestBody CheckoutRequest request,
-	    HttpServletRequest servletRequest,
-	    @RequestHeader("Authorization") String token
+	    HttpServletRequest servletRequest
 	) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Account account = (Account) authentication.getPrincipal();

@@ -17,5 +17,6 @@ public interface NewsRepository extends JpaRepository<News, String>, JpaSpecific
 	
 	Optional<News> findByIdAndIsDeletedFalseAndIsPublishedTrue(String id);
 	Optional<News> findByIdAndIsDeletedFalse(String id);
+	boolean existsByTitleAndIsDeletedFalse(String title);
 	
 }

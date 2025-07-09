@@ -1,7 +1,9 @@
 package com.ec.news.entity;
 
+import com.ec.news.utils.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,8 @@ public class News {
 	
 	@Id
 	@Column(length = 10)
-	private String id;
+	@Builder.Default
+	private String id = IdGenerator.generateId();
 	
 	@Column(nullable = false)
 	private String title;

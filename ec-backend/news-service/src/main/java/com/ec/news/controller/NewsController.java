@@ -1,15 +1,18 @@
 package com.ec.news.controller;
 
 import com.ec.news.api.ApiResponse;
-import com.ec.news.dto.NewsDetailDTO;
-import com.ec.news.dto.NewsListDTO;
-import com.ec.news.dto.NewsListDTOForAdmin;
+import com.ec.news.dto.*;
+import com.ec.news.entity.Account;
 import com.ec.news.entity.News;
 import com.ec.news.service.NewsService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,16 +45,8 @@ public class NewsController {
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy chi tiết bài viết thành công", result));
 	}
 	
-	@GetMapping()
-	public ResponseEntity<ApiResponse<Page<NewsListDTOForAdmin>>> getAllNewsForAdmin(
-	    @RequestParam(required = false) String search,
-	    @RequestParam(required = false) Boolean highlight,
-	    @RequestParam(required = false) Boolean isPublished,
-	    Pageable pageable
-	) {
-		Page<News> entities = newsService.filterNewsForAdmin(search, highlight, isPublished, pageable);
-		Page<NewsListDTOForAdmin> result = entities.map(NewsListDTOForAdmin::toListDTO);
-		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách bài viết thành công", result));
-	}
+	
+	
+	
 	
 }

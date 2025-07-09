@@ -3,7 +3,9 @@ package com.ec.news.exceptions;
 import com.ec.news.aop.AppLogger;
 import com.ec.news.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.news.exceptions.JwtException.*;
+import com.ec.news.exceptions.business.NewsContentInvalidHtmlException;
 import com.ec.news.exceptions.business.NewsNotFoundException;
+import com.ec.news.exceptions.business.NewsTitleAlreadyExistsException;
 import com.ec.news.exceptions.errorCode.NewsBusinessErrorCode;
 import com.ec.news.exceptions.errorCode.SystemErrorCode;
 import com.ec.news.exceptions.fileException.EmptyFileUploadException;
@@ -171,6 +173,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
+	@ExceptionHandler(NewsContentInvalidHtmlException.class)
+	public ResponseEntity<Object> handleInvalidContent(
+	    HttpServletRequest request, NewsContentInvalidHtmlException ex) {
+		return buildErrorResponse(
+		    request,
+		    HttpStatus.BAD_REQUEST,
+		    NewsBusinessErrorCode.NEWS_CONTENT_INVALID_HTML,
+		    ex.getMessage(),
+		    ex,
+		    null
+		);
+	}
 	
 	
 	
@@ -185,6 +199,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		
 		return buildErrorResponse(request, HttpStatus.UNAUTHORIZED, code, message, ex, null);
+	}
+	
+	@ExceptionHandler(NewsTitleAlreadyExistsException.class)
+	public ResponseEntity<Object> handleTitleExists(
+	    HttpServletRequest request, NewsTitleAlreadyExistsException ex) {
+		return buildErrorResponse(
+		    request,
+		    HttpStatus.CONFLICT,
+		    NewsBusinessErrorCode.NEWS_TITLE_ALREADY_EXISTS,
+		    ex.getMessage(),
+		    ex,
+		    null
+		);
 	}
 	
 	
