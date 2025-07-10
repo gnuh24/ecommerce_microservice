@@ -6,9 +6,7 @@ import lombok.Data;
 
 @Data
 public class CategoryCreateForm {
-
-    @NotBlank(message = "Bạn không được để trống tên loại sản phẩm !!")
-    @Size(min = 3, max = 100, message = "Tên loại sản phẩm phải từ 3 đến 100 ký tự !!")
-    private String categoryName;
-
+	@NotBlank(message = "Tên danh mục không được để trống")
+	@Size(max = 100, message = "Tên danh mục không được vượt quá 100 ký tự")
+	private String categoryName;
 }

@@ -5,6 +5,8 @@ import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.catalog.exceptions.JwtException.*;
 import com.ec.catalog.exceptions.business.BusinessException;
+import com.ec.catalog.exceptions.business.category.CategoryAlreadyExistsException;
+import com.ec.catalog.exceptions.business.category.CategoryNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFound;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
 import com.ec.catalog.exceptions.errorCode.CatalogBusinessErrorCode;
@@ -183,6 +185,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		    )
 		);
 	}
+	
+	@ExceptionHandler(CategoryNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleCategoryNotFound(HttpServletRequest request, CategoryNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_CATEGORY_NOT_FOUND,
+			"Không tìm thấy danh mục.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+
 	
 	
 	

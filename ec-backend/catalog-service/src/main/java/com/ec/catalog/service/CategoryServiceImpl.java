@@ -3,7 +3,10 @@ package com.ec.catalog.service;
 import com.ec.catalog.dto.category.CategoryCreateForm;
 import com.ec.catalog.dto.category.CategoryUpdateForm;
 import com.ec.catalog.entity.Category;
+import com.ec.catalog.exceptions.business.category.CategoryAlreadyExistsException;
+import com.ec.catalog.exceptions.business.category.CategoryNotFoundException;
 import com.ec.catalog.repository.CategoryRepository;
+import com.ec.catalog.specification.CategorySpecification;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,63 +16,83 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-
-    @Autowired
-    private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 //    @Autowired
 //    @Lazy
 //    private ProductService productService;
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	@Override
+	public List<Category> getAllCategoryNoPaging() {
+		return categoryRepository.findAllByIsDeletedFalse();
+	}
+	
+	@Override
+	public Page<Category> getAllCategories(Pageable pageable, String search) {
+		return categoryRepository.findAll(CategorySpecification.searchByName(search), pageable);
+	}
 
-    @Autowired
-    private ModelMapper modelMapper;
+	
+	@Override
+	public Category getCategoryById(String id) {
+		return categoryRepository.findByIdAndIsDeletedFalse(id)
+		    .orElseThrow(() -> new CategoryNotFoundException(id));
+	}
+	
+	@Override
+	public Category createCategory(CategoryCreateForm form) {
+		if (categoryRepository.existsByCategoryNameIgnoreCaseAndIsDeletedFalse(form.getCategoryName())) {
+			throw new CategoryAlreadyExistsException(form.getCategoryName());
+		}
+		
+		Category category = Category.builder()
+		    .categoryName(form.getCategoryName().trim())
+		    .build();
+		
+		return categoryRepository.save(category);
+	}
+	
+	@Override
+	public Category updateCategory(String categoryId, CategoryUpdateForm form) {
+		Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
+		    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+		
+		String newName = form.getCategoryName().trim();
+		
+		if (!category.getCategoryName().equalsIgnoreCase(newName) &&
+		    categoryRepository.existsByCategoryNameIgnoreCaseAndIsDeletedFalse(newName)) {
+			throw new CategoryAlreadyExistsException(newName);
+		}
+		
+		category.setCategoryName(newName);
+		return categoryRepository.save(category);
+	}
+	
+	
+	@Override
+	public void deleteCategory(String categoryId) {
+		Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
+		    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+		
+		category.setIsDeleted(true);
+		category.setDeletedAt(LocalDateTime.now());
+		
+		categoryRepository.save(category);
+	}
 
-    @Override
-    public List<Category> getAllCategoryNoPaging() {
-	return categoryRepository.findAllByIsDeletedFalse();
-    }
 
-//    @Override
-//    public Page<Category> getAllCategory(Pageable pageable, String search) {
-//	Specification<Category> specification = CategorySpecification.buildWhere(search);
-//	return categoryRepository.findAll(specification, pageable);
-//    }
-//
-//    @Override
-//    public Category getCategoryById(Integer id) {
-//	return categoryRepository.findById(id)
-//		.orElseThrow(() -> new EntityNotFoundException("Category ID: " + id + " không tồn tại!"));
-//    }
-//
-//    @Override
-//    public Category createCategory(CategoryCreateForm form) throws Exception {
-//	validateCategoryName(form.getCategoryName(), null);
-//
-//	Category entity = modelMapper.map(form, Category.class);
-//	return categoryRepository.save(entity);
-//    }
-//
-//    @Override
-//    public Category updateCategory(Integer id, CategoryUpdateForm form) throws Exception {
-//	Category oldCategory = getCategoryById(id);
-//
-//	validateCategoryName(form.getCategoryName(), oldCategory.getId());
-//
-//	oldCategory.setCategoryName(form.getCategoryName());
-//	return categoryRepository.save(oldCategory);
-//    }
-//
-//    @Override
-//    public void deleteCategory(Integer categoryId) {
-//	getCategoryById(categoryId);
-//	productService.updateDefaultCategoryOfProduct(categoryId);
-//	categoryRepository.deleteById(categoryId);
-//    }
+
 
 //    /**
 //     * Validates if the category name already exists.

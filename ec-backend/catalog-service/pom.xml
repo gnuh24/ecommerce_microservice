@@ -13,7 +13,7 @@
 	</parent>
 
 	<groupId>com.ec.catalog</groupId>
-	<artifactId>news-service</artifactId>
+	<artifactId>catalog-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>catalog-service</name>
 	<description>catalog-service</description>
