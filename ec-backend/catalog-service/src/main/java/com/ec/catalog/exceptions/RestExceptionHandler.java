@@ -1,17 +1,15 @@
 package com.ec.catalog.exceptions;
 
 import com.ec.catalog.aop.AppLogger;
-import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.catalog.exceptions.JwtException.*;
-import com.ec.catalog.exceptions.business.BusinessException;
 import com.ec.catalog.exceptions.business.brand.BrandAlreadyExistsException;
 import com.ec.catalog.exceptions.business.brand.BrandNotFoundException;
 import com.ec.catalog.exceptions.business.category.CategoryAlreadyExistsException;
 import com.ec.catalog.exceptions.business.category.CategoryNotFoundException;
 import com.ec.catalog.exceptions.business.product.ProductAlreadyExistsException;
 import com.ec.catalog.exceptions.business.product_variant.DuplicateVariantVolumeException;
-import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFound;
+import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
 import com.ec.catalog.exceptions.errorCode.CatalogBusinessErrorCode;
 import com.ec.catalog.exceptions.errorCode.SystemErrorCode;
@@ -164,8 +162,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
-	@ExceptionHandler(ProductVariantNotFound.class)
-	public ResponseEntity<ErrorResponse> handleVariantNotFound(HttpServletRequest request, ProductVariantNotFound ex) {
+	@ExceptionHandler(ProductVariantNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleVariantNotFound(HttpServletRequest request, ProductVariantNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
 		    new ErrorResponse(
 			HttpStatus.NOT_FOUND.value(),

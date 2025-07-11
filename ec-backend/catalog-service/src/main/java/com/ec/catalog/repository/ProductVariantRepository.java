@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, String> {
@@ -19,6 +20,10 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 	
 	@Query("SELECT MAX(v.price) FROM ProductVariant v WHERE v.product.id = :productId AND v.isDeleted = false")
 	BigDecimal findMaxPriceByProductId(@Param("productId") String productId);
+	
+	Optional<ProductVariant> findByIdAndIsDeletedFalse(String productVariantId);
+	
+	Optional<ProductVariant> findByProductIdAndVolume(String productId, Integer volume);
 	
 	
 }

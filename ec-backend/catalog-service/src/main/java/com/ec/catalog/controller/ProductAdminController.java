@@ -1,13 +1,14 @@
 package com.ec.catalog.controller;
 
 import com.ec.catalog.api.ApiResponse;
-import com.ec.catalog.dto.product.ProductCreateForm;
-import com.ec.catalog.dto.product.ProductListDTOForAdmin;
-import com.ec.catalog.dto.product.ProductDetailDTOForAdmin;
-import com.ec.catalog.dto.product.ProductUpdateForm;
+import com.ec.catalog.dto.product.*;
+import com.ec.catalog.dto.productVariant.ProductVariantResponseDTO;
 import com.ec.catalog.entity.Product;
+import com.ec.catalog.entity.ProductVariant;
+import com.ec.catalog.repository.ProductVariantRepository;
 import com.ec.catalog.service.ProductService;
 
+import com.ec.catalog.service.ProductVariantService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,9 @@ public class ProductAdminController {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private ProductVariantService productVariantService;
 	
 	// === GET LIST PRODUCTS ===
 	@GetMapping
@@ -63,6 +67,32 @@ public class ProductAdminController {
 		Product updated = productService.updateProduct(productId, form);
 		ProductDetailDTOForAdmin result = ProductDetailDTOForAdmin.fromEntity(updated);
 		return ResponseEntity.ok(new ApiResponse<>(200, "Cập nhật sản phẩm thành công", result));
+	}
+	
+	
+	@PatchMapping("/product-variants/{variantId}")
+	public ResponseEntity<ApiResponse<ProductVariantResponseDTOForAdmin>> updateVariant(
+	    @PathVariable String variantId,
+	    @Valid @RequestBody ProductVariantUpdateForm form
+	) {
+		ProductVariant updated = productVariantService.updateVariant(variantId, form);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Cập nhật phiên bản sản phẩm thành công", ProductVariantResponseDTOForAdmin.fromEntity(updated)));
+	}
+	
+	@PostMapping("/product-variants")
+	public ResponseEntity<ApiResponse<ProductVariantResponseDTOForAdmin>> createVariant(
+	    @RequestParam String productId,
+	    @Valid @RequestBody ProductVariantForm form
+	) {
+		ProductVariant variant = productVariantService.createVariant(productId, form);
+		ProductVariantResponseDTOForAdmin result = ProductVariantResponseDTOForAdmin.fromEntity(variant);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Tạo phiên bản sản phẩm thành công", result));
+	}
+	
+	@DeleteMapping("/product-variants/{variantId}")
+	public ResponseEntity<ApiResponse<Object>> deleteVariant(@PathVariable String variantId) {
+		productVariantService.deleteVariant(variantId);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Xóa phiên bản sản phẩm thành công", null));
 	}
 	
 }
