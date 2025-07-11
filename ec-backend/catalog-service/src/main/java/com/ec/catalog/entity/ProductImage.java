@@ -2,7 +2,10 @@ package com.ec.catalog.entity;
 
 import com.ec.catalog.utils.IdGenerator;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -10,10 +13,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "ProductImage")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductImage {
 	
 	@Id
 	@Column(length = 10)
+	@Builder.Default
 	private String id = IdGenerator.generateId();
 	
 	@Column(length = 1024, nullable = false)

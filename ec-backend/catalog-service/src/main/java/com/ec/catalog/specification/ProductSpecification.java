@@ -2,169 +2,62 @@ package com.ec.catalog.specification;
 
 import com.ec.catalog.dto.product.ProductFilterForm;
 import com.ec.catalog.entity.Product;
-import com.mysql.cj.util.StringUtils;
-import jakarta.persistence.criteria.*;
-import lombok.Data;
-import lombok.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Date;
-
-
-@Data
-public class ProductSpecification implements Specification<Product> {
+public class ProductSpecification {
 	
-	@NonNull
-	private String field;
-	
-	@NonNull
-	private Object value;
-	
-	@Override
-	//Đây là phương thức ta dùng để custom filter
-	public Predicate toPredicate(@NonNull Root<Product> root,
-				     @NonNull CriteriaQuery<?> query,
-				     @NonNull CriteriaBuilder criteriaBuilder) {
-		
-		if (field.equalsIgnoreCase("id")) {
-			return criteriaBuilder.equal(root.get("id"), value);
-		}
-		
-		if (field.equalsIgnoreCase("productName")) {
-			return criteriaBuilder.like(root.get("productName"), "%" + value + "%");
-		}
-		
-		if (field.equalsIgnoreCase("isPublished")) {
-			return criteriaBuilder.equal(root.get("isPublished"), value);
-		}
-		
-//		if (field.equalsIgnoreCase("minCreateTime")) {
-//			return criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(java.sql.Date.class), (Date) value);
-//		}
-//
-//		if (field.equalsIgnoreCase("maxCreateTime")) {
-//			return criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(java.sql.Date.class), (Date) value);
-//		}
-		
-		if (field.equalsIgnoreCase("brandId")) {
-			return criteriaBuilder.equal(root.get("brand").get("id"), value);
-		}
-		
-		if (field.equalsIgnoreCase("categoryId")) {
-			return criteriaBuilder.equal(root.get("category").get("id"), value);
-		}
-
-//        if (field.equalsIgnoreCase("minPrice")){
-//            return criteriaBuilder.greaterThanOrEqualTo( root.get("price"), (Integer) value);
-//        }
-//
-//        if (field.equalsIgnoreCase("maxPrice")){
-//            return criteriaBuilder.lessThanOrEqualTo( root.get("price"), (Integer) value);
-//        }
-		
-		return null;
+	// Dành cho người dùng cuối: chỉ lấy sản phẩm đang publish và chưa bị xóa
+	public static Specification<Product> buildWhere(String search, ProductFilterForm form) {
+		return Specification
+		    .where(hasSearch(search))
+		    .and(hasCategoryId(form.getCategoryId()))
+		    .and(hasBrandId(form.getBrandId()))
+		    .and(isPublished(true))
+		    .and(isNotDeleted());
 	}
 	
-	
-	public static Specification<Product> buildWhere(String search,
-							ProductFilterForm form) {
-		Specification<Product> where = null;
-		
-		//Filter cho thanh tìm kiếm
-		if (!StringUtils.isEmptyOrWhitespaceOnly(search)) {
-			search = search.trim();
-			ProductSpecification productName = new ProductSpecification("productName", search);
-			ProductSpecification id = null;
-			try {
-				Integer num = Integer.parseInt(search);
-				id = new ProductSpecification("id", num);
-				where = Specification.where(productName).or(id);
-			} catch (NumberFormatException e) {
-				where = Specification.where(productName);
-			}
-		}
-		
-		
-		if (form != null) {
-			
-			//Filter cho Combobox Status (Trạng thái)
-			if ( form.getIsPublished() != null ) {
-				ProductSpecification isPublished = new ProductSpecification("isPublished", form.getIsPublished());
-				if (where != null) {
-					where = where.and(isPublished);
-				} else {
-					where = Specification.where(isPublished);
-				}
-			}
-
-
-//            //Filter cho bộ lọc theo ngày ( Cận dưới )
-//            if (form.getMinCreateTime() != null){
-//                ProductSpecification minCreateDate = new ProductSpecification("minCreateTime", form.getMinCreateTime());
-//                if (where != null){
-//                    where = where.and(minCreateDate);
-//                }else{
-//                    where = Specification.where(minCreateDate);
-//                }
-//            }
-//
-//            //Filter cho bộ lọc theo ngày ( Cận trên )
-//            if (form.getMaxCreateTime() != null){
-//                ProductSpecification maxCreateDate = new ProductSpecification("maxCreateTime", form.getMaxCreateTime());
-//                if (where != null){
-//                    where = where.and(maxCreateDate);
-//                }else{
-//                    where = Specification.where(maxCreateDate);
-//                }
-//            }
-			
-			//Filter cho bộ lọc theo thương hiệu
-			if (form.getBrandId() != null) {
-				ProductSpecification brandId = new ProductSpecification("brandId", form.getBrandId());
-				if (where != null) {
-					where = where.and(brandId);
-				} else {
-					where = Specification.where(brandId);
-				}
-			}
-			
-			//Filter cho bộ lọc theo loại sản phẩm
-			if (form.getCategoryId() != null) {
-				ProductSpecification shoeTypeId = new ProductSpecification("categoryId", form.getCategoryId());
-				if (where != null) {
-					where = where.and(shoeTypeId);
-				} else {
-					where = Specification.where(shoeTypeId);
-				}
-			}
-			
-			//Filter cho bộ lọc theo cận dưới của giá sản phẩm
-//            if (form.getMinPrice() != null){
-//                ProductSpecification minPrice = new ProductSpecification("minPrice", form.getMinPrice());
-//                if (where != null){
-//                    where = where.and(minPrice);
-//                }else{
-//                    where = Specification.where(minPrice);
-//                }
-//            }
-//
-//            //Filter cho bộ lọc theo cận trên của giá sản phẩm
-//            if (form.getMaxPrice() != null){
-//                ProductSpecification maxPrice = new ProductSpecification("maxPrice", form.getMaxPrice());
-//                if (where != null){
-//                    where = where.and(maxPrice);
-//                }else{
-//                    where = Specification.where(maxPrice);
-//                }
-//            }
-		
-		
-		}
-		
-		
-		return where;
+	// Dành cho admin: linh hoạt theo isPublished và không loại bỏ soft-deleted nếu không cần
+	public static Specification<Product> buildSpecification(String search, Boolean isPublished, String categoryId, String brandId) {
+		return Specification
+		    .where(hasSearch(search))
+		    .and(isPublished(isPublished))
+		    .and(hasCategoryId(categoryId))
+		    .and(hasBrandId(brandId))
+		    .and(isNotDeleted()); // Admin vẫn loại bỏ soft-delete
 	}
 	
+	// ===== Common Specification Helpers =====
 	
+	public static Specification<Product> hasSearch(String search) {
+		return (root, query, cb) -> {
+			if (search == null || search.trim().isEmpty()) return null;
+			String keyword = "%" + search.trim().toLowerCase() + "%";
+			return cb.like(cb.lower(root.get("productName")), keyword);
+		};
+	}
+	
+	public static Specification<Product> isPublished(Boolean isPublished) {
+		return (root, query, cb) -> {
+			if (isPublished == null) return null;
+			return cb.equal(root.get("isPublished"), isPublished);
+		};
+	}
+	
+	public static Specification<Product> hasCategoryId(String categoryId) {
+		return (root, query, cb) -> {
+			if (categoryId == null || categoryId.trim().isEmpty()) return null;
+			return cb.equal(root.get("category").get("id"), categoryId);
+		};
+	}
+	
+	public static Specification<Product> hasBrandId(String brandId) {
+		return (root, query, cb) -> {
+			if (brandId == null || brandId.trim().isEmpty()) return null;
+			return cb.equal(root.get("brand").get("id"), brandId);
+		};
+	}
+	
+	public static Specification<Product> isNotDeleted() {
+		return (root, query, cb) -> cb.isFalse(root.get("isDeleted"));
+	}
 }
-

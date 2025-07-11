@@ -2,7 +2,10 @@ package com.ec.catalog.entity;
 
 import com.ec.catalog.utils.IdGenerator;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,10 +15,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "ProductVariant")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductVariant {
 	
 	@Id
 	@Column(length = 10)
+	@Builder.Default
 	private String id = IdGenerator.generateId();
 	
 	@Column(nullable = false)
