@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, String>, JpaSpecificationExecutor<Brand> {
-	Optional<Brand> findByBrandName(String name);
-	
 	List<Brand> findAllByIsDeletedFalse();
+	boolean existsByBrandNameIgnoreCaseAndIsDeletedFalse(String name);
+	Optional<Brand> findByIdAndIsDeletedFalse(String id);
 	
 }
