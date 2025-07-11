@@ -8,6 +8,7 @@ import com.ec.catalog.exceptions.business.brand.BrandNotFoundException;
 import com.ec.catalog.exceptions.business.category.CategoryAlreadyExistsException;
 import com.ec.catalog.exceptions.business.category.CategoryNotFoundException;
 import com.ec.catalog.exceptions.business.product.ProductAlreadyExistsException;
+import com.ec.catalog.exceptions.business.product_image.ProductImageNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.DuplicateVariantVolumeException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
@@ -200,6 +201,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		    )
 		);
 	}
+	
+	@ExceptionHandler(ProductImageNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleProductImageNotFound(HttpServletRequest request, ProductImageNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_IMAGE_NOT_FOUND,
+			"Không tìm thấy ảnh sản phẩm.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
 	
 	@ExceptionHandler(CategoryAlreadyExistsException.class)
 	public ResponseEntity<ErrorResponse> handleCategoryAlreadyExists(HttpServletRequest request, CategoryAlreadyExistsException ex) {

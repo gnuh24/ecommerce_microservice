@@ -17,6 +17,10 @@ public final class CatalogBusinessErrorCode {
 	public static final String CAT_VARIANT_ALREADY_DISABLED    = "CAT-VARIANT-004"; // Phiên bản đã ngưng kinh doanh
 	public static final String CAT_VARIANT_DUPLICATE_VOLUME    = "CAT-VARIANT-005"; // Trùng dung tích các phiên bản
 	
+	public static final String CAT_IMAGE_NOT_FOUND = "CAT-IMAGE-001"; // Không tìm thấy ảnh
+	public static final String CAT_IMAGE_ALREADY_DELETED = "CAT-IMAGE-002"; // Ảnh đã bị xóa
+	
+	
 	// ======= CATEGORY =======
 	public static final String CAT_CATEGORY_NOT_FOUND = "CAT-CATEGORY-001"; // Không tìm thấy danh mục
 	public static final String CAT_CATEGORY_ALREADY_EXISTS = "CAT-CATEGORY-002"; // Tên danh mục đã tồn tại
