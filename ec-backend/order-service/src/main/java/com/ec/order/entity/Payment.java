@@ -25,7 +25,7 @@ public class Payment {
 	@Column(nullable = false)
 	private PaymentMethod paymentMethod;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "orderId", nullable = false)
 	private Order order;
 	

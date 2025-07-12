@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,9 +46,9 @@ public class OrderController {
 		Page<Order> orderPage = orderService.getMyOrders(account.getId(), pageable);
 		
 		List<MyOrderResponseDTO> dtoList = orderPage.getContent().stream().map(order -> {
+			
 			OrderStatus.OrderStatusEnum latestStatus = order.getStatuses().stream()
-			    .sorted((a, b) -> b.getUpdateTime().compareTo(a.getUpdateTime()))
-			    .findFirst()
+			    .max(Comparator.comparing(OrderStatus::getUpdateTime))
 			    .map(OrderStatus::getStatus)
 			    .orElse(null);
 			
@@ -59,6 +60,7 @@ public class OrderController {
 				.productThumbnail(detail.getProductThumbnail())
 				.unitPrice(detail.getUnitPrice())
 				.quantity(detail.getQuantity())
+				.totalPrice(detail.getTotalPrice())
 				.build())
 			    .collect(Collectors.toList());
 			
@@ -89,38 +91,16 @@ public class OrderController {
 		
 		// Convert OrderDetails
 		List<OrderDetailDTO> orderDetails = order.getOrderDetails().stream()
-		    .map(detail -> OrderDetailDTO.builder()
-			.productVariantId(detail.getProductVariantId())
-			.productName(detail.getProductName())
-			.productThumbnail(detail.getProductThumbnail())
-			.productVolume(detail.getProductVolume())
-			.unitPrice(detail.getUnitPrice())
-			.quantity(detail.getQuantity())
-			.totalPrice(detail.getTotalPrice())
-			.build())
+		    .map(OrderDetailDTO::fromEntity)
 		    .toList();
 		
 		// Convert Order Status History
 		List<OrderStatusDTO> statusHistory = order.getStatuses().stream()
-		    .map(status -> OrderStatusDTO.builder()
-			.status(status.getStatus())
-			.updateTime(status.getUpdateTime())
-			.build())
+		    .map(OrderStatusDTO::fromEntity)
 		    .toList();
 		
-		// Convert Payment (chỉ lấy 1 payment duy nhất, giả định có 1 payment cho 1 order)
-		Payment payment = order.getPayments() != null && !order.getPayments().isEmpty()
-		    ? order.getPayments().get(0)
-		    : null;
-		
-		PaymentDTO paymentDTO = null;
-		if (payment != null) {
-			paymentDTO = PaymentDTO.builder()
-			    .id(payment.getId())
-			    .paymentStatus(payment.getPaymentStatus())
-			    .paymentMethod(payment.getPaymentMethod())
-			    .build();
-		}
+		// Convert Payment (chỉ lấy 1 payment duy nhất)
+		PaymentDTO paymentDTO = PaymentDTO.fromEntity(order.getPayment());
 		
 		// Build final DTO
 		OrderDetailResponseDTO responseDTO = OrderDetailResponseDTO.builder()
@@ -138,6 +118,7 @@ public class OrderController {
 		
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy chi tiết đơn hàng thành công", responseDTO));
 	}
+
 	
 	@PostMapping("/check-out/cod")
 	public ResponseEntity<ApiResponse<String>> checkoutCOD(@RequestBody CheckoutRequest request) {

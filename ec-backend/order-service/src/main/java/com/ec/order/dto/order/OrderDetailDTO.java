@@ -19,4 +19,19 @@ public class OrderDetailDTO {
 	private BigDecimal unitPrice;
 	private Integer quantity;
 	private BigDecimal totalPrice;
+	
+	public static OrderDetailDTO fromEntity(com.ec.order.entity.OrderDetail entity) {
+		if (entity == null) return null;
+		
+		return OrderDetailDTO.builder()
+		    .productVariantId(entity.getProductVariantId())
+		    .productName(entity.getProductName())
+		    .productThumbnail(entity.getProductThumbnail())
+		    .productVolume(entity.getProductVolume())
+		    .unitPrice(entity.getUnitPrice())
+		    .quantity(entity.getQuantity())
+		    .totalPrice(entity.getTotalPrice())
+		    .build();
+	}
+	
 }

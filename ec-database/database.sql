@@ -363,30 +363,31 @@ INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
 
 -- Đơn ODR002: Đã PROCESSING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR002', 'PENDING', NOW()),
-('ODR002', 'PROCESSING', NOW());
+('ODR002', 'PENDING', NOW() - INTERVAL 2 MINUTE),
+('ODR002', 'PROCESSING', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR003: Đã COMPLETE
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR003', 'PENDING', NOW()),
-('ODR003', 'PROCESSING', NOW()),
-('ODR003', 'COMPLETE', NOW());
+('ODR003', 'PENDING', NOW() - INTERVAL 3 MINUTE),
+('ODR003', 'PROCESSING', NOW() - INTERVAL 2 MINUTE),
+('ODR003', 'COMPLETE', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR004: Bị Hủy sau PENDING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR004', 'PENDING', NOW()),
-('ODR004', 'CANCELED', NOW());
+('ODR004', 'PENDING', NOW() - INTERVAL 2 MINUTE),
+('ODR004', 'CANCELED', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR005: Bị Hủy sau PENDING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR005', 'PENDING', NOW()),
-('ODR005', 'CANCELED', NOW());
+('ODR005', 'PENDING', NOW() - INTERVAL 4 MINUTE),
+('ODR005', 'CANCELED', NOW() - INTERVAL 2 MINUTE);
 
 -- Đơn ODR006: Đã COMPLETE
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR006', 'PENDING', NOW()),
-('ODR006', 'PROCESSING', NOW()),
-('ODR006', 'COMPLETE', NOW());
+('ODR006', 'PENDING', NOW() - INTERVAL 5 MINUTE),
+('ODR006', 'PROCESSING', NOW() - INTERVAL 3 MINUTE),
+('ODR006', 'COMPLETE', NOW() - INTERVAL 1 MINUTE);
+
 
 
 INSERT INTO `VnPayPayment` (
