@@ -96,6 +96,7 @@ CREATE TABLE `Brand` (
     `isDeleted`     BOOLEAN DEFAULT FALSE
 );
 
+
 INSERT INTO `Brand` (`id`, `brandName`) VALUES
 ('B001', 'Thương hiệu khác'),
 ('B002', 'Johnnie Walker'),

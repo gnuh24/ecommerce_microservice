@@ -21,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/categories")
-@CrossOrigin(origins = "*")
 public class CategoryController {
 	
 	@Autowired
@@ -38,49 +37,5 @@ public class CategoryController {
 		
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtos));
 	}
-	
-//	@GetMapping()
-//	public ResponseEntity<ApiResponse<Page<CategoryResponseDTO>>> getAllCategory(Pageable pageable,
-//										     @RequestParam(name = "search", required = false) String search) {
-//		Page<Category> entities = categoryService.getAllCategory(pageable, search);
-//		List<CategoryResponseDTO> dtos = modelMapper.map(entities.getContent(), new TypeToken<List<CategoryResponseDTO>>() {
-//		}.getType());
-//		Page<CategoryResponseDTO> dtoPage = new PageImpl<>(dtos, pageable, entities.getTotalElements());
-//
-//		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtoPage));
-//	}
-//
-//	@GetMapping(value = "/{categoryId}")
-//	public ResponseEntity<ApiResponse<CategoryResponseDTO>> getCategoryById(@PathVariable Integer categoryId) {
-//		Category entity = categoryService.getCategoryById(categoryId);
-//		CategoryResponseDTO dto = modelMapper.map(entity, CategoryResponseDTO.class);
-//
-//		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));
-//	}
-//
-//	@PostMapping()
-//	public ResponseEntity<ApiResponse<CategoryResponseDTO>> createCategory(@RequestBody @Valid CategoryCreateForm form) throws Exception {
-//		Category entity = categoryService.createCategory(form);
-//		CategoryResponseDTO dto = modelMapper.map(entity, CategoryResponseDTO.class);
-//
-//		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(HttpStatus.CREATED.value(), "Category created successfully", dto));
-//	}
-//
-//	@PatchMapping(value = "/{categoryId}")
-//	public ResponseEntity<ApiResponse<CategoryResponseDTO>> updateCategory(@PathVariable Integer categoryId,
-//									       @RequestBody @Valid CategoryUpdateForm form) throws Exception {
-//		Category entity = categoryService.updateCategory(categoryId, form);
-//		CategoryResponseDTO dto = modelMapper.map(entity, CategoryResponseDTO.class);
-//
-//		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Category updated successfully", dto));
-//	}
-//
-//	@DeleteMapping(value = "/{categoryId}")
-//	public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Integer categoryId) throws Exception {
-//		categoryService.deleteCategory(categoryId);
-//
-//		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Category deleted successfully", null));
-//	}
-	
 	
 }
