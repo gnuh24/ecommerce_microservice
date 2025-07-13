@@ -3,8 +3,12 @@ package com.ec.order.service;
 import com.ec.order.client.CatalogClient;
 import com.ec.order.dto.order.*;
 import com.ec.order.entity.*;
+import com.ec.order.entity.OrderStatus.OrderStatusEnum;
+
+import com.ec.order.exceptions.business.order.OrderCannotBeCancelledException;
 import com.ec.order.exceptions.business.order.OrderNotFoundException;
 import com.ec.order.exceptions.business.order.OrderOutOfStockException;
+import com.ec.order.exceptions.business.order.OrderStatusTransitionNotAllowedException;
 import com.ec.order.exceptions.business.payment.PaymentNotFoundException;
 import com.ec.order.integration.redis.RedisService;
 import com.ec.order.repository.OrderRepository;
@@ -13,6 +17,7 @@ import com.ec.order.repository.PaymentRepository;
 import com.ec.order.repository.VnPayPaymentRepository;
 import com.ec.order.specification.OrderSpecification;
 import com.ec.order.utils.IdGenerator;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -307,7 +313,67 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 	
+	@Override
+	@Transactional
+	public void updateOrderStatus(String orderId, OrderStatusEnum newStatus) {
+		Order order = orderRepository.findById(orderId)
+		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		
+		OrderStatusEnum currentStatus = order.getStatuses().stream()
+		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
+		    .map(OrderStatus::getStatus)
+		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		
+		List<OrderStatusEnum> allowedNext = allowedTransitions.getOrDefault(currentStatus, List.of());
+		if (!allowedNext.contains(newStatus)) {
+			throw new OrderStatusTransitionNotAllowedException(currentStatus.name(), newStatus.name());
+		}
+		
+		OrderStatus newOrderStatus = OrderStatus.builder()
+		    .status(newStatus)
+		    .order(order)
+		    .build();
+		
+		order.getStatuses().add(newOrderStatus);
+		orderRepository.save(order);
+	}
 	
+	@Override
+	@Transactional
+	public void cancelOrder(String orderId) {
+		Order order = orderRepository.findById(orderId)
+		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		
+		OrderStatusEnum currentStatus = order.getStatuses().stream()
+		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
+		    .map(OrderStatus::getStatus)
+		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		
+		if (!(currentStatus == OrderStatusEnum.PENDING || currentStatus == OrderStatusEnum.PROCESSING)) {
+			throw new OrderCannotBeCancelledException(currentStatus.name());
+		}
+		
+		// ✅ Chuyển OrderDetail -> List<CheckoutItem> để gọi tăng số lượng
+		List<CheckoutItem> restoreItems = order.getOrderDetails().stream()
+		    .map(detail -> CheckoutItem.builder()
+			.productVariantId(detail.getProductVariantId())
+			.quantity(detail.getQuantity())
+			.build())
+		    .toList();
+		
+		
+		// ✅ Gọi CatalogClient để tăng lại số lượng
+		catalogClient.increaseQuantities(restoreItems);
+		
+		// ✅ Thêm trạng thái hủy
+		OrderStatus cancelStatus = OrderStatus.builder()
+		    .order(order)
+		    .status(OrderStatusEnum.CANCELED)
+		    .build();
+		
+		order.getStatuses().add(cancelStatus);
+		orderRepository.save(order);
+	}
 	
 	
 	
@@ -322,6 +388,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	
+	private static final Map<OrderStatus.OrderStatusEnum, List<OrderStatus.OrderStatusEnum>> allowedTransitions = Map.of(
+	    OrderStatusEnum.PENDING, List.of(OrderStatusEnum.PROCESSING, OrderStatusEnum.CANCELED),
+	    OrderStatusEnum.PROCESSING, List.of(OrderStatusEnum.SHIPPING, OrderStatusEnum.CANCELED),
+	    OrderStatusEnum.SHIPPING, List.of(OrderStatusEnum.COMPLETE)
+	);
 	
 	
 }

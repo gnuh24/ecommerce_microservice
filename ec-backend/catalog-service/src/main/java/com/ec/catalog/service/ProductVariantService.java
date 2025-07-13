@@ -15,6 +15,7 @@ public interface ProductVariantService {
 	List<ProductVariant> getVariantsByProductId(String productId);
 	
 	void reduceQuantities(List<QuantityReduceRequest> requests);
+	void increaseQuantities(List<QuantityReduceRequest> requests);
 	
 	BigDecimal getMinPriceByProductId(String productId);
 	

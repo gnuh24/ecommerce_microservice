@@ -63,4 +63,24 @@ public class CatalogClient {
 			throw new RuntimeException("Gọi giảm số lượng tồn kho từ Catalog Service thất bại");
 		}
 	}
+	
+	// ✅ API gọi tăng số lượng tồn kho
+	public void increaseQuantities(List<CheckoutItem> items) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		HttpEntity<List<CheckoutItem>> requestEntity = new HttpEntity<>(items, headers);
+		
+		ResponseEntity<Void> response = restTemplate.exchange(
+		    "http://localhost:8082/api/catalog/product-variants/increase-quantity", // endpoint tăng số lượng
+		    HttpMethod.POST,
+		    requestEntity,
+		    Void.class
+		);
+		
+		if (!response.getStatusCode().is2xxSuccessful()) {
+			throw new RuntimeException("Gọi tăng số lượng tồn kho từ Catalog Service thất bại");
+		}
+	}
+	
 }

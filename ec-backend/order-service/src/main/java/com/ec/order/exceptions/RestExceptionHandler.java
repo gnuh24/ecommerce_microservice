@@ -3,8 +3,10 @@ package com.ec.order.exceptions;
 import com.ec.order.aop.AppLogger;
 import com.ec.order.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.order.exceptions.JwtException.*;
+import com.ec.order.exceptions.business.order.OrderCannotBeCancelledException;
 import com.ec.order.exceptions.business.order.OrderNotFoundException;
 import com.ec.order.exceptions.business.order.OrderOutOfStockException;
+import com.ec.order.exceptions.business.order.OrderStatusTransitionNotAllowedException;
 import com.ec.order.exceptions.errorCode.OrderBusinessErrorCode;
 import com.ec.order.exceptions.errorCode.SystemErrorCode;
 import com.ec.order.exceptions.fileException.EmptyFileUploadException;
@@ -36,6 +38,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.FileNotFoundException;
 import java.util.*;
+
+import static com.ec.order.exceptions.errorCode.OrderBusinessErrorCode.ORD_STATUS_TRANSITION_NOT_ALLOWED;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -157,6 +161,33 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
+	@ExceptionHandler(OrderStatusTransitionNotAllowedException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidStatusTransition(
+	    HttpServletRequest request, OrderStatusTransitionNotAllowedException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			OrderBusinessErrorCode.ORD_STATUS_TRANSITION_NOT_ALLOWED,
+			"Chuyển trạng thái đơn hàng không hợp lệ.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(OrderCannotBeCancelledException.class)
+	public ResponseEntity<ErrorResponse> handleCannotCancelOrder(
+	    HttpServletRequest request, OrderCannotBeCancelledException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			OrderBusinessErrorCode.ORD_CANCEL_NOT_ALLOWED,
+			"Không thể hủy đơn hàng ở trạng thái hiện tại.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
 	
 	@ExceptionHandler(EmptyFileUploadException.class)
 	public ResponseEntity<Object> handleEmptyFileUpload(HttpServletRequest request, EmptyFileUploadException ex) {

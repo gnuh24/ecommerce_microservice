@@ -3,6 +3,7 @@ package com.ec.order.controller;
 import com.ec.order.api.ApiResponse;
 import com.ec.order.dto.order.OrderAdminDetailDto;
 import com.ec.order.dto.order.OrderAdminListDto;
+import com.ec.order.dto.order.UpdateOrderStatusRequest;
 import com.ec.order.entity.Order;
 import com.ec.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/orders")
@@ -49,6 +49,25 @@ public class AdminOrderController {
 		);
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@PatchMapping("/{orderId}/status")
+	public ResponseEntity<ApiResponse<Void>> updateOrderStatus(
+	    @PathVariable String orderId,
+	    @RequestBody UpdateOrderStatusRequest request
+	) {
+		orderService.updateOrderStatus(orderId, request.getStatus());
+		return ResponseEntity.ok(
+		    new ApiResponse<>(200, "Cập nhật trạng thái đơn hàng thành công", null)
+		);
+	}
+	
+	@PatchMapping("/{orderId}/cancel")
+	public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable String orderId) {
+		orderService.cancelOrder(orderId);
+		return ResponseEntity.ok(
+		    new ApiResponse<>(200, "Hủy đơn hàng thành công", null)
+		);
 	}
 
 	

@@ -57,8 +57,23 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 			productVariantRepository.save(variant);
 		}
 	}
-
-
+	
+	@Override
+	@Transactional
+	public void increaseQuantities(List<QuantityReduceRequest> requests) {
+		for (QuantityReduceRequest req : requests) {
+			ProductVariant variant = productVariantRepository.findById(req.getProductVariantId())
+			    .orElseThrow(() -> new ProductVariantNotFoundException(req.getProductVariantId()));
+			
+			int newQuantity = variant.getQuantity() + req.getQuantity();
+			variant.setQuantity(newQuantity);
+			
+			// Optional save nếu cần
+			productVariantRepository.save(variant);
+		}
+	}
+	
+	
 	
 	@Override
 	public BigDecimal getMinPriceByProductId(String productId) {

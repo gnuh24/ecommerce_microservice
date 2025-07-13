@@ -39,9 +39,6 @@ public class OrderAdminListDto {
 		    .map(OrderStatus::getStatus)
 		    .orElse(null);
 		
-		System.err.println("Statuses of Order " + order.getId() + ":");
-		order.getStatuses().forEach(s -> System.err.println(s.getStatus() + " at " + s.getUpdateTime()));
-		
 		String paymentMethod = String.valueOf(order.getPayment().getPaymentMethod());
 		
 		return OrderAdminListDto.builder()

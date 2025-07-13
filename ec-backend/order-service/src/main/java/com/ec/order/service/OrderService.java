@@ -4,6 +4,7 @@ import com.ec.order.dto.order.CheckoutRequest;
 import com.ec.order.dto.order.OrderAdminListDto;
 import com.ec.order.dto.order.VnPayPaymentCreateForm;
 import com.ec.order.entity.Order;
+import com.ec.order.entity.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,5 +32,6 @@ public interface OrderService {
 	
 	Order processVnPayReturn(VnPayPaymentCreateForm form);
 	
-	
+	void updateOrderStatus(String orderId, OrderStatus.OrderStatusEnum newStatus);
+	void cancelOrder(String orderId);
 }
