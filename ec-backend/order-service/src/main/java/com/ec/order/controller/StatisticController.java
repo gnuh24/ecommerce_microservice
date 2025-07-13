@@ -1,8 +1,7 @@
 package com.ec.order.controller;
 
 import com.ec.order.api.ApiResponse;
-import com.ec.order.dto.statistic.BestSellingProductDto;
-import com.ec.order.dto.statistic.BestSellingVariantDto;
+import com.ec.order.dto.statistic.*;
 import com.ec.order.service.StatisticService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,6 +39,45 @@ public class StatisticController {
 		List<BestSellingVariantDto> result = statisticService.getBestSellingVariantsByProductId(productId, fromDate, toDate);
 		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách variant bán chạy thành công", result));
 	}
+	
+	@GetMapping("/revenue-by-date")
+	public ResponseEntity<ApiResponse<List<RevenueByDateDto>>> getRevenueByDate(
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+	    @RequestParam(defaultValue = "DAY") String groupBy
+	) {
+		List<RevenueByDateDto> result = statisticService.getRevenueByDate(fromDate, toDate, groupBy);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Thống kê doanh thu theo thời gian thành công", result));
+	}
+	
+	@GetMapping("/order-status-daily")
+	public ResponseEntity<ApiResponse<List<OrderStatusDailyDto>>> getOrderStatusDaily(
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+	    @RequestParam(defaultValue = "%Y-%m-%d") String format
+	) {
+		List<OrderStatusDailyDto> result = statisticService.getOrderStatusDaily(fromDate, toDate, format);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Thống kê đơn hàng theo trạng thái theo ngày thành công", result));
+	}
+	
+	@GetMapping("/order-status-summary")
+	public ResponseEntity<ApiResponse<List<OrderStatusSummaryDto>>> getOrderStatusSummary(
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
+	) {
+		List<OrderStatusSummaryDto> result = statisticService.getOrderStatusSummary(fromDate, toDate);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Tổng số đơn theo trạng thái thành công", result));
+	}
+	
+	@GetMapping("/dashboard-overview")
+	public ResponseEntity<ApiResponse<DashboardOverviewDto>> getDashboardOverview(
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
+	) {
+		DashboardOverviewDto result = statisticService.getDashboardOverview(fromDate, toDate);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Lấy thống kê tổng quan dashboard thành công", result));
+	}
+	
 	
 	
 }

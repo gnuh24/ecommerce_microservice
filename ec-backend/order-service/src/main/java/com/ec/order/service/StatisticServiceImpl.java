@@ -1,7 +1,6 @@
 package com.ec.order.service;
 
-import com.ec.order.dto.statistic.BestSellingProductDto;
-import com.ec.order.dto.statistic.BestSellingVariantDto;
+import com.ec.order.dto.statistic.*;
 import com.ec.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,35 @@ public class StatisticServiceImpl implements StatisticService {
 	@Override
 	public List<BestSellingVariantDto> getBestSellingVariantsByProductId(String productId, LocalDateTime fromDate, LocalDateTime toDate) {
 		return orderRepository.getBestSellingVariantsByProductId(productId, fromDate, toDate);
+	}
+	
+	@Override
+	public List<RevenueByDateDto> getRevenueByDate(LocalDateTime fromDate, LocalDateTime toDate, String groupBy) {
+		String format;
+		switch (groupBy.toUpperCase()) {
+			case "MONTH" -> format = "%Y-%m";
+			case "WEEK" -> format = "%Y-%u";
+			case "DAY" -> format = "%Y-%m-%d";
+			default -> throw new IllegalArgumentException("Invalid groupBy value: " + groupBy);
+		}
+		return orderRepository.getRevenueByDate(fromDate, toDate, format);
+	}
+	
+	@Override
+	public List<OrderStatusDailyDto> getOrderStatusDaily(LocalDateTime fromDate, LocalDateTime toDate, String format) {
+		return orderRepository.getOrderStatusDaily(fromDate, toDate, format);
+	}
+	
+	@Override
+	public List<OrderStatusSummaryDto> getOrderStatusSummary(LocalDateTime fromDate, LocalDateTime toDate) {
+		return orderRepository.getOrderStatusSummary(fromDate, toDate);
+	}
+	
+	@Override
+	public DashboardOverviewDto getDashboardOverview(
+	    LocalDateTime fromDate,
+	    LocalDateTime toDate) {
+		return orderRepository.getDashboardOverview(fromDate, toDate);
 	}
 	
 	
