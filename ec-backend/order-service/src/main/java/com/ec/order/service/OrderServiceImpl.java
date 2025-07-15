@@ -1,33 +1,37 @@
 package com.ec.order.service;
 
 import com.ec.order.client.CatalogClient;
-import com.ec.order.dto.order.CheckoutRequest;
-import com.ec.order.dto.order.CheckoutItem;
-import com.ec.order.dto.order.ProductVariantForOrderDTO;
-import com.ec.order.dto.order.VnPayPaymentCreateForm;
+import com.ec.order.dto.order.*;
 import com.ec.order.entity.*;
+import com.ec.order.entity.OrderStatus.OrderStatusEnum;
+
+import com.ec.order.exceptions.business.order.OrderCannotBeCancelledException;
 import com.ec.order.exceptions.business.order.OrderNotFoundException;
 import com.ec.order.exceptions.business.order.OrderOutOfStockException;
+import com.ec.order.exceptions.business.order.OrderStatusTransitionNotAllowedException;
 import com.ec.order.exceptions.business.payment.PaymentNotFoundException;
-import com.ec.order.integration.redis.RedisConstants;
 import com.ec.order.integration.redis.RedisService;
 import com.ec.order.repository.OrderRepository;
 import com.ec.order.repository.OrderStatusRepository;
 import com.ec.order.repository.PaymentRepository;
 import com.ec.order.repository.VnPayPaymentRepository;
+import com.ec.order.specification.OrderSpecification;
 import com.ec.order.utils.IdGenerator;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,8 +61,48 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	@Override
+	public Page<OrderAdminListDto> getAllOrders(
+	    String keyword,
+	    String status,
+	    String paymentMethod,
+	    LocalDate fromDate,
+	    LocalDate toDate,
+	    Pageable pageable) {
+		Specification<Order> spec = Specification.where(null);
+		
+		if (keyword != null && !keyword.isBlank()) {
+			spec = spec.and(OrderSpecification.keywordMatch(keyword));
+		}
+		
+		if (status != null) {
+			spec = spec.and(OrderSpecification.hasLatestStatus(status));
+		}
+		
+		if (paymentMethod != null) {
+			spec = spec.and(OrderSpecification.hasPaymentMethod(paymentMethod));
+		}
+		
+		if (fromDate != null) {
+			spec = spec.and(OrderSpecification.fromDate(fromDate));
+		}
+		
+		if (toDate != null) {
+			spec = spec.and(OrderSpecification.toDate(toDate));
+		}
+		
+		Page<Order> orders = orderRepository.findAll(spec, pageable);
+		return orders.map(OrderAdminListDto::fromEntity);
+	}
+	
+	@Override
 	public Order getOrderDetailById(String orderId, String accountId) {
 		return orderRepository.findByIdAndAccountId(orderId, accountId)
+		    .orElseThrow(() -> new OrderNotFoundException(orderId));
+	}
+	
+	@Override
+	public Order getOrderDetailById(String orderId) {
+		return orderRepository.findById(orderId)
 		    .orElseThrow(() -> new OrderNotFoundException(orderId));
 	}
 	
@@ -70,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		// 2. Lấy thông tin variant
 		List<ProductVariantForOrderDTO> variantInfos = catalogClient.getVariantDetails(rawItems);
+		
 		// 3. Map số lượng từ client
 		Map<String, Integer> quantityMap = rawItems.stream()
 		    .collect(Collectors.toMap(CheckoutItem::getProductVariantId, CheckoutItem::getQuantity));
@@ -81,6 +126,7 @@ public class OrderServiceImpl implements OrderService {
 		for (ProductVariantForOrderDTO variant : variantInfos) {
 			String variantId = variant.getProductVariantId();
 			int quantity = quantityMap.get(variantId);
+			
 			if (quantity > variant.getQuantity()) {
 				throw new OrderOutOfStockException(variant.getProductName(), variant.getQuantity(), quantity);
 			}
@@ -89,7 +135,7 @@ public class OrderServiceImpl implements OrderService {
 			totalAmount = totalAmount.add(total);
 			
 			OrderDetail detail = OrderDetail.builder()
-			    .productVariantId(variant.getProductVariantId())
+			    .productVariantId(variantId)
 			    .productName(variant.getProductName())
 			    .productThumbnail(variant.getThumbnail())
 			    .productVolume(variant.getVolume())
@@ -101,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
 			orderDetails.add(detail);
 		}
 		
-		// 5–9. Tạo Order, Payment, Status, save DB, giảm tồn kho (giữ nguyên logic cũ)
+		// 5. Tạo Order entity
 		Order order = Order.builder()
 		    .accountId(accountId)
 		    .receiverName(request.getReceiverName())
@@ -110,32 +156,38 @@ public class OrderServiceImpl implements OrderService {
 		    .note(request.getNote())
 		    .orderTime(LocalDateTime.now())
 		    .totalAmount(totalAmount)
-		    .orderDetails(orderDetails)
+		    .isTemp(false)
 		    .build();
 		
+		// 6. Gắn order vào các chi tiết
 		orderDetails.forEach(detail -> detail.setOrder(order));
+		order.setOrderDetails(orderDetails);
 		
+		// 7. Tạo Payment (OneToOne)
 		Payment payment = Payment.builder()
+		    .id(IdGenerator.generateId()) // nếu bạn cần ID riêng
 		    .paymentMethod(Payment.PaymentMethod.COD)
 		    .paymentStatus(Payment.PaymentStatus.PENDING)
 		    .order(order)
 		    .build();
+		order.setPayment(payment); // OneToOne
 		
-		order.setPayments(List.of(payment));
-		
+		// 8. Tạo OrderStatus
 		OrderStatus status = OrderStatus.builder()
 		    .status(OrderStatus.OrderStatusEnum.PENDING)
 		    .order(order)
 		    .build();
-		
 		order.setStatuses(List.of(status));
 		
+		// 9. Lưu tất cả vào DB (Cascade sẽ tự lưu orderDetails, payment, statuses)
 		orderRepository.save(order);
 		
+		// 10. Gọi catalogClient giảm tồn kho
 		catalogClient.reduceQuantities(rawItems);
 		
 		return order.getId();
 	}
+
 	
 	
 	@Override
@@ -162,8 +214,9 @@ public class OrderServiceImpl implements OrderService {
 			    .unitPrice(variant.getUnitPrice())
 			    .quantity(quantity)
 			    .totalPrice(total)
+			    .order(null) // gán sau
 			    .build();
-		}).collect(Collectors.toList());
+		}).toList();
 		
 		// 4. Tạo Order entity
 		Order order = Order.builder()
@@ -184,20 +237,22 @@ public class OrderServiceImpl implements OrderService {
 		
 		// 6. Tạo Payment ban đầu
 		Payment payment = Payment.builder()
+		    .id(IdGenerator.generateId()) // nếu bạn cần ID riêng
 		    .paymentMethod(Payment.PaymentMethod.VNPAY)
 		    .paymentStatus(Payment.PaymentStatus.PENDING)
 		    .order(order)
 		    .build();
 		
-		// 7. Gắn Payment vào Order (nếu dùng quan hệ 1-n)
-		order.setPayments(List.of(payment));
+		// 7. Gắn payment vào order (OneToOne)
+		order.setPayment(payment);
 		
-		// 8. Lưu vào DB
-		orderRepository.save(order); // cascade sẽ tự lưu luôn orderDetails và payment
+		// 8. Lưu vào DB (cascade tự lưu hết)
+		orderRepository.save(order);
 		
 		return order;
 	}
-
+	
+	
 	@Override
 	@Transactional
 	public Order processVnPayReturn(VnPayPaymentCreateForm form) {
@@ -258,7 +313,67 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 	
+	@Override
+	@Transactional
+	public void updateOrderStatus(String orderId, OrderStatusEnum newStatus) {
+		Order order = orderRepository.findById(orderId)
+		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		
+		OrderStatusEnum currentStatus = order.getStatuses().stream()
+		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
+		    .map(OrderStatus::getStatus)
+		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		
+		List<OrderStatusEnum> allowedNext = allowedTransitions.getOrDefault(currentStatus, List.of());
+		if (!allowedNext.contains(newStatus)) {
+			throw new OrderStatusTransitionNotAllowedException(currentStatus.name(), newStatus.name());
+		}
+		
+		OrderStatus newOrderStatus = OrderStatus.builder()
+		    .status(newStatus)
+		    .order(order)
+		    .build();
+		
+		order.getStatuses().add(newOrderStatus);
+		orderRepository.save(order);
+	}
 	
+	@Override
+	@Transactional
+	public void cancelOrder(String orderId) {
+		Order order = orderRepository.findById(orderId)
+		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		
+		OrderStatusEnum currentStatus = order.getStatuses().stream()
+		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
+		    .map(OrderStatus::getStatus)
+		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		
+		if (!(currentStatus == OrderStatusEnum.PENDING || currentStatus == OrderStatusEnum.PROCESSING)) {
+			throw new OrderCannotBeCancelledException(currentStatus.name());
+		}
+		
+		// ✅ Chuyển OrderDetail -> List<CheckoutItem> để gọi tăng số lượng
+		List<CheckoutItem> restoreItems = order.getOrderDetails().stream()
+		    .map(detail -> CheckoutItem.builder()
+			.productVariantId(detail.getProductVariantId())
+			.quantity(detail.getQuantity())
+			.build())
+		    .toList();
+		
+		
+		// ✅ Gọi CatalogClient để tăng lại số lượng
+		catalogClient.increaseQuantities(restoreItems);
+		
+		// ✅ Thêm trạng thái hủy
+		OrderStatus cancelStatus = OrderStatus.builder()
+		    .order(order)
+		    .status(OrderStatusEnum.CANCELED)
+		    .build();
+		
+		order.getStatuses().add(cancelStatus);
+		orderRepository.save(order);
+	}
 	
 	
 	
@@ -273,6 +388,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	
+	private static final Map<OrderStatus.OrderStatusEnum, List<OrderStatus.OrderStatusEnum>> allowedTransitions = Map.of(
+	    OrderStatusEnum.PENDING, List.of(OrderStatusEnum.PROCESSING, OrderStatusEnum.CANCELED),
+	    OrderStatusEnum.PROCESSING, List.of(OrderStatusEnum.SHIPPING, OrderStatusEnum.CANCELED),
+	    OrderStatusEnum.SHIPPING, List.of(OrderStatusEnum.COMPLETE)
+	);
 	
 	
 }

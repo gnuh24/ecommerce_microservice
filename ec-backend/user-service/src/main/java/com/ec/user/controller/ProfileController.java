@@ -27,7 +27,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/profiles")
-@CrossOrigin(origins = "*")
 @Tag(name = "Profile", description = "Quản lý thông tin hồ sơ người dùng")
 public class ProfileController {
 	

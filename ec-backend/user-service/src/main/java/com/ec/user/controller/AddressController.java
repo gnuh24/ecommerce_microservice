@@ -21,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/addresses")
-@CrossOrigin(origins = "*")
 @Tag(name = "Address", description = "Quản lý địa chỉ người dùng")
 public class AddressController {
 	

@@ -44,27 +44,12 @@ public class WebSecurityConfiguration {
 	}
 	
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of("*"));
-		configuration.setAllowCredentials(true);
-		
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-	
-	
-	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http,
 					       CorsConfigurationSource corsConfigurationSource) throws Exception {
 		http
 		    // Loại bỏ bảo vệ CSRF
 		    .csrf(AbstractHttpConfigurer::disable)
-		    .cors(cors -> cors.configurationSource(corsConfigurationSource))
-		    
+		    .cors(AbstractHttpConfigurer::disable)
 		    
 		    // Configure các luồng truy cập
 		    .authorizeHttpRequests(auth -> auth
@@ -76,50 +61,7 @@ public class WebSecurityConfiguration {
 //			.requestMatchers(HttpMethod.POST, "/accounts")                                                    .permitAll()
 //			.requestMatchers(HttpMethod.POST, "/accounts/activate-account")                         .permitAll()
 //			.requestMatchers(HttpMethod.POST, "/accounts/{accountId}/account-activity-logs").hasAnyAuthority("USER")
-//
-//
-//			.requestMatchers(HttpMethod.PATCH, "/accounts/{id}")                                            .hasAnyAuthority("USER")
-//			.requestMatchers(HttpMethod.PATCH, "/accounts/{id}/update-password")                .hasAnyAuthority("USER")
-//			.requestMatchers(HttpMethod.PATCH, "/accounts/{id}/update-email")                       .hasAnyAuthority("USER")
-//
-//
-//			.requestMatchers( HttpMethod.GET, "/media")                                                           .permitAll()
-//			.requestMatchers( HttpMethod.POST, "/media/upload")                                             .permitAll()
-//
-//
-//			.requestMatchers(HttpMethod.POST, "/auth/send-otp-update-email")                        .hasAnyAuthority("USER")
-//			.requestMatchers(HttpMethod.POST, "/auth/send-otp-reset-password")                    .permitAll()
-//			.requestMatchers(HttpMethod.PATCH, "/auth/{id}/update-role")                                 .hasAnyAuthority("ADMIN")
-//			.requestMatchers(HttpMethod.PATCH, "/auth/{id}/update-status")                              .hasAnyAuthority("ADMIN")
-			    
-//			    // PermitAll cho các API public
-//			    .requestMatchers(HttpMethod.GET, "/auth/check-username").permitAll()
-//			    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-//			    .requestMatchers(HttpMethod.POST, "/auth/staff-login").permitAll()
-//			    .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-//			    .requestMatchers(HttpMethod.POST, "/auth/active-account").permitAll()
-//
-//			    .requestMatchers(HttpMethod.POST, "/auth/send-reset-password-otp/{username}").permitAll()
-//			    .requestMatchers(HttpMethod.PATCH, "/auth/reset-password/{username}").permitAll()
-//
-//			    .requestMatchers(HttpMethod.POST, "/auth/send-update-email-otp/{username}").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.PATCH, "/auth/update-email").hasAnyAuthority("USER")
-//
-//
-//			    .requestMatchers(HttpMethod.PATCH, "/auth/update-password").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll()
-//
-//			    .requestMatchers(HttpMethod.GET, "/profiles/me").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.PATCH, "/profiles/me").hasAnyAuthority("USER")
-//
-//
-//			    .requestMatchers(HttpMethod.GET, "/addresses/me").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.POST, "/addresses/me").hasAnyAuthority("USER")
-//
-//			    .requestMatchers(HttpMethod.PATCH, "/addresses/{addressId}").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.PATCH, "/addresses/{addressId}/set-default").hasAnyAuthority("USER")
-//			    .requestMatchers(HttpMethod.DELETE, "/addresses/{addressId}").hasAnyAuthority("USER")
-//
+
 			    // Còn lại cần xác thực
 //			    .anyRequest().authenticated()
 			

@@ -18,8 +18,6 @@ import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/media")
-@CrossOrigin(origins = "*")
-
 public class MediaController {
 	
 	@Autowired

@@ -16,4 +16,14 @@ import java.time.LocalDateTime;
 public class OrderStatusDTO {
     private OrderStatusEnum status;
     private LocalDateTime updateTime;
+	
+	public static OrderStatusDTO fromEntity(com.ec.order.entity.OrderStatus entity) {
+		if (entity == null) return null;
+		
+		return OrderStatusDTO.builder()
+		    .status(entity.getStatus())
+		    .updateTime(entity.getUpdateTime())
+		    .build();
+	}
+	
 }

@@ -10,16 +10,14 @@ import java.util.List;
 
 public interface CategoryService {
 	
-    List<Category> getAllCategoryNoPaging();
-
-//    Page<Category> getAllCategory(Pageable pageable, String search);
-//
-//    Category getCategoryById(Integer id);
-//
-//    Category createCategory(CategoryCreateForm form) throws Exception;
-//
-//    Category updateCategory(Integer id, CategoryUpdateForm form) throws Exception;
-//
-//    void deleteCategory(Integer categoryId) throws Exception;
-    
+	List<Category> getAllCategoryNoPaging();
+	
+	Page<Category> getAllCategories(Pageable pageable, String search);
+	
+	Category getCategoryById(String id);
+	Category createCategory(CategoryCreateForm form);
+	
+	Category updateCategory(String id, CategoryUpdateForm form)  ;
+	void deleteCategory(String categoryId)  ;
+	
 }

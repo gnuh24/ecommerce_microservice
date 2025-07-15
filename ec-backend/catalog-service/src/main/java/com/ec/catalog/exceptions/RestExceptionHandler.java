@@ -1,11 +1,16 @@
 package com.ec.catalog.exceptions;
 
 import com.ec.catalog.aop.AppLogger;
-import com.ec.catalog.api.ApiResponse;
 import com.ec.catalog.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.catalog.exceptions.JwtException.*;
-import com.ec.catalog.exceptions.business.BusinessException;
-import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFound;
+import com.ec.catalog.exceptions.business.brand.BrandAlreadyExistsException;
+import com.ec.catalog.exceptions.business.brand.BrandNotFoundException;
+import com.ec.catalog.exceptions.business.category.CategoryAlreadyExistsException;
+import com.ec.catalog.exceptions.business.category.CategoryNotFoundException;
+import com.ec.catalog.exceptions.business.product.ProductAlreadyExistsException;
+import com.ec.catalog.exceptions.business.product_image.ProductImageNotFoundException;
+import com.ec.catalog.exceptions.business.product_variant.DuplicateVariantVolumeException;
+import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
 import com.ec.catalog.exceptions.errorCode.CatalogBusinessErrorCode;
 import com.ec.catalog.exceptions.errorCode.SystemErrorCode;
@@ -158,8 +163,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
-	@ExceptionHandler(ProductVariantNotFound.class)
-	public ResponseEntity<ErrorResponse> handleVariantNotFound(HttpServletRequest request, ProductVariantNotFound ex) {
+	@ExceptionHandler(ProductVariantNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleVariantNotFound(HttpServletRequest request, ProductVariantNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
 		    new ErrorResponse(
 			HttpStatus.NOT_FOUND.value(),
@@ -178,6 +183,98 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 			HttpStatus.BAD_REQUEST.value(),
 			CatalogBusinessErrorCode.CAT_VARIANT_QUANTITY_NOT_ENOUGH,
 			"Không đủ số lượng trong kho để xử lý yêu cầu.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(CategoryNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleCategoryNotFound(HttpServletRequest request, CategoryNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_CATEGORY_NOT_FOUND,
+			"Không tìm thấy danh mục.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(ProductImageNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleProductImageNotFound(HttpServletRequest request, ProductImageNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_IMAGE_NOT_FOUND,
+			"Không tìm thấy ảnh sản phẩm.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	
+	@ExceptionHandler(CategoryAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleCategoryAlreadyExists(HttpServletRequest request, CategoryAlreadyExistsException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			CatalogBusinessErrorCode.CAT_CATEGORY_ALREADY_EXISTS,
+			"Tên danh mục đã tồn tại.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(BrandNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleBrandNotFound(HttpServletRequest request, BrandNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_BRAND_NOT_FOUND,
+			"Không tìm thấy thương hiệu.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(BrandAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleBrandAlreadyExists(HttpServletRequest request, BrandAlreadyExistsException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			CatalogBusinessErrorCode.CAT_BRAND_ALREADY_EXISTS,
+			"Tên thương hiệu đã tồn tại.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(ProductAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleProductAlreadyExists(HttpServletRequest request, ProductAlreadyExistsException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			CatalogBusinessErrorCode.CAT_PRODUCT_ALREADY_EXISTS,
+			"Tên sản phẩm đã tồn tại.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(DuplicateVariantVolumeException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateVariantVolume(HttpServletRequest request, DuplicateVariantVolumeException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+		    new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			CatalogBusinessErrorCode.CAT_VARIANT_DUPLICATE_VOLUME,
+			"Có phiên bản bị trùng dung tích.",
 			ex.getMessage(),
 			null
 		    )

@@ -96,6 +96,7 @@ CREATE TABLE `Brand` (
     `isDeleted`     BOOLEAN DEFAULT FALSE
 );
 
+
 INSERT INTO `Brand` (`id`, `brandName`) VALUES
 ('B001', 'Thương hiệu khác'),
 ('B002', 'Johnnie Walker'),
@@ -362,30 +363,31 @@ INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
 
 -- Đơn ODR002: Đã PROCESSING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR002', 'PENDING', NOW()),
-('ODR002', 'PROCESSING', NOW());
+('ODR002', 'PENDING', NOW() - INTERVAL 2 MINUTE),
+('ODR002', 'PROCESSING', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR003: Đã COMPLETE
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR003', 'PENDING', NOW()),
-('ODR003', 'PROCESSING', NOW()),
-('ODR003', 'COMPLETE', NOW());
+('ODR003', 'PENDING', NOW() - INTERVAL 3 MINUTE),
+('ODR003', 'PROCESSING', NOW() - INTERVAL 2 MINUTE),
+('ODR003', 'COMPLETE', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR004: Bị Hủy sau PENDING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR004', 'PENDING', NOW()),
-('ODR004', 'CANCELED', NOW());
+('ODR004', 'PENDING', NOW() - INTERVAL 2 MINUTE),
+('ODR004', 'CANCELED', NOW() - INTERVAL 1 MINUTE);
 
 -- Đơn ODR005: Bị Hủy sau PENDING
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR005', 'PENDING', NOW()),
-('ODR005', 'CANCELED', NOW());
+('ODR005', 'PENDING', NOW() - INTERVAL 4 MINUTE),
+('ODR005', 'CANCELED', NOW() - INTERVAL 2 MINUTE);
 
 -- Đơn ODR006: Đã COMPLETE
 INSERT INTO `OrderStatus` (`orderId`, `status`, `updateTime`) VALUES
-('ODR006', 'PENDING', NOW()),
-('ODR006', 'PROCESSING', NOW()),
-('ODR006', 'COMPLETE', NOW());
+('ODR006', 'PENDING', NOW() - INTERVAL 5 MINUTE),
+('ODR006', 'PROCESSING', NOW() - INTERVAL 3 MINUTE),
+('ODR006', 'COMPLETE', NOW() - INTERVAL 1 MINUTE);
+
 
 
 INSERT INTO `VnPayPayment` (
@@ -414,5 +416,49 @@ VALUES (
 );
 
 
+
+CREATE TABLE `News` (
+    `id` VARCHAR(10) PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
+    `content` TEXT NOT NULL,
+    `highlight` BOOLEAN NOT NULL DEFAULT FALSE,
+    `thumbnail` VARCHAR(500),
+    `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME,
+    `deletedAt` DATETIME,
+    `isDeleted` BOOLEAN NOT NULL DEFAULT FALSE,
+    `isPublished` BOOLEAN NOT NULL DEFAULT FALSE,
+    `accountId` VARCHAR(10) NOT NULL,
+    FOREIGN KEY (`accountId`) REFERENCES `Account`(`id`) ON DELETE CASCADE
+);
+
+
+
+
+
+INSERT INTO `News` (`id`, `title`, `content`, `highlight`, `thumbnail`, `createdAt`, `updatedAt`, `deletedAt`, `isDeleted`, `isPublished`, `accountId`) VALUES
+('N000001', 'Rượu vang đỏ và lợi ích cho tim mạch', 'Các nghiên cứu cho thấy việc tiêu thụ một lượng nhỏ rượu vang đỏ có thể giúp cải thiện sức khỏe tim mạch.', TRUE, 'https://cdn.example.com/news/1.jpg', NOW(), NULL, NULL, FALSE, TRUE, 'acc1'),
+('N000002', 'Quy trình sản xuất rượu whisky truyền thống', 'Rượu whisky được sản xuất qua quá trình chưng cất và ủ lâu năm trong thùng gỗ sồi.', FALSE, 'https://cdn.example.com/news/2.jpg', NOW(), NULL, NULL, FALSE, TRUE, 'acc1'),
+('N000003', 'Cách phân biệt rượu thật và rượu giả', 'Rượu giả có thể chứa các chất gây hại nghiêm trọng cho sức khỏe. Học cách phân biệt để bảo vệ bản thân.', TRUE, 'https://cdn.example.com/news/3.jpg', NOW(), NULL, NULL, FALSE, TRUE, 'acc1'),
+('N000004', 'Các dòng rượu vang nổi bật năm 2025', 'Tổng hợp các thương hiệu rượu vang được đánh giá cao trong năm nay.', FALSE, 'https://cdn.example.com/news/4.jpg', NOW(), NULL, NULL, FALSE, FALSE, 'acc1'),
+('N000005', 'Ảnh hưởng của rượu tới gan và sức khỏe', 'Việc lạm dụng rượu có thể dẫn đến các bệnh lý nghiêm trọng về gan như xơ gan, viêm gan.', FALSE, 'https://cdn.example.com/news/5.jpg', NOW(), NULL, NULL, FALSE, FALSE, 'acc1');
+
+
+CREATE TABLE `NewsImage` (
+    `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+    `imageUrl` VARCHAR(500) NOT NULL,
+    `newsId` VARCHAR(10),
+    FOREIGN KEY (`newsId`) REFERENCES `News`(`id`) ON DELETE CASCADE
+);
+
+INSERT INTO `NewsImage` (`imageUrl`, `newsId`) VALUES
+('https://cdn.example.com/news/images/1-1.jpg', 'N000001'),
+('https://cdn.example.com/news/images/1-2.jpg', 'N000001'),
+('https://cdn.example.com/news/images/2-1.jpg', 'N000002'),
+('https://cdn.example.com/news/images/3-1.jpg', 'N000003'),
+('https://cdn.example.com/news/images/3-2.jpg', 'N000003'),
+('https://cdn.example.com/news/images/4-1.jpg', 'N000004'),
+('https://cdn.example.com/news/images/5-1.jpg', 'N000005'),
+('https://cdn.example.com/news/images/5-2.jpg', 'N000005');
 
 

@@ -15,7 +15,13 @@ public final class OrderBusinessErrorCode {
 	public static final String ORD_PAYMENT_INVALID_METHOD  = "ORD-PAYMENT-002";  // Phương thức không hợp lệ
 	public static final String ORD_PAYMENT_ALREADY_PAID    = "ORD-PAYMENT-003";  // Đơn hàng đã thanh toán
 	
+	// ======= STATUS / UPDATE =======
+	public static final String ORD_STATUS_TRANSITION_NOT_ALLOWED = "ORD-STATUS-001";  // Không thể chuyển trạng thái
+	public static final String ORD_STATUS_INVALID_STATE          = "ORD-STATUS-002";  // Trạng thái không hợp lệ
+	
 	// ======= CANCEL ORDER =======
 	public static final String ORD_CANCEL_NOT_ALLOWED      = "ORD-CANCEL-001";   // Không thể hủy đơn trong trạng thái hiện tại
 	public static final String ORD_CANCEL_ALREADY_DONE     = "ORD-CANCEL-002";   // Đơn đã bị hủy trước đó
+	
+	
 }

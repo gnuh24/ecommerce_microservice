@@ -65,11 +65,6 @@ public class Account implements Serializable,  UserDetails {
 		return this.password;
 	}
 	
-	@OneToOne
-	@JoinColumn(name = "ProfileId", nullable = false)
-	private Profile profile;
-	
-	
 	@Override
 	public String getUsername() {
 		return this.username;

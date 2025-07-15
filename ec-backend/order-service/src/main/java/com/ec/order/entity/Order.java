@@ -46,8 +46,8 @@ public class Order {
 	@Column(nullable = false)
 	private String accountId;
 	
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Payment> payments;
+	@OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+	private Payment payment;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderDetail> orderDetails;

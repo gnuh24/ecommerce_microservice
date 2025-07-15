@@ -9,15 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category,  Integer>, JpaSpecificationExecutor<Category> {
-    /**
-     * Finds a category by its name.
-     *
-     * @param categoryName the name of the category to find.
-     * @return an Optional containing the Category if found, otherwise empty.
-     */
-    Optional<Category> findByCategoryName(String categoryName);
+
+    Optional<Category> findByIdAndIsDeletedFalse(String categoryId);
 	
 	List<Category> findAllByIsDeletedFalse();
-	
+	boolean existsByCategoryNameIgnoreCaseAndIsDeletedFalse(String categoryName);
 }
 

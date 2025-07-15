@@ -87,6 +87,13 @@ public class ProductVariantController {
 		return ResponseEntity.ok(new ApiResponse<>(200, "Giảm số lượng thành công", null));
 	}
 	
+	@PostMapping("/increase-quantity")
+	public ResponseEntity<ApiResponse<Void>> increaseQuantities(@RequestBody List<QuantityReduceRequest> requests) {
+		productVariantService.increaseQuantities(requests);
+		return ResponseEntity.ok(new ApiResponse<>(200, "Tăng số lượng thành công", null));
+	}
+	
+	
 	
 	
 }
