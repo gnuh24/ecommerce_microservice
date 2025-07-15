@@ -1,13 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../../service/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { getMessageByCode } from '../../../core/system-error-code';
 
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../../shared/shared.module';
+
 @Component({
     selector: 'app-login',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedModule],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss', '../auth.scss'],
 })

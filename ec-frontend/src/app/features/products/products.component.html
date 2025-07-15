@@ -1,0 +1,19 @@
+<section class="products-page">
+  <h2>Our Products</h2>
+
+  <div *ngIf="loading">Loading products...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && products.length > 0" class="product-list">
+    <div *ngFor="let product of products" class="product-card">
+      <img [src]="product.thumbnailUrl" alt="{{ product.productName }}">
+      <h3>{{ product.productName }}</h3>
+      <p>Price: {{ product.minPrice | currency:'USD':'symbol':'1.2-2' }} - {{ product.maxPrice | currency:'USD':'symbol':'1.2-2' }}</p>
+      <!-- Add more product details here -->
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && products.length === 0">
+    No products found.
+  </div>
+</section>

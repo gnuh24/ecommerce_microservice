@@ -14,9 +14,29 @@ interface UpdateEmailForm {
     newEmail: string;
 }
 
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service'; // Updated path
+import { interval, Subscription } from 'rxjs';
+
+interface UpdatePasswordForm {
+    oldPassword: string;
+    newPassword: string;
+}
+
+interface UpdateEmailForm {
+    otp: string;
+    newEmail: string;
+}
+
 @Component({
     selector: 'app-my-account',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterModule],
     templateUrl: './my-account.component.html',
     styleUrls: [
         './my-account.component.scss',

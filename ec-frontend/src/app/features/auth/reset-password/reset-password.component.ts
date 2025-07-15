@@ -1,13 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../service/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { getMessageByCode } from '../../../core/system-error-code';
+
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-reset-password',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedModule, FormsModule],
     templateUrl: './reset-password.component.html',
     styleUrls: [
         './reset-password.component.scss',

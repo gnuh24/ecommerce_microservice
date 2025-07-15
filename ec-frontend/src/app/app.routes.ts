@@ -1,31 +1,34 @@
 import { Routes } from '@angular/router';
-import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
-import { LoginComponent } from './features/auth/login/login.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: UserLayoutComponent, // ✅ Có thể gán layout ở đây
+    component: MainLayoutComponent, // Sử dụng MainLayoutComponent làm layout chính
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       {
         path: 'home',
-        loadChildren: () =>
-          import('./features/home/home.module').then((m) => m.HomeModule), // ✅ Load HomeModule
+        loadComponent: () =>
+          import('./features/home/home.component').then((m) => m.HomeComponent), // Lazy load HomeComponent
       },
       {
-        path: 'profile',
-        loadChildren: () =>
-          import('./features/profile/profile.module').then(
-            (m) => m.ProfileModule
-          ),
+        path: 'products',
+        loadComponent: () =>
+          import('./features/products/products.component').then((m) => m.ProductsComponent), // Lazy load ProductsComponent
       },
+      {
+        path: 'products/:slug',
+        loadComponent: () =>
+          import('./features/product/product-detail/product-detail.component').then((m) => m.ProductDetailComponent), // Lazy load ProductDetailComponent
+      },
+      // Thêm các route khác vào đây nếu cần
     ],
   },
   {
     path: 'auth',
     loadChildren: () =>
-      import('./features/auth/auth.module').then((m) => m.AuthModule),
+      import('./features/auth/auth-routing.module').then((m) => m.AuthRoutingModule),
   },
   { path: '**', redirectTo: 'home' },
 ];

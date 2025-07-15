@@ -1,0 +1,39 @@
+<div class="container">
+  <h2>Product List</h2>
+
+  <div class="search-bar mb-3">
+    <input type="text" class="form-control" placeholder="Search products..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+    <button class="btn btn-primary mt-2" (click)="onSearch()">Search</button>
+  </div>
+
+  <div *ngIf="products.length > 0; else noProducts" class="row">
+    <div class="col-md-4 mb-4" *ngFor="let product of products">
+      <div class="card product-card">
+        <img [src]="product.thumbnailUrl" class="card-img-top" alt="{{ product.productName }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.productName }}</h5>
+          <p class="card-text">Price: {{ product.minPrice | currency:'USD':'symbol':'1.0-2' }} - {{ product.maxPrice | currency:'USD':'symbol':'1.0-2' }}</p>
+          <a [routerLink]="['/products', product.slug]" class="btn btn-primary">View Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noProducts>
+    <div class="alert alert-info">No products found.</div>
+  </ng-template>
+
+  <nav *ngIf="totalPages.length > 1">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 0">
+        <a class="page-link" (click)="onPageChange(currentPage - 1)">Previous</a>
+      </li>
+      <li class="page-item" *ngFor="let page of totalPages; let i = index" [class.active]="currentPage === i">
+        <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages.length - 1">
+        <a class="page-link" (click)="onPageChange(currentPage + 1)">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>

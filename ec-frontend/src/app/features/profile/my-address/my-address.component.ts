@@ -4,9 +4,19 @@ import Swal from 'sweetalert2';
 import { MatDialog } from '@angular/material/dialog';
 import { AddressFormDialogComponent } from '../address-form-dialog/address-form-dialog.component';
 
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Address } from '../../../models/address.model'; // Updated path to model
+import { AddressService } from '../../../core/services/address.service'; // Updated path to service
+import Swal from 'sweetalert2';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Import MatDialogModule
+import { AddressFormDialogComponent } from '../address-form-dialog/address-form-dialog.component';
+
 @Component({
     selector: 'app-my-address',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, RouterModule, MatDialogModule],
     templateUrl: './my-address.component.html',
     styleUrls: [
         './my-address.component.scss',

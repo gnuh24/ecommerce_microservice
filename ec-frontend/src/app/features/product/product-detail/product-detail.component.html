@@ -1,0 +1,20 @@
+<div class="container">
+  <div *ngIf="product" class="product-detail-card">
+    <div class="row">
+      <div class="col-md-6">
+        <img [src]="product.thumbnailUrl" alt="{{ product.productName }}" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h2>{{ product.productName }}</h2>
+        <p class="price">Price: {{ product.minPrice | currency:'USD':'symbol':'1.0-2' }} - {{ product.maxPrice | currency:'USD':'symbol':'1.0-2' }}</p>
+        <p><strong>Description:</strong></p>
+        <div [innerHTML]="product.description"></div>
+        <p *ngIf="product.isInWishlist">This product is in your wishlist!</p>
+        <!-- Add more product details here as needed -->
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!product" class="alert alert-warning">
+    Product not found.
+  </div>
+</div>

@@ -2,9 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { ProfileService } from '../../../service/profile.service';
 import Swal from 'sweetalert2';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ProfileService } from '../../../core/services/profile.service'; // Updated path
+import Swal from 'sweetalert2';
+
 @Component({
     selector: 'app-my-profile',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, FormsModule, RouterModule],
     templateUrl: './my-profile.component.html',
     styleUrls: [
         './my-profile.component.scss',

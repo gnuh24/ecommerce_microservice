@@ -3,9 +3,17 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Address } from '../../../service/address.service';
 
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Address } from '../../../models/address.model'; // Updated path to model
+
 @Component({
     selector: 'app-address-form-dialog',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule],
     templateUrl: './address-form-dialog.component.html',
     styleUrls: ['./address-form-dialog.component.scss']
 })

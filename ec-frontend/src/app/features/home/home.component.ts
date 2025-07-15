@@ -1,20 +1,31 @@
-import { Component, AfterViewInit } from '@angular/core';
-import { OnInit } from '@angular/core';
-
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../shared/shared.module';
+import { CategoryService } from '../../core/services/category.service';
+import { BrandService } from '../../core/services/brand.service';
 declare var $: any;
 
 @Component({
   selector: 'app-home',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, RouterModule, SharedModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent {
   inputModel: any;
 
-  constructor() {}
+  constructor(private categoryService: CategoryService, private brandService: BrandService  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.categoryService.getCategoriesNoPagination().subscribe((categories) => {
+      console.log(categories);
+    });
+    this.brandService.getBrandsNoPagination().subscribe((brands) => {
+      console.log(brands);
+    });
+  }
 
   ngAfterViewInit(): void {
     const $carousel = $('.hot-offers-carousel');

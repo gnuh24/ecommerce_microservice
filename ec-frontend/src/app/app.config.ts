@@ -8,7 +8,7 @@ import { MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeVi from '@angular/common/locales/vi';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './service/auth.interceptor';
+import { AuthInterceptor } from './core/services/auth.interceptor';
 registerLocaleData(localeVi);
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 

@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../../service/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { take } from 'rxjs/operators';
+
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-verify-account',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, RouterModule, SharedModule],
     templateUrl: './verify-account.component.html',
     styleUrls: [
         './verify-account.component.scss',
