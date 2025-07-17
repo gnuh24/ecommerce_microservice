@@ -1,27 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../service/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
-
-interface UpdatePasswordForm {
-    oldPassword: string;
-    newPassword: string;
-}
-
-interface UpdateEmailForm {
-    otp: string;
-    newEmail: string;
-}
 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import Swal from 'sweetalert2';
-import { AuthService } from '../../../core/services/auth.service'; // Updated path
-import { interval, Subscription } from 'rxjs';
+
+
 
 interface UpdatePasswordForm {
     oldPassword: string;
@@ -33,10 +20,16 @@ interface UpdateEmailForm {
     newEmail: string;
 }
 
+import { ProfileMenuComponent } from '../profile-menu/profile-menu.component';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+
 @Component({
     selector: 'app-my-account',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, ProfileMenuComponent, MatFormFieldModule, MatInputModule, MatButtonModule],
     templateUrl: './my-account.component.html',
     styleUrls: [
         './my-account.component.scss',

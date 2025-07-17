@@ -13,9 +13,9 @@ public class ProductImageResponseDTO {
 
     public static ProductImageResponseDTO fromEntity(ProductImage image) {
         return ProductImageResponseDTO.builder()
-            .id(image.getId())
-            .imageUrl(image.getImageUrl())
-            .isThumbnail(image.getIsThumbnail())
-            .build();
+                .id(image.getId())
+                .imageUrl(image.getImageUrl())
+                .isThumbnail(image.getIsThumbnail())
+                .build();
     }
 }

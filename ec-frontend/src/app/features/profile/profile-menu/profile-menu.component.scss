@@ -1,42 +1,96 @@
 .profile-menu {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 16px 0;
+    width: 250px; /* Fixed width for the menu */
+
     .menu-title {
-        font-size: 16px;
-        margin: 16px;
-        color: #444;
+        font-size: 1.1rem;
+        margin: 0 16px 16px;
+        color: #333;
         font-weight: 600;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
     }
 
-    // Áp dụng style sâu vào bên trong mat-list-item
-    ::ng-deep a.menu-item.mat-mdc-list-item {
+    .menu-item {
         display: flex;
         align-items: center;
         padding: 12px 16px;
         color: #333;
         text-decoration: none;
-        transition: background 0.2s ease;
-
-        .mat-mdc-list-item-unscoped-content.mdc-list-item__primary-text {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        transition: background 0.2s ease, color 0.2s ease;
+        font-size: 0.95rem;
+        line-height: 1.5; /* Adjust line height for better readability */
 
         mat-icon {
-            margin-right: 8px;
+            margin-right: 12px; /* Increased spacing for icon */
             color: #616161;
+            font-size: 20px; /* Adjust icon size */
+            width: 20px; /* Ensure consistent icon width */
+            height: 20px;
         }
 
         span {
-            font-size: 14px;
+            flex-grow: 1; /* Allow text to take available space */
         }
 
         &:hover {
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
+            color: #007bff; /* Highlight text on hover */
+
+            mat-icon {
+                color: #007bff; /* Highlight icon on hover */
+            }
         }
 
         &.active {
-            background-color: #e0e0e0;
+            background-color: #e0e7ff; /* Lighter blue for active state */
+            color: #0056b3; /* Darker blue for active text */
             font-weight: 500;
+
+            mat-icon {
+                color: #0056b3; /* Darker blue for active icon */
+            }
+        }
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-menu {
+        width: 100%; /* Full width on smaller screens */
+        margin-bottom: 24px; /* Space below the menu */
+        padding: 12px 0;
+
+        .menu-title {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .menu-item {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+
+            mat-icon {
+                margin-right: 10px;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-menu {
+        padding: 8px 0;
+
+        .menu-title {
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            padding: 8px 12px;
+            font-size: 0.85rem;
         }
     }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
 import { environment } from '../../../enviro/environment';
@@ -9,23 +9,42 @@ import { environment } from '../../../enviro/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private baseUrl = environment.apiUserService;
+    private userSubject: BehaviorSubject<LoginResponse | null>;
+    public user$: Observable<LoginResponse | null>;
 
     constructor(
         private http: HttpClient,
         private tokenService: TokenService,
         private router: Router
-    ) { }
+    ) {
+        this.userSubject = new BehaviorSubject<LoginResponse | null>(this.tokenService.getUserInfo());
+        this.user$ = this.userSubject.asObservable();
+    }
 
     login(data: LoginRequest): Observable<Response<LoginResponse>> {
         return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/login`, data, {
             withCredentials: true
-        });
+        }).pipe(
+            tap(res => {
+                this.tokenService.setAccessToken(res.data.token);
+                this.tokenService.setRefreshToken(res.data.refreshToken);
+                this.tokenService.setUserInfo(res.data);
+                this.userSubject.next(res.data);
+            })
+        );
     }
 
     loginForStaff(data: LoginRequest): Observable<Response<LoginResponse>> {
         return this.http.post<Response<LoginResponse>>(`${this.baseUrl}/auth/staff-login`, data, {
             withCredentials: true
-        });
+        }).pipe(
+            tap(res => {
+                this.tokenService.setAccessToken(res.data.token);
+                this.tokenService.setRefreshToken(res.data.refreshToken);
+                this.tokenService.setUserInfo(res.data);
+                this.userSubject.next(res.data);
+            })
+        );
     }
 
     refreshToken(): Observable<Response<LoginResponse>> {
@@ -67,8 +86,8 @@ export class AuthService {
     }
 
     logout(): void {
-        sessionStorage.clear();
-        localStorage.clear();
+        this.tokenService.clearTokens();
+        this.userSubject.next(null);
         this.router.navigate(['/auth/login']);
     }
 }

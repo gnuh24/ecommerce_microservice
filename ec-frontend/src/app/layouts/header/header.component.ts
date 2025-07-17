@@ -5,6 +5,9 @@ import { SharedModule } from '../../shared/shared.module';
 import { Router } from '@angular/router';
 import { BrandService } from '../../core/services/brand.service';
 import { CategoryService } from '../../core/services/category.service';
+import { AuthService } from '../../core/services/auth.service';
+import { TokenService } from '../../core/services/token.service';
+import { Subscription } from 'rxjs';
 
 interface MenuState {
   isActive: boolean;
@@ -23,9 +26,13 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     isActive: false,
     isOpen: false,
   };
-
+  listBrands: any[] = [];
+  listCategories: any[] = [];
   isDropdownOpen = false;
   selectedDropdown = 'English';
+  isLoggedIn = false;
+  fullName = '';
+  private userSubscription!: Subscription;
 
   @ViewChild('menuContent', { static: false }) menuContentRef!: ElementRef;
   @ViewChild('menuTrigger', { static: false }) menuTriggerRef!: ElementRef;
@@ -35,7 +42,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private eventListeners: Array<() => void> = [];
 
-  constructor(private router: Router, private renderer: Renderer2, private brandService: BrandService, private categoryService: CategoryService) {}
+  constructor(private router: Router, private renderer: Renderer2, private brandService: BrandService, private categoryService: CategoryService, private authService: AuthService, private tokenService: TokenService) {}
 
   goToLogin() {
     this.router.navigate(['/auth/login']);
@@ -47,11 +54,21 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.brandService.getBrandsNoPagination().subscribe((res: any) => {
-      console.log(res);
+      this.listBrands = res;
     });
     this.categoryService.getCategoriesNoPagination().subscribe((res: any) => {
-      console.log(res);
+      this.listCategories = res;
     });
+    this.userSubscription = this.authService.user$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      if (user) {
+        this.fullName = user.fullName;
+      }
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 
   ngAfterViewInit(): void {
@@ -61,6 +78,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.eventListeners.forEach((off) => off());
+    this.userSubscription.unsubscribe();
   }
 
   @HostListener('window:resize')

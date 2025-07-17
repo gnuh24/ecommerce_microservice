@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../enviro/environment';
+import { environment } from '../../../enviro/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AddressService {
@@ -37,4 +37,5 @@ export interface Address {
     phone: string;
     fullName: string;
     isDefault: boolean;
+    isDeleted: boolean;
 }

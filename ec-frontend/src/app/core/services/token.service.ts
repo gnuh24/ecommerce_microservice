@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoginResponse } from './auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -7,6 +8,7 @@ import { Router } from '@angular/router';
 export class TokenService {
     private readonly accessTokenKey = 'token';
     private readonly refreshTokenKey = 'refreshToken';
+    private readonly userKey = 'user';
 
     constructor(private router: Router) { }
 
@@ -16,7 +18,6 @@ export class TokenService {
         }
         return null;
     }
-
 
     setAccessToken(token: string): void {
         if (typeof window !== 'undefined') {
@@ -49,10 +50,25 @@ export class TokenService {
         }
     }
 
+    setUserInfo(user: LoginResponse): void {
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem(this.userKey, JSON.stringify(user));
+        }
+    }
+
+    getUserInfo(): LoginResponse | null {
+        if (typeof window !== 'undefined') {
+            const user = sessionStorage.getItem(this.userKey);
+            return user ? JSON.parse(user) : null;
+        }
+        return null;
+    }
+
     clearTokens(): void {
         if (typeof window !== 'undefined') {
             sessionStorage.removeItem(this.accessTokenKey);
             sessionStorage.removeItem(this.refreshTokenKey);
+            sessionStorage.removeItem(this.userKey);
         }
     }
 }

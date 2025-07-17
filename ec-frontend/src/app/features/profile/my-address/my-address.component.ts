@@ -1,22 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { Address, AddressService } from '../../../service/address.service';
-import Swal from 'sweetalert2';
-import { MatDialog } from '@angular/material/dialog';
-import { AddressFormDialogComponent } from '../address-form-dialog/address-form-dialog.component';
+
 
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
-import { Address } from '../../../models/address.model'; // Updated path to model
-import { AddressService } from '../../../core/services/address.service'; // Updated path to service
-import Swal from 'sweetalert2';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Import MatDialogModule
+import { Address } from '../../../models/address.model';
+import { AddressService } from '../../../core/services/address.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddressFormDialogComponent } from '../address-form-dialog/address-form-dialog.component';
+import Swal from 'sweetalert2';
+
+import { ProfileMenuComponent } from '../profile-menu/profile-menu.component';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-my-address',
     standalone: true,
-    imports: [CommonModule, RouterModule, MatDialogModule],
+    imports: [CommonModule, RouterModule, MatDialogModule, ProfileMenuComponent, MatCardModule, MatButtonModule, MatIconModule],
     templateUrl: './my-address.component.html',
     styleUrls: [
         './my-address.component.scss',
@@ -47,7 +49,7 @@ export class MyAddressComponent implements OnInit {
     loadAddresses() {
         this.addressService.getMyAddresses().subscribe({
             next: res => {
-                this.addresses = res.data;
+                this.addresses = res.data;   
             },
             error: () => {
                 Swal.fire('Lỗi', 'Không thể tải danh sách địa chỉ', 'error');

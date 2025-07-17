@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { environment } from '../../enviro/environment';
+import { environment } from '../../../enviro/environment';
 import { TokenService } from './token.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';

@@ -48,13 +48,6 @@ export class LoginComponent implements OnInit {
                         text: `Chào mừng ${res.data.fullName}!`
                     });
 
-                    // Lưu token vào localStorage hoặc sessionStorage
-                    sessionStorage.setItem('id', res.data.id);
-                    sessionStorage.setItem('token', res.data.token);
-                    sessionStorage.setItem('refreshToken', res.data.refreshToken);
-                    sessionStorage.setItem('fullName', res.data.fullName);
-                    sessionStorage.setItem('username', res.data.username);
-                    sessionStorage.setItem('role', res.data.role);
                     // Chuyển hướng đến trang chính hoặc trang người dùng
                     this.router.navigate(['/home']);
                 },

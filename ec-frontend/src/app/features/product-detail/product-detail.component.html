@@ -1,0 +1,17 @@
+<div *ngIf="product" class="product-detail-container">
+  <h2>{{ product.productName }}</h2>
+  <div class="product-image">
+    <img [src]="product.thumbnailUrl || 'https://picsum.photos/id/400/300'" alt="{{ product.productName }}">
+  </div>
+  <div class="product-info">
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <p><strong>Price:</strong> {{ product.minPrice | currency:'USD':'symbol':'1.0-2' }} - {{ product.maxPrice | currency:'USD':'symbol':'1.0-2' }}</p>
+    <p><strong>Brand:</strong> {{ product.brandName }}</p>
+    <p><strong>Category:</strong> {{ product.categoryName }}</p>
+    <!-- Add more product details here -->
+  </div>
+</div>
+
+<div *ngIf="!product">
+  <p>Loading product details...</p>
+</div>

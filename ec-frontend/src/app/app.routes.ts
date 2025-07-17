@@ -20,7 +20,12 @@ export const routes: Routes = [
       {
         path: 'products/:slug',
         loadComponent: () =>
-          import('./features/product/product-detail/product-detail.component').then((m) => m.ProductDetailComponent), // Lazy load ProductDetailComponent
+          import('./features/product-detail/product-detail.component').then((m) => m.ProductDetailComponent),
+      },
+      {
+        path: 'profile',
+        loadChildren: () =>
+          import('./features/profile/profile-routing.module').then((m) => m.ProfileRoutingModule),
       },
       // Thêm các route khác vào đây nếu cần
     ],

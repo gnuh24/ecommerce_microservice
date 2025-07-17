@@ -1,18 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { ProfileService } from '../../../service/profile.service';
-import Swal from 'sweetalert2';
+
+import Swal from 'sweetalert2'; 
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
-import { ProfileService } from '../../../core/services/profile.service'; // Updated path
-import Swal from 'sweetalert2';
+import { ProfileService } from '../../../core/services/profile.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+
+import { MatRadioModule } from '@angular/material/radio';
+import { ProfileMenuComponent } from '../profile-menu/profile-menu.component';
 
 @Component({
     selector: 'app-my-profile',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule, MatRadioModule, ProfileMenuComponent],
     templateUrl: './my-profile.component.html',
     styleUrls: [
         './my-profile.component.scss',

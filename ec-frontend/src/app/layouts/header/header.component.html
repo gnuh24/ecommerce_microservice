@@ -51,8 +51,14 @@
                               <div class="user_icon"><img
                                       src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1560918647/user.svg"
                                       alt="User"></div>
-                              <div><a (click)="goToRegister()">Register</a></div>
-                              <div class="ms-3"><a (click)=" goToLogin()">Login</a></div>
+                              <div *ngIf="!isLoggedIn">
+                                  <a (click)="goToRegister()">Register</a>
+                                  <div class="ms-3"><a (click)="goToLogin()">Login</a></div>
+                              </div>
+                              <div *ngIf="isLoggedIn">
+                                  <a routerLink="/profile">{{ fullName }}</a>
+                                  <div class="ms-3"><a (click)="logout()">Logout</a></div>
+                              </div>
                           </div>
                       </div>
                   </div>
@@ -160,33 +166,13 @@
                                   <li class="hassubs">
                                       <a href="#">Category<i class="fas fa-chevron-down"></i></a>
                                       <ul>
-                                          <li>
-                                              <a href="#">Lenovo<i class="fas fa-chevron-down"></i></a>
-                                              <ul>
-                                                  <li><a href="#">Lenovo 1<i class="fas fa-chevron-down"></i></a></li>
-                                                  <li><a href="#">Lenovo 3<i class="fas fa-chevron-down"></i></a></li>
-                                                  <li><a href="#">Lenovo 2<i class="fas fa-chevron-down"></i></a></li>
-                                              </ul>
-                                          </li>
-                                          <li><a href="#">DELL<i class="fas fa-chevron-down"></i></a></li>
-                                          <li><a href="#">APPLE<i class="fas fa-chevron-down"></i></a></li>
-                                          <li><a href="#">HP<i class="fas fa-chevron-down"></i></a></li>
+                                          <li *ngFor="let category of listCategories" ><a href="#">{{category.categoryName}}</a></li>
                                       </ul>
                                   </li>
                                   <li class="hassubs">
                                       <a href="#">Featured Brands<i class="fas fa-chevron-down"></i></a>
                                       <ul>
-                                          <li>
-                                              <a href="#">APPLE<i class="fas fa-chevron-down"></i></a>
-                                              <ul>
-                                                  <li><a href="#">Laptop<i class="fas fa-chevron-down"></i></a></li>
-                                                  <li><a href="#">Mobiles<i class="fas fa-chevron-down"></i></a></li>
-                                                  <li><a href="#">Ipads<i class="fas fa-chevron-down"></i></a></li>
-                                              </ul>
-                                          </li>
-                                          <li><a href="#">Samsung<i class="fas fa-chevron-down"></i></a></li>
-                                          <li><a href="#">Lenovo<i class="fas fa-chevron-down"></i></a></li>
-                                          <li><a href="#">DELL<i class="fas fa-chevron-down"></i></a></li>
+                                          <li *ngFor="let brand of listBrands" ><a href="#">{{brand.brandName}}</a></li>
                                       </ul>
                                   </li>
                                   <li class="hassubs">

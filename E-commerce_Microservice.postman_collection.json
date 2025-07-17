@@ -70,6 +70,36 @@
 							"response": []
 						},
 						{
+							"name": "Staff Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"staff@example.com\",\n    \"password\": \"your_staff_password\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/user/auth/staff-login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"auth",
+										"staff-login"
+									]
+								},
+								"description": "Đăng nhập tài khoản nhân viên vào hệ thống."
+							},
+							"response": []
+						},
+						{
 							"name": "Register User",
 							"request": {
 								"method": "POST",
@@ -123,6 +153,50 @@
 									]
 								},
 								"description": "Kích hoạt tài khoản bằng OTP."
+							},
+							"response": []
+						},
+						{
+							"name": "Send Reset Password OTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/user/auth/send-reset-password-otp/{{username}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"auth",
+										"send-reset-password-otp",
+										"{{username}}"
+									]
+								},
+								"description": "Gửi OTP để đặt lại mật khẩu."
+							},
+							"response": []
+						},
+						{
+							"name": "Send Update Email OTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/user/auth/send-update-email-otp/{{username}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"auth",
+										"send-update-email-otp",
+										"{{username}}"
+									]
+								},
+								"description": "Gửi OTP để cập nhật email."
 							},
 							"response": []
 						},
@@ -414,19 +488,31 @@
 										"public"
 									],
 									"query": [
-										{
-											"key": "page",
-											"value": "0"
-										},
-										{
-											"key": "size",
-											"value": "10"
-										},
-										{
-											"key": "search",
-											"value": "dior"
-										}
-									]
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "dior"
+								},
+								{
+									"key": "brandId",
+									"value": "your_brand_id",
+									"description": "Optional: Filter by brand ID",
+									"disabled": true
+								},
+								{
+									"key": "categoryId",
+									"value": "your_category_id",
+									"description": "Optional: Filter by category ID",
+									"disabled": true
+								}
+							]
 								},
 								"description": "Lấy danh sách sản phẩm công khai, có hỗ trợ phân trang và tìm kiếm."
 							},

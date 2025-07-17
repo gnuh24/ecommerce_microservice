@@ -1,18 +1,45 @@
-
 :host {
-  margin: 8px * 5 0;
+  display: block;
+  margin: 0;
+}
+
+.main-content-wrapper {
+  max-width: 1200px; /* Max width for content */
+  margin: 0 auto; /* Center the content */
+  padding: 0 20px; /* Horizontal padding */
+}
+
+.home-page {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f8f8;
+  margin-bottom: 30px;
+
+  h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: #666;
+  }
+}
+
+.banner {
+  margin-bottom: 40px;
 }
 
 .wine-banner {
-  background-image: url("../../../assets/background.png"); // Thay đường dẫn nếu cần
+  background-image: url("../../../assets/background.png");
   background-size: cover;
-  background-position: center right; // Đẩy hình sang bên phải
+  background-position: center right;
   background-repeat: no-repeat;
   height: 700px;
-
   display: flex;
   align-items: center;
-  justify-content: flex-start; // Canh nội dung về bên trái
+  justify-content: flex-start;
 
   .content {
     padding-left: 4rem;
@@ -20,18 +47,20 @@
     color: rgb(34, 34, 34);
 
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
     }
 
     button {
-      border: 1px solid rgb(34, 34, 34);
+      border: 2px solid rgb(34, 34, 34);
       background-color: transparent;
-      padding: 0.5rem 1rem;
+      padding: 12px 24px;
       cursor: pointer;
-      color: rgb(34, 34, 34) k;
+      color: rgb(34, 34, 34);
       font-weight: bold;
-      transition: 0.2s;
+      transition: 0.3s ease;
+      font-size: 1.1rem;
 
       &:hover {
         background-color: rgb(34, 34, 34);
@@ -41,214 +70,350 @@
   }
 }
 
+.container {
+  padding: 40px 0;
+}
+
 .hot-offers,
-.trent-offers {
+.trent-offers,
+.shipping {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  width: 100%;
+  margin-bottom: 40px;
 }
 
 .trent-offers {
-  width: 930px;
-
-  .product {
-    width: 50%;
+  .offers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    justify-items: center;
   }
 
-  button {
-    margin-top: -(8px * 2.5);
-    width: 90%;
+  .product {
+    width: 100%;
+    max-width: 350px;
+
+    button {
+      margin-top: 20px;
+      width: 80%;
+    }
   }
 }
 
 .head {
   display: flex;
-  flex-direction: row;
-  padding: 8px * 3 8px * 2;
+  align-items: center;
+  margin-bottom: 30px;
 
   .line {
     flex-grow: 1;
-  }
-
-  hr {
-    border-top: 2px solid rgb(34, 34, 34);
-    margin: 8px * 3 0;
+    hr {
+      border-top: 2px solid #ccc;
+      margin: 0;
+    }
   }
 
   .title {
-    margin: 0 8px;
-    text-align: center;
-    width: 35%;
+    margin: 0 20px;
+    h2 {
+      font-size: 2rem;
+      color: #333;
+      white-space: nowrap;
+    }
   }
 }
 
 .offers {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  /* Removed display: grid and gap from here as Slick handles layout */
+  /* grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); */
+  /* gap: 30px; */
+  justify-items: center;
+}
+
+.hot-offers-carousel {
+  display: block; /* Ensure it's a block element for Slick */
+  margin: 0 -15px; /* Counteract product padding/margin if needed, or for overall carousel spacing */
+
+  .slick-list {
+    margin: 0 -15px; /* Adjust slick-list margin */
+  }
+
+  .slick-slide {
+    padding: 0 15px; /* Add padding to individual slides for spacing */
+    box-sizing: border-box;
+  }
 }
 
 .product {
-  margin-bottom: 8px * 3;
   text-align: center;
-  width: 370px;
-  padding: 0 8px;
+  padding: 15px;
   box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  width: 280px; /* Explicit width for product card */
+  margin: 0 auto; /* Center product within its grid cell */
 
-  > div {
-    margin-bottom: 8px;
+  &:hover {
+    transform: translateY(-5px);
   }
 
   .wrapper {
-    align-items: center;
-    box-sizing: border-box;
-    
-    
-    padding: 8px * 2;
-    width: 100%;
-    height: 330px;
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 200px; /* Fixed height for image wrapper */
+    margin-bottom: 15px;
+    overflow: hidden;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .sub-title {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 8px;
+    min-height: 40px; /* Ensure consistent height for titles */
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
-}
 
-img {
-  max-height: 100%;
-  max-width: 100%;
-}
+  .price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+  }
 
-.sub-title {
-  font-size: 1.2rem;
-}
+  .highlight-price {
+    color: #e63946; /* A strong red for emphasis */
+    font-size: 2.2rem;
+    font-weight: 900;
+  }
 
-.price {
-  font-size: 1.9rem;
-  font-weight: 700;
-}
-
-button {
-  background: transparent;
-  border: 2px solid rgb(34, 34, 34);
-  border-radius: 2px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 8px * 3.5;
-  padding: 8px * 2 8px * 4;
-  text-transform: uppercase;
-
-  &:hover {
-    background: rgb(34, 34, 34);
-    border-color: rgb(34, 34, 34);
-    box-shadow: 0 10px 30px rgba(79, 70, 228, 0.8);
+  button {
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
     color: #ffffff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background: #0056b3;
+      box-shadow: none;
+    }
   }
 }
 
 .shipping-box {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
   justify-content: center;
 }
 
 .element {
-  background-color: rgb(245, 245, 245);
-  box-sizing: border-box;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.9rem;
-  padding: 8px * 4;
+  background-color: #f0f8ff; /* Light blue background */
+  border: 1px solid #cce0ff;
+  border-radius: 8px;
+  padding: 30px;
   text-align: center;
-  width: 350px;
-  margin: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
 .subscribe {
-  background-color: rgb(245, 245, 245);
-  margin: 8px * 10 0;
-  padding: 8px * 5 0;
+  background-color: #f5f5f5;
+  padding: 60px 0;
+  margin-top: 50px;
 }
 
 .subscribe-box {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 
   .title {
-    flex-grow: 1;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 10px;
+    color: #333;
     text-align: center;
+    max-width: 600px;
   }
 
   .join {
     display: flex;
-    flex-direction: row;
-    width: 360px;
+    width: 100%;
+    max-width: 450px;
 
     input {
-      border: 1px solid rgb(34, 34, 34);
-      border-radius: 4px 0 0 4px;
-      box-sizing: border-box;
-      height: 44px;
-      padding: 0 8px * 1.5;
-      width: 230px; 
+      flex-grow: 1;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      outline: none;
+
+      &:focus {
+        border-color: #007bff;
+      }
     }
 
     button {
-        background: rgb(34, 34, 34);
-      box-sizing: border-box;
-      border: 1px solid rgb(34, 34, 34);
-      border-radius: 0 4px 4px 0;
+      background: #28a745; /* Green for subscribe button */
+      border: none;
+      border-radius: 0 5px 5px 0;
       color: #fff;
+      padding: 12px 25px;
       font-size: 1rem;
-      font-weight: normal;
-      text-align: center;
-      text-transform: uppercase;
-        padding: 8px * 1.5 8px * 2;
-    }
-  }
-}
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
 
-@media (max-width: 1200px) {
-  .trent-offers {
-    width: 100%;
-  }
-}
-
-@media (max-width: 800px) {
-  .subscribe-box {
-    .join {
-      width: auto;
-
-      input {
-        height: 41px;
-        width: 200px;
+      &:hover {
+        background: #218838;
       }
     }
   }
 }
 
-@media (max-width: 700px) {
-  .trent-offers {
-    .product {
-      width: 100%;
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .wine-banner .content {
+    max-width: 50%;
+    padding-left: 2rem;
+
+    h1 {
+      font-size: 3rem;
+    }
+  }
+
+  }
+
+@media (max-width: 768px) {
+  .main-content-wrapper {
+    padding: 0 15px;
+  }
+
+  .home-page {
+    padding: 30px 15px;
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .wine-banner {
+    height: 500px;
+
+    .content {
+      max-width: 70%;
+      padding-left: 1.5rem;
+
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .head {
+    .title h2 {
+      font-size: 1.7rem;
+    }
+  }
+
+  .offers {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .product {
+    width: 100%;
+    max-width: 300px;
+  }
+  .hot-offers-carousel{
+    padding: 30px !important;
+    margin: 0 -15px;
+  }
+  .subscribe-box {
+    padding: 20px;
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .join {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      input,
+      button {
+        width: 100%;
+        border-radius: 5px;
+      }
+
+      input {
+        margin-bottom: 0;
+      }
     }
   }
 }
 
-@media (max-width: 500px) {
-  :host {
-    margin: 0;
+@media (max-width: 576px) {
+  .wine-banner {
+    height: 400px;
+
+    .content {
+      max-width: 90%;
+      padding-left: 1rem;
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+    }
   }
 
-  .subscribe {
-    margin: 0;
+  .head {
+    .title h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .offers {
+    grid-template-columns: 1fr;
+  }
+
+  .element {
+    padding: 20px;
+    font-size: 1rem;
   }
 }
