@@ -32,6 +32,8 @@ public final class CatalogBusinessErrorCode {
 	public static final String CAT_BRAND_ALREADY_EXISTS      = "CAT-BRAND-002"; // Tên thương hiệu đã tồn tại
 	public static final String CAT_BRAND_INVALID_ID          = "CAT-BRAND-003"; // ID thương hiệu không hợp lệ
 	public static final String CAT_BRAND_ALREADY_DELETED     = "CAT-BRAND-004"; // Thương hiệu đã bị xóa
-
 	
+	// ======= WISHLIST =======
+	public static final String CAT_WISHLIST_NOT_FOUND         = "CAT-WISHLIST-001"; // Không tìm thấy mục yêu thích
+	public static final String CAT_WISHLIST_ALREADY_EXISTS    = "CAT-WISHLIST-002"; // Sản phẩm đã tồn tại trong danh sách yêu thích
 }

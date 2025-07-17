@@ -10,6 +10,7 @@ import com.ec.catalog.entity.ProductVariant;
 
 public interface ProductVariantService {
 	
+	ProductVariant getVariantById(String productVariantId);
 	List<ProductVariant> getVariantsByIds(List<String> productIds);
 	
 	List<ProductVariant> getVariantsByProductId(String productId);

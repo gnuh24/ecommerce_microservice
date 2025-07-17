@@ -20,14 +20,5 @@ public interface ProductService {
 	Product createProduct(ProductCreateForm form);
 	Product updateProduct(String productId, ProductUpdateForm form);
 
-//	List<Product> getVariantsByIds(List<Integer> ids);
-	
-//	int updateDefaultBrandOfProduct(Integer brandId);
-//
-//	int updateDefaultCategoryOfProduct(Integer categoryId);
-//
-//	Product createProduct(ProductCreateForm form);
-//
-//	Product updateProduct(Integer productId, ProductUpdateForm form);
 	
 }

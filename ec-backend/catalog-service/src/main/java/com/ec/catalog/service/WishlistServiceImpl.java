@@ -4,6 +4,8 @@ import com.ec.catalog.entity.Account;
 import com.ec.catalog.entity.Product;
 import com.ec.catalog.entity.Wishlist;
 import com.ec.catalog.entity.Wishlist.WishlistId;
+import com.ec.catalog.exceptions.business.wishlist.ProductAlreadyInWishlistException;
+import com.ec.catalog.exceptions.business.wishlist.ProductNotInWishlistException;
 import com.ec.catalog.repository.ProductRepository;
 import com.ec.catalog.repository.WishlistRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,34 +31,34 @@ public class WishlistServiceImpl implements WishlistService {
 	}
 	
 	@Override
-	public void addToWishlist(Account account, String productId) throws Exception {
-		// Check product tồn tại và chưa bị xóa
+	public void addToWishlist(Account account, String productId) {
 		Product product = productService.getProductById(productId);
 		
 		WishlistId wishlistId = new WishlistId(account.getId(), productId);
-
-//        Optional<Wishlist> existing = wishlistRepository.findById(wishlistId);
-//        if (existing.isPresent()) {
-//            throw new Exception("Sản phẩm đã có trong wishlist");
-//        }
+		
+		if (wishlistRepository.existsById(wishlistId)) {
+			throw new ProductAlreadyInWishlistException(productId);
+		}
 		
 		Wishlist wishlist = new Wishlist();
 		wishlist.setId(wishlistId);
-		
 		wishlist.setProduct(product);
 		wishlist.setAccount(account);
+		
 		wishlistRepository.save(wishlist);
 	}
 	
+	
 	@Override
-	public void removeFromWishlist(String accountId, String productId) throws Exception {
+	public void removeFromWishlist(String accountId, String productId) {
 		WishlistId wishlistId = new WishlistId(accountId, productId);
 		
 		Wishlist wishlist = wishlistRepository.findById(wishlistId)
-		    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại trong wishlist"));
+		    .orElseThrow(() -> new ProductNotInWishlistException(productId));
 		
 		wishlistRepository.delete(wishlist);
 	}
+
 	
 	@Override
 	public boolean isProductInWishlist(String accountId, String productId) {

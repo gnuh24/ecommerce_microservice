@@ -42,7 +42,7 @@ public class AddressServiceImpl implements AddressService {
 	
 	@Override
 	public Address updateAddress(String addressId, AddressUpdateForm form) {
-		Address address = getAddressById(addressId);
+		Address address = this.getAddressById(addressId);
 		
 		if (form.getAddress() != null) {
 			address.setAddress(form.getAddress());
@@ -65,14 +65,14 @@ public class AddressServiceImpl implements AddressService {
 	public Address setDefault(String addressId, String profileId) {
 		addressRepository.resetDefaultAddressByProfileId(profileId);
 		
-		Address address = getAddressById(addressId);
+		Address address = this.getAddressById(addressId);
 		address.setIsDefault(true);
 		return addressRepository.save(address);
 	}
 	
 	@Override
 	public Address deleteAddress(String addressId) {
-		Address address = getAddressById(addressId);
+		Address address = this.getAddressById(addressId);
 		address.setIsDeleted(true);
 		return addressRepository.save(address);
 	}

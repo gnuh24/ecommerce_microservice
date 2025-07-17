@@ -4,11 +4,7 @@ import com.ec.order.client.CatalogClient;
 import com.ec.order.dto.order.*;
 import com.ec.order.entity.*;
 import com.ec.order.entity.OrderStatus.OrderStatusEnum;
-
-import com.ec.order.exceptions.business.order.OrderCannotBeCancelledException;
-import com.ec.order.exceptions.business.order.OrderNotFoundException;
-import com.ec.order.exceptions.business.order.OrderOutOfStockException;
-import com.ec.order.exceptions.business.order.OrderStatusTransitionNotAllowedException;
+import com.ec.order.exceptions.business.order.*;
 import com.ec.order.exceptions.business.payment.PaymentNotFoundException;
 import com.ec.order.integration.redis.RedisService;
 import com.ec.order.repository.OrderRepository;
@@ -17,7 +13,6 @@ import com.ec.order.repository.PaymentRepository;
 import com.ec.order.repository.VnPayPaymentRepository;
 import com.ec.order.specification.OrderSpecification;
 import com.ec.order.utils.IdGenerator;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +56,18 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	@Override
+	public Order getOrderDetailById(String orderId, String accountId) {
+		return orderRepository.findByIdAndAccountId(orderId, accountId)
+		    .orElseThrow(() -> new OrderNotFoundException(orderId));
+	}
+	
+	@Override
+	public Order getOrderDetailById(String orderId) {
+		return orderRepository.findById(orderId)
+		    .orElseThrow(() -> new OrderNotFoundException(orderId));
+	}
+	
+	@Override
 	public Page<OrderAdminListDto> getAllOrders(
 	    String keyword,
 	    String status,
@@ -94,17 +101,6 @@ public class OrderServiceImpl implements OrderService {
 		return orders.map(OrderAdminListDto::fromEntity);
 	}
 	
-	@Override
-	public Order getOrderDetailById(String orderId, String accountId) {
-		return orderRepository.findByIdAndAccountId(orderId, accountId)
-		    .orElseThrow(() -> new OrderNotFoundException(orderId));
-	}
-	
-	@Override
-	public Order getOrderDetailById(String orderId) {
-		return orderRepository.findById(orderId)
-		    .orElseThrow(() -> new OrderNotFoundException(orderId));
-	}
 	
 	@Override
 	@Transactional
@@ -187,7 +183,6 @@ public class OrderServiceImpl implements OrderService {
 		
 		return order.getId();
 	}
-
 	
 	
 	@Override
@@ -316,13 +311,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public void updateOrderStatus(String orderId, OrderStatusEnum newStatus) {
-		Order order = orderRepository.findById(orderId)
-		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		Order order = this.getOrderDetailById(orderId);
 		
 		OrderStatusEnum currentStatus = order.getStatuses().stream()
 		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
 		    .map(OrderStatus::getStatus)
-		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		    .orElseThrow(() -> new DataCorruptionException(orderId));
 		
 		List<OrderStatusEnum> allowedNext = allowedTransitions.getOrDefault(currentStatus, List.of());
 		if (!allowedNext.contains(newStatus)) {
@@ -341,13 +335,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public void cancelOrder(String orderId) {
-		Order order = orderRepository.findById(orderId)
-		    .orElseThrow(() -> new OrderNotFoundException("Không tìm thấy đơn hàng"));
+		Order order = getOrderDetailById(orderId);
 		
 		OrderStatusEnum currentStatus = order.getStatuses().stream()
 		    .max(Comparator.comparing(OrderStatus::getUpdateTime))
 		    .map(OrderStatus::getStatus)
-		    .orElseThrow(() -> new RuntimeException("Đơn hàng chưa có trạng thái"));
+		    .orElseThrow(() -> new DataCorruptionException(orderId));
 		
 		if (!(currentStatus == OrderStatusEnum.PENDING || currentStatus == OrderStatusEnum.PROCESSING)) {
 			throw new OrderCannotBeCancelledException(currentStatus.name());
@@ -374,7 +367,6 @@ public class OrderServiceImpl implements OrderService {
 		order.getStatuses().add(cancelStatus);
 		orderRepository.save(order);
 	}
-	
 	
 	
 	private BigDecimal calculateTotalAmount(List<CheckoutItem> items) {

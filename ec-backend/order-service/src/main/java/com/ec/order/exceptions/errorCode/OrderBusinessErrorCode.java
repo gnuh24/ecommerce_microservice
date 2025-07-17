@@ -18,6 +18,7 @@ public final class OrderBusinessErrorCode {
 	// ======= STATUS / UPDATE =======
 	public static final String ORD_STATUS_TRANSITION_NOT_ALLOWED = "ORD-STATUS-001";  // Không thể chuyển trạng thái
 	public static final String ORD_STATUS_INVALID_STATE          = "ORD-STATUS-002";  // Trạng thái không hợp lệ
+	public static final String ORD_STATUS_MISSING                = "ORD-STATUS-003";  // Thiếu trạng thái đơn hàng (có thể do lỗi thủ công)
 	
 	// ======= CANCEL ORDER =======
 	public static final String ORD_CANCEL_NOT_ALLOWED      = "ORD-CANCEL-001";   // Không thể hủy đơn trong trạng thái hiện tại

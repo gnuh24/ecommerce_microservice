@@ -3,10 +3,7 @@ package com.ec.order.exceptions;
 import com.ec.order.aop.AppLogger;
 import com.ec.order.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.order.exceptions.JwtException.*;
-import com.ec.order.exceptions.business.order.OrderCannotBeCancelledException;
-import com.ec.order.exceptions.business.order.OrderNotFoundException;
-import com.ec.order.exceptions.business.order.OrderOutOfStockException;
-import com.ec.order.exceptions.business.order.OrderStatusTransitionNotAllowedException;
+import com.ec.order.exceptions.business.order.*;
 import com.ec.order.exceptions.errorCode.OrderBusinessErrorCode;
 import com.ec.order.exceptions.errorCode.SystemErrorCode;
 import com.ec.order.exceptions.fileException.EmptyFileUploadException;
@@ -19,8 +16,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.security.authentication.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -37,12 +39,11 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.FileNotFoundException;
-import java.util.*;
-
-import static com.ec.order.exceptions.errorCode.OrderBusinessErrorCode.ORD_STATUS_TRANSITION_NOT_ALLOWED;
+import java.util.ArrayList;
+import java.util.List;
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@Autowired
 	private AppLogger appLogger;
@@ -135,6 +136,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildErrorResponse(request, HttpStatus.NOT_FOUND, SystemErrorCode.SYS_FILE_NOT_FOUND, "Không tìm thấy tệp", ex, null);
 	}
 	
+	
+	
 	@ExceptionHandler(OrderNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleOrderNotFound(HttpServletRequest request, OrderNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -189,6 +192,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
+	@ExceptionHandler(DataCorruptionException.class)
+	public ResponseEntity<ErrorResponse> handleDataCorruption(
+	    HttpServletRequest request, DataCorruptionException ex) {
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+		    new ErrorResponse(
+			HttpStatus.INTERNAL_SERVER_ERROR.value(),
+			OrderBusinessErrorCode.ORD_STATUS_MISSING,
+			"Đơn hàng không có trạng thái.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	
 	@ExceptionHandler(EmptyFileUploadException.class)
 	public ResponseEntity<Object> handleEmptyFileUpload(HttpServletRequest request, EmptyFileUploadException ex) {
 		return buildErrorResponse(
@@ -206,14 +225,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildErrorResponse(
 		    request,
 		    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-		    SystemErrorCode.SYS_FILE_UNSUPPORTED_TYPE ,
+		    SystemErrorCode.SYS_FILE_UNSUPPORTED_TYPE,
 		    "Chỉ cho phép upload các định dạng ảnh như jpg, png...",
 		    ex,
 		    null
 		);
 	}
 	
-
+	
 	@ExceptionHandler(InvalidTokenTypeException.class)
 	public ResponseEntity<Object> handleReTypeException(HttpServletRequest request, InvalidTokenTypeException ex) {
 		String code = SystemErrorCode.AUTH_INVALID_CREDENTIALS;
@@ -295,7 +314,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		    null
 		);
 	}
-
 	
 	
 	@ExceptionHandler(OtpNotFoundException.class)

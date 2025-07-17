@@ -40,11 +40,16 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	}
 	
 	@Override
+	public ProductVariant getVariantById(String productVariantId){
+		return productVariantRepository.findById(productVariantId)
+		    .orElseThrow(() -> new ProductVariantNotFoundException(productVariantId));
+	}
+	
+	@Override
 	@Transactional
 	public void reduceQuantities(List<QuantityReduceRequest> requests) {
 		for (QuantityReduceRequest req : requests) {
-			ProductVariant variant = productVariantRepository.findById(req.getProductVariantId())
-			    .orElseThrow(() -> new ProductVariantNotFoundException(req.getProductVariantId()));
+			ProductVariant variant = this.getVariantById(req.getProductVariantId());
 			
 			int available = variant.getQuantity();
 			int requested = req.getQuantity();
@@ -62,8 +67,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Transactional
 	public void increaseQuantities(List<QuantityReduceRequest> requests) {
 		for (QuantityReduceRequest req : requests) {
-			ProductVariant variant = productVariantRepository.findById(req.getProductVariantId())
-			    .orElseThrow(() -> new ProductVariantNotFoundException(req.getProductVariantId()));
+			ProductVariant variant = this.getVariantById(req.getProductVariantId());
 			
 			int newQuantity = variant.getQuantity() + req.getQuantity();
 			variant.setQuantity(newQuantity);
@@ -88,8 +92,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Override
 	@Transactional
 	public ProductVariant updateVariant(String variantId, ProductVariantUpdateForm form) {
-		ProductVariant variant = productVariantRepository.findByIdAndIsDeletedFalse(variantId)
-		    .orElseThrow(() -> new ProductVariantNotFoundException(variantId));
+		ProductVariant variant = this.getVariantById(variantId);
 		
 		variant.setPrice(form.getPrice());
 		variant.setQuantity(form.getQuantity());
@@ -102,8 +105,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 	@Override
 	@Transactional
 	public void deleteVariant(String variantId) {
-		ProductVariant variant = productVariantRepository.findByIdAndIsDeletedFalse(variantId)
-		    .orElseThrow(() -> new ProductVariantNotFoundException(variantId));
+		ProductVariant variant = this.getVariantById(variantId);
 		
 		variant.setIsDeleted(true);
 		variant.setDeletedAt(LocalDateTime.now());

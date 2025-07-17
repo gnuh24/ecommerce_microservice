@@ -12,6 +12,8 @@ import com.ec.catalog.exceptions.business.product_image.ProductImageNotFoundExce
 import com.ec.catalog.exceptions.business.product_variant.DuplicateVariantVolumeException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantNotFoundException;
 import com.ec.catalog.exceptions.business.product_variant.ProductVariantQuantityNotEnough;
+import com.ec.catalog.exceptions.business.wishlist.ProductAlreadyInWishlistException;
+import com.ec.catalog.exceptions.business.wishlist.ProductNotInWishlistException;
 import com.ec.catalog.exceptions.errorCode.CatalogBusinessErrorCode;
 import com.ec.catalog.exceptions.errorCode.SystemErrorCode;
 import com.ec.catalog.exceptions.fileException.EmptyFileUploadException;
@@ -24,8 +26,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.security.authentication.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -42,7 +49,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -109,7 +117,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 	
-	
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 		return buildErrorResponse(getRequest(request), HttpStatus.BAD_REQUEST, SystemErrorCode.SYS_MISSING_REQUIRED_FIELD, "Thiếu tham số bắt buộc", ex, null);
@@ -156,7 +163,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildErrorResponse(
 		    request,
 		    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-		    SystemErrorCode.SYS_FILE_UNSUPPORTED_TYPE ,
+		    SystemErrorCode.SYS_FILE_UNSUPPORTED_TYPE,
 		    "Chỉ cho phép upload các định dạng ảnh như jpg, png...",
 		    ex,
 		    null
@@ -281,6 +288,33 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 	
+	@ExceptionHandler(ProductAlreadyInWishlistException.class)
+	public ResponseEntity<ErrorResponse> handleProductAlreadyInWishlist(
+	    ProductAlreadyInWishlistException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(
+		    new ErrorResponse(
+			HttpStatus.CONFLICT.value(),
+			CatalogBusinessErrorCode.CAT_WISHLIST_ALREADY_EXISTS,
+			"Sản phẩm đã có trong danh sách yêu thích.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
+	
+	@ExceptionHandler(ProductNotInWishlistException.class)
+	public ResponseEntity<ErrorResponse> handleProductNotInWishlist(
+	    ProductNotInWishlistException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+		    new ErrorResponse(
+			HttpStatus.NOT_FOUND.value(),
+			CatalogBusinessErrorCode.CAT_WISHLIST_NOT_FOUND,
+			"Sản phẩm không tồn tại trong danh sách yêu thích.",
+			ex.getMessage(),
+			null
+		    )
+		);
+	}
 	
 	
 	@ExceptionHandler(InvalidTokenTypeException.class)
@@ -364,7 +398,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		    null
 		);
 	}
-
 	
 	
 	@ExceptionHandler(OtpNotFoundException.class)

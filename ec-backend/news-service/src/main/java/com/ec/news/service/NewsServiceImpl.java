@@ -116,9 +116,9 @@ public class NewsServiceImpl implements NewsService {
 	
 	@Override
 	public News updateNews(String newsId, NewsUpdateForm form) {
+		
 		// 1. Tìm bài viết
-		News news = newsRepository.findById(newsId)
-		    .orElseThrow(() -> new NewsNotFoundException(newsId));
+		News news = this.getNewsById(newsId);
 		
 		// 2. Kiểm tra trùng tiêu đề (bỏ qua chính nó)
 		if (!news.getTitle().equalsIgnoreCase(form.getTitle()) &&

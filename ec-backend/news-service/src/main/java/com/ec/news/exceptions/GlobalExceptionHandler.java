@@ -39,7 +39,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@Autowired
 	private AppLogger appLogger;

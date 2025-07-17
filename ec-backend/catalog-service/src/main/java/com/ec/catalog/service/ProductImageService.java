@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ProductImageService {
 	// Lấy tất cả ảnh (không bị xóa) theo productId
 	List<ProductImage> getAllByProductId(String productId);
-	
+	ProductImage getById(String productImageId);
 	// Lấy thumbnail của sản phẩm theo productId
 	Optional<ProductImage> getThumbnailByProductId(String productId);
 	

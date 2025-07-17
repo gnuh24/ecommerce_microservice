@@ -22,6 +22,16 @@ public class ProductImageServiceImpl implements ProductImageService {
 	@Autowired
 	private ProductImageRepository productImageRepository;
 	
+	@Autowired
+	private ProductService productService;
+	
+	@Override
+	public ProductImage getById(String productImageId){
+		return productImageRepository.findByIdAndIsDeletedFalse(productImageId)
+		    .orElseThrow(() -> new ProductImageNotFoundException(productImageId));
+	}
+	
+	
 	@Override
 	public List<ProductImage> getAllByProductId(String productId) {
 		return productImageRepository.findByProductIdAndIsDeletedFalse(productId);
@@ -41,8 +51,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 		return optionalThumbnail;
 	}
 	
-	@Autowired
-	private ProductService productService;
+
 	
 	
 	@Override
@@ -71,8 +80,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 	@Override
 	@Transactional
 	public ProductImage setThumbnail(String imageId) {
-		ProductImage image = productImageRepository.findByIdAndIsDeletedFalse(imageId)
-		    .orElseThrow(() -> new ProductImageNotFoundException(imageId));
+		ProductImage image = this.getById(imageId);
 		
 		// Xóa trạng thái thumbnail hiện tại của các ảnh thuộc cùng sản phẩm
 		List<ProductImage> allImages = productImageRepository.findByProductIdAndIsDeletedFalse(image.getProduct().getId());
@@ -87,8 +95,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 	@Override
 	@Transactional
 	public void deleteImage(String imageId) {
-		ProductImage image = productImageRepository.findByIdAndIsDeletedFalse(imageId)
-		    .orElseThrow(() -> new ProductImageNotFoundException(imageId));
+		ProductImage image = this.getById(imageId);
 		
 		image.setIsDeleted(true);
 		image.setDeletedAt(LocalDateTime.now());
