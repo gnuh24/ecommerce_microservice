@@ -5,6 +5,7 @@ import com.ec.catalog.dto.category.CategoryInProductDTO;
 import com.ec.catalog.dto.productImage.ProductImageResponseDTO;
 import com.ec.catalog.dto.productVariant.ProductVariantResponseDTO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ProductDetailPublicDTO {
 	
 	private String id;

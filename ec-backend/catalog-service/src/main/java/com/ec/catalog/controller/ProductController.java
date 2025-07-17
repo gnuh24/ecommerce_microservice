@@ -1,11 +1,16 @@
 package com.ec.catalog.controller;
 
 import com.ec.catalog.api.ApiResponse;
+import com.ec.catalog.dto.brand.BrandInProductDTO;
+import com.ec.catalog.dto.category.CategoryInProductDTO;
 import com.ec.catalog.dto.product.ProductDetailPublicDTO;
 import com.ec.catalog.dto.product.ProductFilterForm;
 import com.ec.catalog.dto.product.ProductListPublicDTO;
+import com.ec.catalog.dto.productImage.ProductImageResponseDTO;
+import com.ec.catalog.dto.productVariant.ProductVariantResponseDTO;
 import com.ec.catalog.entity.Account;
 import com.ec.catalog.entity.Product;
+import com.ec.catalog.entity.ProductImage;
 import com.ec.catalog.service.ProductImageService;
 import com.ec.catalog.service.ProductService;
 import com.ec.catalog.service.ProductVariantService;
@@ -23,7 +28,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/products")
@@ -41,9 +48,6 @@ public class ProductController {
 	@Autowired
 	private WishlistService wishlistService;
 	
-	
-	@Autowired
-	private ModelMapper modelMapper;
 
 //	@GetMapping(value = "/management")
 //	public ResponseEntity<ApiResponse<Page<ProductListManagementDTO>>> getAllProductsForManagement(
@@ -99,39 +103,67 @@ public class ProductController {
 		form.setIsPublished(true);
 		Page<Product> entities = productService.getAllProduct(pageable, search, form);
 		
-		List<ProductListPublicDTO> dtos = modelMapper.map(
-		    entities.getContent(), new TypeToken<List<ProductListPublicDTO>>() {
-		    }.getType()
-		);
-		
-		for (ProductListPublicDTO dto : dtos) {
-			productImageService.getThumbnailByProductId(dto.getId()).ifPresent(
-			    img -> dto.setThumbnailUrl(img.getImageUrl())
-			);
+		List<ProductListPublicDTO> dtos = entities.getContent().stream().map(product -> {
+			String thumbnailUrl = productImageService
+			    .getThumbnailByProductId(product.getId())
+			    .map(ProductImage::getImageUrl)
+			    .orElse(null);
 			
-			dto.setMinPrice(productVariantService.getMinPriceByProductId(dto.getId()));
-			dto.setMaxPrice(productVariantService.getMaxPriceByProductId(dto.getId()));
-		}
+			BigDecimal minPrice = productVariantService.getMinPriceByProductId(product.getId());
+			BigDecimal maxPrice = productVariantService.getMaxPriceByProductId(product.getId());
+			
+			return ProductListPublicDTO.builder()
+			    .id(product.getId())
+			    .productName(product.getProductName())
+			    .slug(product.getSlug())
+			    .thumbnailUrl(thumbnailUrl)
+			    .minPrice(minPrice)
+			    .maxPrice(maxPrice)
+			    .build();
+		}).collect(Collectors.toList());
 		
 		Page<ProductListPublicDTO> dtoPage = new PageImpl<>(dtos, pageable, entities.getTotalElements());
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dtoPage));
 	}
 	
+	
 	@GetMapping(value = "/public/{slug}")
 	public ResponseEntity<ApiResponse<ProductDetailPublicDTO>> getProductDetailForPublic(
-	    	@PathVariable String slug) {
+	    @PathVariable String slug) {
 		
 		Product entity = productService.getProductBySlug(slug);
-		ProductDetailPublicDTO dto = modelMapper.map(entity, ProductDetailPublicDTO.class);
+		
+		ProductDetailPublicDTO dto = ProductDetailPublicDTO.builder()
+		    .id(entity.getId())
+		    .productName(entity.getProductName())
+		    .slug(entity.getSlug())
+		    .description(entity.getDescription())
+		    .vintage(entity.getVintage())
+		    .alcohol(entity.getAlcohol())
+		    .region(entity.getRegion())
+		    .brand(BrandInProductDTO.fromEntity(entity.getBrand())) // bạn cần đảm bảo có static method fromEntity
+		    .category(CategoryInProductDTO.fromEntity(entity.getCategory()))
+		    .images(entity.getImages()
+			.stream()
+			.map(ProductImageResponseDTO::fromEntity)
+			.toList())
+		    .variants(entity.getVariants()
+			.stream()
+			.map(ProductVariantResponseDTO::fromEntity)
+			.toList())
+		    .build();
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof Account account) {
+		if (authentication != null && authentication.isAuthenticated()
+		    && authentication.getPrincipal() instanceof Account account) {
 			boolean isInWishlist = wishlistService.isProductInWishlist(account.getId(), entity.getId());
 			dto.setIsInWishlist(isInWishlist);
 		}
 		
 		return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", dto));
 	}
+
+
 
 
 //	@PostMapping()
