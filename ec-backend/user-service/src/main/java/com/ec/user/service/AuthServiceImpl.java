@@ -11,6 +11,7 @@ import com.ec.user.exceptions.AuthException.AuthExceptionHandler;
 import com.ec.user.exceptions.AuthException.StepUpAuthenticationException;
 import com.ec.user.exceptions.JwtException.*;
 import com.ec.user.exceptions.otpException.OtpNotFoundException;
+import com.ec.user.integration.kafka.KafkaProducerService;
 import com.ec.user.integration.redis.RedisConstants;
 import com.ec.user.integration.redis.RedisService;
 import com.ec.user.security.JwtTokenProvider;
@@ -67,6 +68,9 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private RedisService redisService;
+	
+	@Autowired
+	private KafkaProducerService kafkaProducerService;
 	
 	
 	
@@ -172,7 +176,8 @@ public class AuthServiceImpl implements AuthService {
 		String otp = IdGenerator.generateOTP();
 		redisService.setObjectWithTTL(RedisConstants.OTP_VERIFY_ACCOUNT + ":" + otp, account, 5, TimeUnit.MINUTES);
 		
-		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(), otp);
+//		emailService.sendRegistrationUserConfirm(userRegistrationForm.getUsername(), otp);
+		kafkaProducerService.sendRegisterEmail(userRegistrationForm.getUsername(), otp);
 		return account;
 	}
 	
@@ -181,7 +186,8 @@ public class AuthServiceImpl implements AuthService {
 		redisService.delete(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username);
 		String otp = IdGenerator.generateOTP();
 		redisService.set(RedisConstants.OTP_FORGOT_PASSWORD + ":" + username, otp, 3, TimeUnit.MINUTES);
-		emailService.sendResetPasswordUserConfirm(username, otp);
+//		emailService.sendResetPasswordUserConfirm(username, otp);
+		kafkaProducerService.sendResetPasswordEmail(username, otp);
 	}
 	
 	@Override
@@ -216,7 +222,9 @@ public class AuthServiceImpl implements AuthService {
 		redisService.delete(RedisConstants.OTP_CHANGE_EMAIL + ":" + username);
 		String otp = IdGenerator.generateOTP();
 		redisService.set(RedisConstants.OTP_CHANGE_EMAIL + ":" + username, otp, 3, TimeUnit.MINUTES);
-		emailService.sendUpdateEmailOtp(username, otp);
+//		emailService.sendUpdateEmailOtp(username, otp);
+		
+		kafkaProducerService.sendUpdateEmail(username, otp);
 	}
 	
 	@Override

@@ -3,10 +3,7 @@ package com.ec.news.security;
 import com.ec.news.aop.AppLogger;
 import com.ec.news.api.ApiPath;
 import com.ec.news.exceptions.AuthException.AuthExceptionHandler;
-import com.ec.news.exceptions.JwtException.InvalidJWTSignatureException;
-import com.ec.news.exceptions.JwtException.InvalidTokenTypeException;
-import com.ec.news.exceptions.JwtException.TokenExpiredException;
-import com.ec.news.exceptions.JwtException.UsernameNotFound;
+import com.ec.news.exceptions.JwtException.*;
 import com.ec.news.service.AccountService;
 import com.ec.news.utils.EnvironmentUtils;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -95,7 +92,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				if (environmentUtils.isDevMode()) {
 					errorString = "Token đã hết hạn. ";
 				}
-				authExceptionHandler.commence(request, response, new TokenExpiredException(errorString));
+				authExceptionHandler.commence(request, response, new AccessTokenExpiredException(errorString));
 				
 				return;
 			} catch (SignatureException e) {

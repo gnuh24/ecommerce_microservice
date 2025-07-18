@@ -3,10 +3,7 @@ package com.ec.order.security;
 import com.ec.order.aop.AppLogger;
 import com.ec.order.api.ApiPath;
 import com.ec.order.exceptions.AuthException.AuthExceptionHandler;
-import com.ec.order.exceptions.JwtException.InvalidJWTSignatureException;
-import com.ec.order.exceptions.JwtException.InvalidTokenTypeException;
-import com.ec.order.exceptions.JwtException.TokenExpiredException;
-import com.ec.order.exceptions.JwtException.UsernameNotFound;
+import com.ec.order.exceptions.JwtException.*;
 import com.ec.order.security.JwtTokenProvider;
 import com.ec.order.service.AccountService;
 import com.ec.order.utils.EnvironmentUtils;
@@ -96,7 +93,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				if (environmentUtils.isDevMode()) {
 					errorString = "Token đã hết hạn. ";
 				}
-				authExceptionHandler.commence(request, response, new TokenExpiredException(errorString));
+				authExceptionHandler.commence(request, response, new AccessTokenExpiredException(errorString));
 				
 				return;
 			} catch (SignatureException e) {

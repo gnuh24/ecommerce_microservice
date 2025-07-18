@@ -3,10 +3,7 @@ package com.ec.catalog.security;
 import com.ec.catalog.aop.AppLogger;
 import com.ec.catalog.api.ApiPath;
 import com.ec.catalog.exceptions.AuthException.AuthExceptionHandler;
-import com.ec.catalog.exceptions.JwtException.InvalidJWTSignatureException;
-import com.ec.catalog.exceptions.JwtException.InvalidTokenTypeException;
-import com.ec.catalog.exceptions.JwtException.TokenExpiredException;
-import com.ec.catalog.exceptions.JwtException.UsernameNotFound;
+import com.ec.catalog.exceptions.JwtException.*;
 import com.ec.catalog.service.AccountService;
 import com.ec.catalog.utils.EnvironmentUtils;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -95,7 +92,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				if (environmentUtils.isDevMode()) {
 					errorString = "Token đã hết hạn. ";
 				}
-				authExceptionHandler.commence(request, response, new TokenExpiredException(errorString));
+				authExceptionHandler.commence(request, response, new AccessTokenExpiredException(errorString));
 				
 				return;
 			} catch (SignatureException e) {
