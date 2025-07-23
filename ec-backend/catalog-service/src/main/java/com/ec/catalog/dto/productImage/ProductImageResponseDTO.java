@@ -5,17 +5,22 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class ProductImageResponseDTO {
+
     private String id;
     private String imageUrl;
     private Boolean isThumbnail;
 
+    public ProductImageResponseDTO() {
+    }
+
+    public ProductImageResponseDTO(String id, String imageUrl, Boolean isThumbnail) {
+        this.id = id;
+        this.imageUrl = imageUrl;
+        this.isThumbnail = isThumbnail;
+    }
+
     public static ProductImageResponseDTO fromEntity(ProductImage image) {
-        return ProductImageResponseDTO.builder()
-            .id(image.getId())
-            .imageUrl(image.getImageUrl())
-            .isThumbnail(image.getIsThumbnail())
-            .build();
+        return new ProductImageResponseDTO(image.getId(), image.getImageUrl(), image.getIsThumbnail());
     }
 }
